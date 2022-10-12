@@ -13,11 +13,11 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import useStore from "@/store/useStore";
 import { useDotSamaContext, useParachainApi, SupportedWalletId, useEagerConnect } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { useAssetsWithBalance } from "@/defi/hooks";
 import { useSnackbar } from "notistack";
+import { useUiSlice, setUiState } from "@/store/ui/ui.slice";
 
 const WALLETS_SUPPORTED: Array<{ walletId: SupportedWalletId, icon: string, name: string }> = [
   {
@@ -37,7 +37,6 @@ const Status = () => {
   const theme = useTheme();
   const assetsWithBalance = useAssetsWithBalance(DEFAULT_NETWORK_ID, false);
 
-  const { openPolkadotModal } = useStore();
   useEagerConnect(DEFAULT_NETWORK_ID);
   const { accounts } = useParachainApi(DEFAULT_NETWORK_ID);
   const [selectedAsset, setSelectedAsset] = useState<string>("");
@@ -79,7 +78,7 @@ const Status = () => {
         />
         <AccountIndicator
           onClick={() => {
-            openPolkadotModal();
+            setUiState({ isPolkadotModalOpen: true });
           }}
           network="polkadot"
           label={
@@ -95,7 +94,7 @@ const Status = () => {
   return (
     <Button
       onClick={() => {
-        openPolkadotModal();
+        setUiState({ isPolkadotModalOpen: true });
       }}
       variant="contained"
     >
@@ -107,9 +106,8 @@ const Status = () => {
 export const PolkadotConnect: React.FC<{}> = () => {
   const theme = useTheme();
   const {
-    ui: { isPolkadotModalOpen },
-    closePolkadotModal,
-  } = useStore();
+    isPolkadotModalOpen
+  } = useUiSlice();
   const { extensionStatus, activate } = useDotSamaContext();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -127,7 +125,7 @@ export const PolkadotConnect: React.FC<{}> = () => {
       <Status />
       <Modal
         onClose={() => {
-          closePolkadotModal();
+          setUiState({ isPolkadotModalOpen: false });
         }}
         open={isPolkadotModalOpen}
         maxWidth="sm"

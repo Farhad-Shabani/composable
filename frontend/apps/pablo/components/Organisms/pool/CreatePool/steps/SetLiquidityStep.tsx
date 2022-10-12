@@ -12,17 +12,16 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import BigNumber from "bignumber.js";
-import { useDispatch } from "react-redux";
 import FormWrapper from "../FormWrapper";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useMobile } from "@/hooks/responsive";
 import { TransactionSettings } from "@/components/Organisms/TransactionSettings";
-import { openTransactionSettingsModal } from "@/stores/ui/uiSlice";
 import useStore from "@/store/useStore";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
+import { setUiState } from "@/store/ui/ui.slice";
 
 const selectLabelProps = (valid: boolean, label: string, balance: string) =>
   ({
@@ -89,7 +88,6 @@ const combinedSelectProps = (
 const SetLiquidityStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const theme = useTheme();
   const isMobile = useMobile();
-  const dispatch = useDispatch();
 
   const { createPool } = useStore();
 
@@ -137,7 +135,7 @@ const SetLiquidityStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   };
 
   const onSettingHandler = () => {
-    dispatch(openTransactionSettingsModal());
+    setUiState({ isTransactionSettingsModalOpen: true })
   };
 
   return (

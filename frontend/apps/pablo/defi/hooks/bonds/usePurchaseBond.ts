@@ -8,6 +8,7 @@ import {
   useSigner,
 } from "substrate-react";
 import BigNumber from "bignumber.js";
+import { setUiState } from "@/store/ui/ui.slice";
 
 export function usePurchaseBond(offerId: BigNumber, amount: BigNumber) {
   const signer = useSigner();
@@ -41,7 +42,7 @@ export function usePurchaseBond(offerId: BigNumber, amount: BigNumber) {
               )
           } catch (err: any) {
             console.error(err.message);
-            enqueueSnackbar(err.message);
+            enqueueSnackbar(err.message, { variant: "error" });
             return rej(err)
           }
         })

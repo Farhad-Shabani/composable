@@ -13,13 +13,11 @@ import {
 import React, { useState } from "react";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { KeyboardArrowUp } from "@mui/icons-material";
-import { useAppSelector } from "@/hooks/store";
 import moment from "moment-timezone";
 import { Link } from "@/components/Molecules";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { getShortAddress } from "shared";
-import useStore from "@/store/useStore";
 import BigNumber from "bignumber.js";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";

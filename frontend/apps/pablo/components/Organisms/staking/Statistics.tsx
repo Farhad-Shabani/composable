@@ -1,6 +1,4 @@
 import { Label } from "@/components/Atoms";
-import { TOKENS } from "@/defi/Tokens";
-import { useAppSelector } from "@/hooks/store";
 import {
   Box,
   Grid,

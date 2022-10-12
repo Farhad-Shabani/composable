@@ -134,7 +134,7 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
             color="text.secondary"
             textAlign={"center"}
           >
-            You don&apos;t currently have any ${principalAssetSymbol} positions
+            You don&apos;t currently have any {principalAssetSymbol} positions
             staked.
           </Typography>
         </Box>

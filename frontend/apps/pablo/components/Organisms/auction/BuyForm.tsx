@@ -7,7 +7,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Settings } from "@mui/icons-material";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
   DropdownCombinedBigNumberInput,
   BigNumberInput,
@@ -16,11 +16,6 @@ import {
 import { useMobile } from "@/hooks/responsive";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useAppDispatch } from "@/hooks/store";
-import {
-  openPolkadotModal,
-  openTransactionSettingsModal,
-} from "@/stores/ui/uiSlice";
 import { getFullHumanizedDateDiff } from "shared";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { ConfirmingModal } from "../swap/ConfirmingModal";
@@ -30,6 +25,8 @@ import { useDotSamaContext } from "substrate-react";
 import { usePabloSwap } from "@/defi/hooks/swaps/usePabloSwap";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import _ from "lodash";
+import useStore from "@/store/useStore";
+import { setUiState } from "@/store/ui/ui.slice";
 
 export type BuyFormProps = {
   auction: LiquidityBootstrappingPool;
@@ -72,8 +69,6 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
     auction.sale.end >= currentTimestamp;
   const isEnded: boolean = auction.sale.end < currentTimestamp;
 
-  const dispatch = useAppDispatch();
-
   const initiateBuyTx = usePabloSwap({
     baseAssetId: selectedAuction.pair.base.toString(),
     quoteAssetId: selectedAuction.pair.quote.toString(),
@@ -83,7 +78,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
   });
 
   const onSettingHandler = () => {
-    dispatch(openTransactionSettingsModal());
+    setUiState({ isTransactionSettingsModalOpen: true })
   };
 
   return (
@@ -253,7 +248,9 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
           <Button
             variant="contained"
             fullWidth
-            onClick={() => dispatch(openPolkadotModal())}
+            onClick={() => {
+              setUiState({ isPolkadotModalOpen: true })
+            }}
           >
             Connect wallet
           </Button>

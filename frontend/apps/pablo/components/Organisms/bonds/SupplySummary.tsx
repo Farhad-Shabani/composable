@@ -122,7 +122,7 @@ export const SupplySummary: React.FC<SupplySummaryProps> = ({
             />
           )}
           <Typography variant="body1">
-            {rewardAsset && `${rewardAsset.symbol}`}
+            {rewardAsset && `${rewardAsset.symbol}`}&nbsp;
             <Typography variant="body1" fontWeight="600" component="span">
               {`${bond.roi}%`}
             </Typography>

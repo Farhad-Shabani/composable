@@ -7,9 +7,9 @@ import {
   isValidAssetPair,
   stableSwapCalculator,
 } from "@/defi/utils";
-import { useAppSelector } from "@/hooks/store";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import { usePrevious } from "@/hooks/usePrevious";
+import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { useLiquidityByPool } from "@/store/hooks/useLiquidityByPool";
@@ -57,9 +57,7 @@ export function useSwaps(): {
   isProcessing: boolean;
   priceImpact: BigNumber;
 } {
-  const slippage = useAppSelector(
-    (state) => state.settings.transactionSettings.tolerance
-  );
+  const slippage = useAppSettingsSlice().transactionSettings.tolerance;
   const previousSlippage = usePrevious(slippage);
 
   const [assetOneInputValid, setAssetOneInputValid] = useState(true);

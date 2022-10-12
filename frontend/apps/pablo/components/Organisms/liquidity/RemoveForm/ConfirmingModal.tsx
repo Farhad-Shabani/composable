@@ -11,17 +11,14 @@ import {
   useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
-import { useDispatch } from "react-redux";
-import { closeConfirmingModal } from "@/stores/ui/uiSlice";
 import BigNumber from "bignumber.js";
 import { useRemoveLiquidityState } from "@/store/removeLiquidity/hooks";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useParachainApi, useSelectedAccount, useExecutor, getSigner, useSigner } from "substrate-react";
-import { APP_NAME } from "@/defi/polkadot/constants";
 import { useRouter } from "next/router";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { toChainUnits } from "@/defi/utils";
+import { setUiState } from "@/store/ui/ui.slice";
 
 export type ConfirmingModalProps = {
   baseAsset: MockedAsset;
@@ -56,19 +53,18 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
   const { poolId } = useRemoveLiquidityState();
 
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const [confirming, setConfirming] = useState<boolean>(false);
 
   const onCloseHandler = () => {
-    dispatch(closeConfirmingModal());
+    setUiState({ isConfirmingModalOpen: false });
   };
 
   const confirmRemoveHandler = async () => {
     // WIP
     if (
       parachainApi &&
-     signer !== undefined && executor &&
+      signer !== undefined && executor &&
       baseAsset &&
       quoteAsset &&
       selectedAccount
@@ -90,19 +86,19 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
           },
           (txHash: string, events) => {
             console.log("Finalized ", txHash);
-            dispatch(closeConfirmingModal());
+            setUiState({ isConfirmingModalOpen: false });
             setConfirming(false);
             router.push("/pool/select/" + poolId);
           },
           (txError) => {
             console.log("Error ", txError);
-            dispatch(closeConfirmingModal());
+            setUiState({ isConfirmingModalOpen: false });
             setConfirming(false);
           }
         );
       } catch (err) {
         console.log(err);
-        dispatch(closeConfirmingModal());
+        setUiState({ isConfirmingModalOpen: false });
         setConfirming(false);
       }
     }

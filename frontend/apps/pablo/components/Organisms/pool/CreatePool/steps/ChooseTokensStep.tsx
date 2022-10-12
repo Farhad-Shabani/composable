@@ -3,22 +3,17 @@ import { BigNumberInput, Select } from "@/components/Atoms";
 import { FormTitle } from "@/components/Organisms/FormTitle";
 import { Box, Button, useTheme, BoxProps, Grid } from "@mui/material";
 import { useMemo, useState } from "react";
-import BigNumber from "bignumber.js";
-import { useAppSelector } from "@/hooks/store";
-import { useDispatch } from "react-redux";
 import { getAMMOptions } from "@/defi/AMMs";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { UnverifiedPoolWarningModal } from "../UnverifiedPoolWarningModal";
-import {
-  openConfirmingModal,
-  openTransactionSettingsModal,
-} from "@/stores/ui/uiSlice";
-import FormWrapper from "../FormWrapper";
 import { TransactionSettings } from "@/components/Organisms/TransactionSettings";
-import useStore from "@/store/useStore";
 import { AssetId } from "@/defi/polkadot/types";
 import { LiquidityPoolType } from "@/store/pools/pools.types";
 import { useFilteredAssetListDropdownOptions } from "@/defi/hooks/assets/useFilteredAssetListDropdownOptions";
+import BigNumber from "bignumber.js";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import FormWrapper from "../FormWrapper";
+import useStore from "@/store/useStore";
+import { useUiSlice,setUiState } from "@/store/ui/ui.slice";
 
 const labelProps = (label: string, disabled: boolean = false) => ({
   label: label,
@@ -58,7 +53,6 @@ const gridItem4ColumnProps = {
 
 const ChooseTokensStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const {
     createPool
@@ -69,9 +63,7 @@ const ChooseTokensStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const baseAssetList = useFilteredAssetListDropdownOptions(quoteAsset);
   const quoteAssetList = useFilteredAssetListDropdownOptions(baseAsset);
 
-  const isUnverifiedPoolWarningOpen = useAppSelector(
-    (state) => state.ui.isConfirmingModalOpen
-  );
+  const { isUnverifiedPoolWarningOpen } = useUiSlice();
 
   const setWeight = (key: string) => (weight: BigNumber) => {
     createPool.setWeights({
@@ -115,7 +107,7 @@ const ChooseTokensStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const onNextClickHandler = () => {
     verified ? setSelectable({
       currentStep: currentStep + 1
-    }) : dispatch(openConfirmingModal());
+    }) : setUiState({ isConfirmingModalOpen: true });
   };
 
   const tokenGridProps =
@@ -128,7 +120,7 @@ const ChooseTokensStep: React.FC<BoxProps> = ({ ...boxProps }) => {
         };
 
   const onSettingHandler = () => {
-    dispatch(openTransactionSettingsModal());
+    setUiState({ isTransactionSettingsModalOpen: true })
   };
 
   return (

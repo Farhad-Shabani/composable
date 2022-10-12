@@ -11,16 +11,13 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { useDispatch } from "react-redux";
-import {
-  closeConfirmSupplyModal
-} from "@/stores/ui/uiSlice";
 import BigNumber from "bignumber.js";
 import { useSigner, useExecutor, useParachainApi, useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils/constants";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { useAddLiquidity } from "@/defi/hooks/pools/addLiquidity/useAddLiquidity";
+import { setUiState } from "@/store/ui/ui.slice";
 export interface SupplyModalProps {
   assetOne: MockedAsset | undefined;
   assetTwo: MockedAsset | undefined;
@@ -46,7 +43,6 @@ export const ConfirmSupplyModal: React.FC<SupplyModalProps & ModalProps> = ({
   ...rest
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const signer = useSigner();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
@@ -67,7 +63,7 @@ export const ConfirmSupplyModal: React.FC<SupplyModalProps & ModalProps> = ({
   });
 
   return (
-    <Modal onClose={() => dispatch(closeConfirmSupplyModal())} {...rest}>
+    <Modal onClose={() => setUiState({ isConfirmSupplyModalOpen: false })} {...rest}>
       <Box
         sx={{
           background: theme.palette.gradient.secondary,
@@ -85,7 +81,7 @@ export const ConfirmSupplyModal: React.FC<SupplyModalProps & ModalProps> = ({
       >
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="body1">You will receive</Typography>
-          <IconButton onClick={() => dispatch(closeConfirmSupplyModal())}>
+          <IconButton onClick={() => setUiState({ isConfirmSupplyModalOpen: false })}>
             <CloseIcon />
           </IconButton>
         </Box>

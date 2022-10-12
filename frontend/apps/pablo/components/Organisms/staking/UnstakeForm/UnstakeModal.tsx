@@ -24,7 +24,6 @@ export const UnstakeModal: React.FC<UnstakeModalProps> = ({
   ...modalProps
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const amount = useMemo(() => {
     if (!stakingRewardPool) return new BigNumber(0);

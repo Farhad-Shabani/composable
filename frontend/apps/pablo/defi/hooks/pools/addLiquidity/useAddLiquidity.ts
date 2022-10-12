@@ -1,8 +1,3 @@
-import {
-  closeConfirmingSupplyModal,
-  closeConfirmSupplyModal,
-  openConfirmingSupplyModal,
-} from "@/stores/ui/uiSlice";
 import { Executor, ConnectedAccount } from "substrate-react";
 import BigNumber from "bignumber.js";
 import router from "next/router";
@@ -11,9 +6,9 @@ import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { toChainUnits } from "@/defi/utils";
 import { resetAddLiquiditySlice } from "@/store/addLiquidity/addLiquidity.slice";
 import { useSnackbar, VariantType } from "notistack";
-import { useDispatch } from "react-redux";
 import { Signer } from "@polkadot/api/types";
 import { useCallback, useMemo } from "react";
+import { setUiState } from "@/store/ui/ui.slice";
 
 const TxOrigin = "Add Liquidity";
 
@@ -58,7 +53,6 @@ export const useAddLiquidity = ({
   signer: Signer | undefined;
 }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
 
   const { baseAmount, quoteAmount } = useMemo(() => {
     if (!pool || !assetOne)
@@ -88,9 +82,9 @@ export const useAddLiquidity = ({
         transactionStatusSnackbarMessage(TxOrigin, transactionHash, "Initiated"),
         SNACKBAR_TYPES.INFO
       );
-      dispatch(openConfirmingSupplyModal());
+      setUiState({ isConfirmingSupplyModalOpen: true, isConfirmSupplyModalOpen: false });
     },
-    [enqueueSnackbar, dispatch]
+    [enqueueSnackbar]
   );
 
   const onTxFinalized = useCallback(
@@ -101,9 +95,9 @@ export const useAddLiquidity = ({
       );
       resetAddLiquiditySlice();
       router.push("/pool/select/" + pool?.poolId);
-      dispatch(closeConfirmingSupplyModal());
+      setUiState({ isConfirmingSupplyModalOpen: false });
     },
-    [pool, enqueueSnackbar, dispatch]
+    [pool, enqueueSnackbar]
   );
 
   const onTxError = useCallback(
@@ -112,9 +106,9 @@ export const useAddLiquidity = ({
         transactionStatusSnackbarMessage(TxOrigin, transactionError, "Error"),
         SNACKBAR_TYPES.ERROR
       );
-      dispatch(closeConfirmingSupplyModal());
+      setUiState({ isConfirmingSupplyModalOpen: false });
     },
-    [enqueueSnackbar, dispatch]
+    [enqueueSnackbar]
   );
 
   return useCallback(async () => {
@@ -133,7 +127,7 @@ export const useAddLiquidity = ({
         throw new Error("Missing dependencies.");
       }
 
-      dispatch(closeConfirmSupplyModal());
+      setUiState({ isConfirmingSupplyModalOpen: false });
 
       await executor.execute(
         parachainApi.tx.pablo.addLiquidity(
@@ -155,24 +149,8 @@ export const useAddLiquidity = ({
         transactionStatusSnackbarMessage(TxOrigin, err.message, "Error"),
         SNACKBAR_TYPES.ERROR
       );
-      dispatch(closeConfirmingSupplyModal());
+      setUiState({ isConfirmingSupplyModalOpen: false });
     }
-  }, [
-    parachainApi,
-    executor,
-    signer,
-    baseAmount,
-    quoteAmount,
-    _lpReceiveAmount,
-    enqueueSnackbar,
-    assetOne,
-    assetTwo,
-    dispatch,
-    pool,
-    selectedAccount,
-    onTxError,
-    onTxFinalized,
-    onTxReady,
-  ]);
+  }, [selectedAccount, parachainApi, executor, assetOne, baseAmount, quoteAmount, assetTwo, signer, pool, _lpReceiveAmount, onTxReady, onTxFinalized, onTxError, enqueueSnackbar]);
 
 };

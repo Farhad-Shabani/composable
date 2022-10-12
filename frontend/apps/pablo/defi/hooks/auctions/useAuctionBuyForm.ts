@@ -2,8 +2,8 @@ import { fetchAuctionTrades } from "@/defi/subsquid/auctions/helpers";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { calculator, DEFAULT_NETWORK_ID, fetchSpotPrice } from "@/defi/utils";
 import { fetchAndExtractAuctionStats } from "@/defi/utils/pablo/auctions";
-import { useAppSelector } from "@/hooks/store";
 import { usePrevious } from "@/hooks/usePrevious";
+import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
 import { MockedAsset } from "@/store/assets/assets.types";
 import { useAssetBalance } from "@/store/assets/hooks";
 import {
@@ -63,9 +63,7 @@ export const useAuctionBuyForm = (): {
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const { activePool } = useAuctionsSlice();
-  const slippage = useAppSelector(
-    (state) => state.settings.transactionSettings.tolerance
-  );
+  const slippage = useAppSettingsSlice().transactionSettings.tolerance;
   const previousSlippage = usePrevious(slippage);
 
   const spotPrice = useAuctionSpotPrice(activePool.poolId);

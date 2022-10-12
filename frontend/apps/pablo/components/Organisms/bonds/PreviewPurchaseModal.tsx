@@ -2,11 +2,10 @@ import React from "react";
 import { ModalProps, Modal } from "@/components/Molecules";
 import { Label } from "@/components/Atoms";
 import { Box, Typography, useTheme, Button } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { closeConfirmingModal } from "@/stores/ui/uiSlice";
 import BigNumber from "bignumber.js";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
+import { setUiState } from "@/store/ui/ui.slice";
 
 const defaultLabelProps = (label: string, balance: string) =>
   ({
@@ -37,11 +36,10 @@ export const PreviewPurchaseModal: React.FC<PreviewPurchaseModalProps> = ({
   ...modalProps
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const { roi } = bond;
   const handleCancelBond = async () => {
-    dispatch(closeConfirmingModal());
+    setUiState({ isOpenPreviewPurchaseModal: false })
   };
 
   const principalPriceUSD = useUSDPriceByAssetId(bond.selectedBondOffer ?  bond.selectedBondOffer.asset : "none");

@@ -1,5 +1,26 @@
+import { fromChainIdUnit } from "shared";
 import { ApiPromise } from "@polkadot/api";
 import BigNumber from "bignumber.js";
+
+export async function fetchOracleAssetPrice(
+  api: ApiPromise,
+  assetId: string | BigNumber,
+  priceDecimals:  number = 12
+): Promise<{ price: BigNumber, block: BigNumber }> {
+  try {
+    const oraclePrice = await api.query.oracle.prices(
+      typeof assetId === "string" ? assetId : assetId.toString()
+    );
+    
+    const price = fromChainIdUnit(BigInt(oraclePrice.price.toString()), priceDecimals);
+    const block = fromChainIdUnit(BigInt(oraclePrice.block.toString()), priceDecimals);
+
+    return { price, block }
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
 
 export async function fetchApolloPriceByAssetId (
   api: ApiPromise,

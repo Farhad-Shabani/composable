@@ -17,14 +17,13 @@ import {
 import { TokenId } from "@/defi/types";
 import BigNumber from "bignumber.js";
 import { FormTitle } from "../../FormTitle";
-import { useDispatch } from "react-redux";
-import { openTransactionSettingsModal } from "@/stores/ui/uiSlice";
 import { useMobile } from "@/hooks/responsive";
 import { getToken, getTokenOptions } from "@/defi/Tokens";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { InfoOutlined, SwapVertRounded } from "@mui/icons-material";
 import { BigNumberInput } from "@/components/Atoms";
 import { TransactionSettings } from "../../TransactionSettings";
+import { setUiState } from "@/store/ui/ui.slice";
 
 const containerProps = (theme: Theme) => ({
   p: 4,
@@ -82,7 +81,6 @@ export const BuySingleTokenModal: React.FC<BuySingleTokenModalProps> = ({
   ...modalProps
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const isMobile = useMobile();
 
   const [balance1] = useState<BigNumber>(new BigNumber(500.35523));
@@ -102,7 +100,7 @@ export const BuySingleTokenModal: React.FC<BuySingleTokenModalProps> = ({
   }, [tokenId]);
 
   const onSettingHandler = () => {
-    dispatch(openTransactionSettingsModal());
+    setUiState({ isTransactionSettingsModalOpen: true });
   };
 
   const onSwapHandler = () => {

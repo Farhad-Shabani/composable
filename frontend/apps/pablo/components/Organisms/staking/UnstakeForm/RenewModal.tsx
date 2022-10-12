@@ -5,7 +5,6 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
 import { Label } from "@/components/Atoms";
 import { TokenValueItem } from "../TokenValueItem";
 import { TOKENS } from "@/defi/Tokens";
@@ -23,9 +22,7 @@ export const RenewModal: React.FC<RenewModalProps> = ({
   onClose,
   ...modalProps
 }) => {
-  const dispatch = useDispatch();
-
-  const [multiplier, setMultiplier] = useState<Multiplier>({});
+  const [multiplier, _setMultiplier] = useState<Multiplier>({});
 
   const validMultiplier = isNumber(multiplier.value);
 

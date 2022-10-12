@@ -11,47 +11,42 @@ import {
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useMemo, useState } from "react";
 import BigNumber from "bignumber.js";
-import { useAppSelector } from "@/hooks/store";
-import {
-  closeConfirmingModal,
-  openConfirmingModal,
-  openWrongAmountEnteredModal,
-} from "@/stores/ui/uiSlice";
 import { PreviewPurchaseModal } from "./PreviewPurchaseModal";
-import { useDispatch } from "react-redux";
 import { WrongAmountEnteredModal } from "./WrongAmountEnteredModal";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
 import { useAssetBalance } from "@/store/assets/hooks";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { ConfirmingModal } from "../swap/ConfirmingModal";
-import usePrincipalAssetSymbol from "@/defi/hooks/bonds/usePrincipalAssetSymbol";
 import { usePurchaseBond } from "@/defi/hooks/bonds";
+import { useUiSlice, setUiState } from "@/store/ui/ui.slice";
+import { usePendingExtrinsic, useSelectedAccount } from "substrate-react";
+import usePrincipalAssetSymbol from "@/defi/hooks/bonds/usePrincipalAssetSymbol";
 import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
 
 const containerBoxProps = (theme: Theme) =>
-  ({
-    p: 4,
-    borderRadius: 1,
-    sx: {
-      background: theme.palette.gradient.secondary,
-      border: `1px solid ${alpha(
-        theme.palette.common.white,
-        theme.custom.opacity.light
-      )}`,
-    },
-  } as const);
+({
+  p: 4,
+  borderRadius: 1,
+  sx: {
+    background: theme.palette.gradient.secondary,
+    border: `1px solid ${alpha(
+      theme.palette.common.white,
+      theme.custom.opacity.light
+    )}`,
+  },
+} as const);
 
 const defaultLabelProps = (label: string, balance: string) =>
-  ({
-    label: label,
-    BalanceProps: {
-      balance: balance,
-      BalanceTypographyProps: {
-        variant: "body1",
-        fontWeight: "600",
-      },
+({
+  label: label,
+  BalanceProps: {
+    balance: balance,
+    BalanceTypographyProps: {
+      variant: "body1",
+      fontWeight: "600",
     },
-  } as const);
+  },
+} as const);
 
 export type DepositFormProps = {
   bond: SelectedBondOffer;
@@ -63,15 +58,12 @@ export const DepositForm: React.FC<DepositFormProps> = ({
   offerId,
   ...boxProps
 }) => {
-  const dispatch = useDispatch();
   const theme = useTheme();
-
-  const isOpenPreviewPurchaseModal = useAppSelector(
-    (state) => state.ui.isConfirmingModalOpen
-  );
-  const isWrongAmountEnteredModalOpen = useAppSelector(
-    (state) => state.ui.isWrongAmountEnteredModalOpen
-  );
+  const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
+  const {
+    isOpenPreviewPurchaseModal,
+    isWrongAmountEnteredModalOpen
+  } = useUiSlice();
 
   const [amount, setAmount] = useState<BigNumber>(new BigNumber(0));
   const [valid, setValid] = useState<boolean>(false);
@@ -83,9 +75,9 @@ export const DepositForm: React.FC<DepositFormProps> = ({
   const isWrongAmount = bond.roi.lt(0);
 
   const handleDeposit = () => {
-    dispatch(
-      isWrongAmount ? openWrongAmountEnteredModal() : openConfirmingModal()
-    );
+    setUiState(
+      isWrongAmount ? { isWrongAmountEnteredModalOpen: true } : { isOpenPreviewPurchaseModal: true }
+    )
   };
 
   const handleButtonClick = () => {
@@ -96,11 +88,10 @@ export const DepositForm: React.FC<DepositFormProps> = ({
     DEFAULT_NETWORK_ID,
     bond.selectedBondOffer ? bond.selectedBondOffer.asset : "0"
   );
+
   const buttonText = soldOut ? "Sold out" : "Deposit";
   const disabled = !valid || soldOut;
-
   const principalSymbol = usePrincipalAssetSymbol(bond.principalAsset);
-
   const vestingTime = useBondVestingTime(bond.selectedBondOffer);
 
   const youWillGet = useMemo(() => {
@@ -127,18 +118,19 @@ export const DepositForm: React.FC<DepositFormProps> = ({
     amount
   );
 
-  const [isTxProcessing, setIsTxProcessing] = useState(false);
+  const isPendingPurchase = usePendingExtrinsic(
+    "bond",
+    "bondedFinance",
+    selectedAccount?.address ?? "-"
+  )
 
   const onPurchaseBond = async () => {
-    dispatch(closeConfirmingModal());
-    setIsTxProcessing(true);
     try {
+      setUiState({ isOpenPreviewPurchaseModal: false })
       await purchaseBond();
       bond.updateBondInfo();
     } catch (e: any) {
       console.error(e);
-    } finally {
-      setIsTxProcessing(false);
     }
   };
 
@@ -167,11 +159,10 @@ export const DepositForm: React.FC<DepositFormProps> = ({
             label: "Amount",
             BalanceProps: {
               title: <AccountBalanceWalletIcon color="primary" />,
-              balance: `${
-                bond.selectedBondOffer
+              balance: `${bond.selectedBondOffer
                   ? bond.selectedBondOffer.nbOfBonds
                   : new BigNumber(0)
-              } ${principalSymbol} Bonds`,
+                } ${principalSymbol} Bonds`,
             },
           }}
           disabled={soldOut}
@@ -221,8 +212,8 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         rewardableTokens={
           bond.selectedBondOffer
             ? bond.selectedBondOffer.reward.amount.div(
-                bond.selectedBondOffer.nbOfBonds
-              )
+              bond.selectedBondOffer.nbOfBonds
+            )
             : new BigNumber(0)
         }
         amount={amount}
@@ -230,7 +221,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         open={isOpenPreviewPurchaseModal}
       />
       <WrongAmountEnteredModal open={isWrongAmountEnteredModalOpen} />
-      <ConfirmingModal open={isTxProcessing} />
+      <ConfirmingModal open={isPendingPurchase} />
     </Box>
   );
 };

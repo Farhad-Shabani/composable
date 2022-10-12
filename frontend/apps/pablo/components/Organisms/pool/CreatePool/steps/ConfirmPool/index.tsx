@@ -4,7 +4,6 @@ import { FormTitle } from "@/components/Organisms/FormTitle";
 import { alpha, Box, BoxProps, Button, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import { useMemo, useState } from "react";
 import BigNumber from "bignumber.js";
-import { useDispatch } from "react-redux";
 import FormWrapper from "../../FormWrapper";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -23,33 +22,32 @@ import {
   createStableSwapPool,
   toChainUnits
 } from "@/defi/utils";
-import { closeConfirmingModal, openConfirmingModal } from "@/stores/ui/uiSlice";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
+import { setUiState } from "@/store/ui/ui.slice";
 
 const labelProps = (
   label: string | undefined,
   balance?: string,
   fontWeight?: string | number
 ) =>
-  ({
-    label: label,
-    mb: 0,
-    TypographyProps: {
+({
+  label: label,
+  mb: 0,
+  TypographyProps: {
+    variant: "body1",
+    fontWeight: fontWeight
+  },
+  BalanceProps: {
+    balance: balance,
+    BalanceTypographyProps: {
       variant: "body1",
       fontWeight: fontWeight
-    },
-    BalanceProps: {
-      balance: balance,
-      BalanceTypographyProps: {
-        variant: "body1",
-        fontWeight: fontWeight
-      }
     }
-  } as const);
+  }
+} as const);
 
 const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
 
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const signer = useSigner();
@@ -135,12 +133,12 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
           console.log("Add Liq Tx Hash: ", txHash);
         },
         (txHash: string, events) => {
-          dispatch(closeConfirmingModal());
+          setUiState({ isConfirmingModalOpen: false });
           console.log("Add Liq Tx Hash: ", txHash);
           resetSlice();
         },
         (errorMessage: string) => {
-          dispatch(closeConfirmingModal());
+          setUiState({ isConfirmingModalOpen: false });
           console.log("Add Liq Error: ", errorMessage);
         }
       );
@@ -197,18 +195,18 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
           parachainApi,
           signer,
           (txHash: string) => {
-            dispatch(openConfirmingModal());
+            setUiState({ isConfirmingModalOpen: true });
             console.log("Tx Ready Hash: ", txHash);
           },
           onCreateFinalized,
           (errorMessage) => {
             console.log("tx Error: ", errorMessage);
-            dispatch(closeConfirmingModal());
+            setUiState({ isConfirmingModalOpen: false });
           }
         )
         .catch((err) => {
           console.log("error", err);
-          dispatch(closeConfirmingModal());
+          setUiState({ isConfirmingModalOpen: false });
         });
     }
   };
@@ -291,6 +289,7 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
         <Label
           {...labelProps(
             "Pool type",
+            // @ts-ignore
             `${ammId === "none" ? "-" : AMMs[ammId].label}`
           )}
           mt={1}
