@@ -50,7 +50,8 @@
     "tokens": "*",
     "urql": "^2.2.0",
     "uuid": "^8.3.2",
-    "endpoints": "*"
+    "endpoints": "*",
+    "immer": "^9.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
