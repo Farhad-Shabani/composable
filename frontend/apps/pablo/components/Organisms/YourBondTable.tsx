@@ -6,16 +6,15 @@ import {
   TableHead,
   TableRow,
   Box,
-  Typography,
   Tooltip,
 } from "@mui/material";
-import Image from "next/image";
-import { useRouter } from "next/router";
 import React, { useMemo } from "react";
+import { useRouter } from "next/router";
 import { InfoOutlined } from "@mui/icons-material";
 import { TableHeader } from "@/defi/types";
-import BondedOfferRow from "./bonds/BondedOfferRow";
 import { useBondOffersSlice } from "@/store/bond/bond.slice";
+import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
+import BondedOfferRow from "./bonds/BondedOfferRow";
 
 const tableHeaders: TableHeader[] = [
   {
@@ -52,18 +51,7 @@ export const YourBondTable: React.FC = () => {
 
   if (myOffers.length == 0) {
     return (
-      <Box textAlign="center" mt={3}>
-        <Image
-          src="/static/lemonade.png"
-          css={{ mixBlendMode: "luminosity" }}
-          width="96"
-          height="96"
-          alt="lemonade"
-        />
-        <Typography variant="body2" paddingTop={4} color="text.secondary">
-          You currently do not have any active bonds.
-        </Typography>
-      </Box>
+      <NoPositionsPlaceholder text="You currently do not have any active bonds." />
     );
   } else {
     return (
@@ -100,5 +88,4 @@ export const YourBondTable: React.FC = () => {
       </TableContainer>
     );
   }
-  return null;
 };

@@ -9,17 +9,22 @@ import {
   Typography,
   useTheme,
   Tooltip,
+  BoxProps,
 } from "@mui/material";
 import Image from "next/image";
-import { useAppDispatch } from "@/hooks/store";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 import { InfoOutlined, KeyboardArrowDown } from "@mui/icons-material";
-import { TableHeader } from "@/defi/types";
-
-import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
+import { ConstantProductPool, StableSwapPool, TableHeader } from "@/defi/types";
 import LiquidityPoolRow from "./pool/LiquidityPoolRow";
-import { usePoolsWithLpBalance } from "@/store/hooks/overview/usePoolsWithLpBalance";
+import React, { useState } from "react";
+import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
+
+
+type EmptyPlaceholderProps = BoxProps & { message: string }
+enum EMPTY_INFO_MESSAGES {
+  USER_NO_POOL = "You currently do not have any active liquidity pool.",
+  NO_POOL_EXISTS = "Liquidity pools are not available at the moment."
+}
 
 const tableHeaders: TableHeader[] = [
   {
@@ -27,7 +32,7 @@ const tableHeaders: TableHeader[] = [
   },
   {
     header: "TVL",
-    tooltip: "TVL",
+    tooltip: "Total value locked",
   },
   {
     header: "APY",
@@ -43,24 +48,19 @@ const tableHeaders: TableHeader[] = [
   },
 ];
 
-export type AllLiquidityTableProps = {
-  flow: "all" | "user";
+export type PoolsTableProps = {
+  liquidityPools: Array<StableSwapPool | ConstantProductPool>;
+  source: "user" | "pallet"
 };
 
-export const AllLiquidityTable: React.FC<AllLiquidityTableProps> = ({
-  flow,
+const SEE_MORE_OFFSET = 5;
+
+export const PoolsTable: React.FC<PoolsTableProps> = ({
+  liquidityPools,
+  source
 }) => {
-  const dispatch = useAppDispatch();
   const theme = useTheme();
   const [startIndex, setStartIndex] = useState(0);
-
-  const [showNoPools, setShowNoPools] = useState(true);
-  let pools = useAllLpTokenRewardingPools();
-  const userPools = usePoolsWithLpBalance();
-  if (flow !== "all") {
-    pools = userPools;
-  }
-
   const router = useRouter();
 
   const handleRowClick = (e: React.MouseEvent, poolId: string) => {
@@ -69,33 +69,16 @@ export const AllLiquidityTable: React.FC<AllLiquidityTableProps> = ({
   };
 
   const handleSeeMore = () => {
-    setStartIndex(startIndex + 4);
+    setStartIndex(startIndex + SEE_MORE_OFFSET);
   };
 
-  useEffect(() => {
-    if (!userPools.length) {
-      setShowNoPools(true);
-    } else {
-      setShowNoPools(false);
-    }
-  }, [userPools]);
-
-  if (flow === "user" && showNoPools) {
+  if (liquidityPools.length === 0) {
     return (
-      <Box textAlign="center" mt={3}>
-        <Image
-          src="/static/lemonade.png"
-          css={{ mixBlendMode: "luminosity" }}
-          width="96"
-          height="96"
-          alt="lemonade"
-        />
-        <Typography variant="body2" paddingTop={2} color="text.secondary">
-          You currently do not have any active liquidity pool.
-        </Typography>
-      </Box>
+      <NoPositionsPlaceholder text={
+        source === "user" ? EMPTY_INFO_MESSAGES.USER_NO_POOL : EMPTY_INFO_MESSAGES.NO_POOL_EXISTS
+      } />
     );
-  } else if (Array.isArray(pools) && pools.length > 0) {
+  } else if (liquidityPools.length > 0) {
     return (
       <TableContainer>
         <Table sx={{ minWidth: 420 }} aria-label="simple table">
@@ -116,7 +99,7 @@ export const AllLiquidityTable: React.FC<AllLiquidityTableProps> = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {pools.map((row, index) => (
+            {liquidityPools.map((row, index) => (
               <LiquidityPoolRow
                 liquidityPool={row}
                 key={index}
@@ -125,21 +108,20 @@ export const AllLiquidityTable: React.FC<AllLiquidityTableProps> = ({
             ))}
           </TableBody>
         </Table>
-        {flow === "all" && (
-          <Box
-            onClick={handleSeeMore}
-            mt={4}
-            display="flex"
-            gap={1}
-            justifyContent="center"
-            sx={{ cursor: "pointer" }}
-          >
-            <Typography textAlign="center" variant="body2">
-              See more
-            </Typography>
-            <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
-          </Box>
-        )}
+
+        {liquidityPools.length > startIndex + SEE_MORE_OFFSET && <Box
+          onClick={handleSeeMore}
+          mt={4}
+          display="flex"
+          gap={1}
+          justifyContent="center"
+          sx={{ cursor: "pointer" }}
+        >
+          <Typography textAlign="center" variant="body2">
+            See more
+          </Typography>
+          <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
+        </Box>}
       </TableContainer>
     );
   }

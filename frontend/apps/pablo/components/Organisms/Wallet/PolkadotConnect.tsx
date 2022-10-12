@@ -35,7 +35,7 @@ const WALLETS_SUPPORTED: Array<{ walletId: SupportedWalletId, icon: string, name
 const Status = () => {
   const { extensionStatus, selectedAccount } = useDotSamaContext();
   const theme = useTheme();
-  const assetsWithBalance = useAssetsWithBalance(DEFAULT_NETWORK_ID);
+  const assetsWithBalance = useAssetsWithBalance(DEFAULT_NETWORK_ID, false);
 
   const { openPolkadotModal } = useStore();
   useEagerConnect(DEFAULT_NETWORK_ID);

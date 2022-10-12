@@ -32,6 +32,7 @@ import {
   useBondOffersSlice,
   putBondOffers,
 } from "@/store/bond/bond.slice";
+import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
 
 const tableHeaders: TableHeader[] = [
   {
@@ -102,51 +103,57 @@ export const AllBondTable: React.FC = () => {
     router.push(`bond/select/${offerId}`);
   };
 
-  return (
-    <TableContainer>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {tableHeaders.map((th) => (
-              <TableCell align="left" key={th.header}>
-                <Box display="flex" alignItems="center" gap={1}>
-                  {th.header}
-                  {th.tooltip && (
-                    <Tooltip arrow title={th.tooltip}>
-                      <InfoOutlined color="primary" fontSize="small" />
-                    </Tooltip>
-                  )}
-                </Box>
-              </TableCell>
+  if (bondOffers.length === 0) {
+    return (
+      <NoPositionsPlaceholder text="There no bond offers active at the moment." />
+    )
+  } else {
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {tableHeaders.map((th) => (
+                <TableCell align="left" key={th.header}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    {th.header}
+                    {th.tooltip && (
+                      <Tooltip arrow title={th.tooltip}>
+                        <InfoOutlined color="primary" fontSize="small" />
+                      </Tooltip>
+                    )}
+                  </Box>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {bondOffers.slice(0, count).map((bondOffer) => (
+              <BondOfferRow
+                offerId={bondOffer.offerId.toString()}
+                key={bondOffer.offerId.toString()}
+                bondOffer={bondOffer}
+                handleBondClick={handleBondClick}
+              />
             ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {bondOffers.slice(0, count).map((bondOffer, index) => (
-            <BondOfferRow
-              offerId={bondOffer.offerId.toString()}
-              key={bondOffer.offerId.toString()}
-              bondOffer={bondOffer}
-              handleBondClick={handleBondClick}
-            />
-          ))}
-        </TableBody>
-      </Table>
-      {bondOffers.length > count && (
-        <Box
-          onClick={handleSeeMore}
-          mt={4}
-          display="flex"
-          gap={1}
-          justifyContent="center"
-          sx={{ cursor: "pointer" }}
-        >
-          <Typography textAlign="center" variant="body2">
-            See more
-          </Typography>
-          <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
-        </Box>
-      )}
-    </TableContainer>
-  );
+          </TableBody>
+        </Table>
+        {bondOffers.length > count && (
+          <Box
+            onClick={handleSeeMore}
+            mt={4}
+            display="flex"
+            gap={1}
+            justifyContent="center"
+            sx={{ cursor: "pointer" }}
+          >
+            <Typography textAlign="center" variant="body2">
+              See more
+            </Typography>
+            <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
+          </Box>
+        )}
+      </TableContainer>
+    );
+  }
 };

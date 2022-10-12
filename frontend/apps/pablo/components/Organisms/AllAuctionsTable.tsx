@@ -19,12 +19,13 @@ import { AuctionStatusIndicator } from "./auction/AuctionStatusIndicator";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { useAllAuctionVerifiedPools } from "@/defi/hooks/auctions";
 import { setAuctionsSlice } from "@/store/auctions/auctions.slice";
+import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
 
 export const AllAuctionsTable: React.FC<TableContainerProps> = ({
   ...rest
 }) => {
   const { liquidityBootstrappingPools, tableLimit } =
-  useAllAuctionVerifiedPools();
+    useAllAuctionVerifiedPools();
   const theme = useTheme();
   const [count, setCount] = useState(tableLimit);
 
@@ -43,72 +44,59 @@ export const AllAuctionsTable: React.FC<TableContainerProps> = ({
     setCount(tableLimit);
   };
 
-  return (
-    <TableContainer {...rest}>
-      <Table sx={{ minWidth: 420 }} aria-label="auctions table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left" sx={{ paddingLeft: theme.spacing(4) }}>
-              Token
-            </TableCell>
-            {/* <TableCell align="left">Network</TableCell> */}
-            <TableCell align="center">Auction Status</TableCell>
-            <TableCell align="right" sx={{ paddingRight: theme.spacing(4) }}>
-              Price
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {liquidityBootstrappingPools.slice(0, count).map((lbPool) => (
-            <TableRow
-              onClick={() => {
-                goAuctionDetails(lbPool);
-              }}
-              key={lbPool.poolId}
-              sx={{ cursor: "pointer" }}
-            >
-              <TableCell align="left" sx={{ padding: theme.spacing(4) }}>
-                {lbPool.baseAsset && (
-                  <BaseAsset
-                    icon={lbPool.baseAsset.icon}
-                    label={lbPool.baseAsset.name}
-                    LabelProps={{ variant: "body1" }}
-                  />
-                )}
+  if (liquidityBootstrappingPools.length === 0) {
+    return (
+      <NoPositionsPlaceholder text="There are no active liquidity bootstrapping pools at the moment." />
+    )
+  } else {
+    return (
+      <TableContainer {...rest}>
+        <Table sx={{ minWidth: 420 }} aria-label="auctions table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="left" sx={{ paddingLeft: theme.spacing(4) }}>
+                Token
               </TableCell>
-              <TableCell align="center">
-                <AuctionStatusIndicator
-                  auction={lbPool}
-                  justifyContent="center"
-                />
-              </TableCell>
-              <TableCell align="right" sx={{ padding: theme.spacing(4) }}>
-                <Typography variant="body1">${lbPool.spotPrice.toFixed(2)}</Typography>
+              <TableCell align="center">Auction Status</TableCell>
+              <TableCell align="right" sx={{ paddingRight: theme.spacing(4) }}>
+                Price
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {liquidityBootstrappingPools.length > count && (
-        <Box
-          onClick={handleSeeMore}
-          mt={2}
-          display="flex"
-          gap={1}
-          justifyContent="center"
-          sx={{ cursor: "pointer" }}
-        >
-          <Typography textAlign="center" variant="body2">
-            See more
-          </Typography>
-          <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
-        </Box>
-      )}
-
-      {liquidityBootstrappingPools.length <= count &&
-        liquidityBootstrappingPools.length > tableLimit && (
+          </TableHead>
+          <TableBody>
+            {liquidityBootstrappingPools.slice(0, count).map((lbPool) => (
+              <TableRow
+                onClick={() => {
+                  goAuctionDetails(lbPool);
+                }}
+                key={lbPool.poolId}
+                sx={{ cursor: "pointer" }}
+              >
+                <TableCell align="left" sx={{ padding: theme.spacing(4) }}>
+                  {lbPool.baseAsset && (
+                    <BaseAsset
+                      icon={lbPool.baseAsset.icon}
+                      label={lbPool.baseAsset.name}
+                      LabelProps={{ variant: "body1" }}
+                    />
+                  )}
+                </TableCell>
+                <TableCell align="center">
+                  <AuctionStatusIndicator
+                    auction={lbPool}
+                    justifyContent="center"
+                  />
+                </TableCell>
+                <TableCell align="right" sx={{ padding: theme.spacing(4) }}>
+                  <Typography variant="body1">${lbPool.spotPrice.toFixed(2)}</Typography>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {liquidityBootstrappingPools.length > count && (
           <Box
-            onClick={handleSeeLess}
+            onClick={handleSeeMore}
             mt={2}
             display="flex"
             gap={1}
@@ -116,11 +104,29 @@ export const AllAuctionsTable: React.FC<TableContainerProps> = ({
             sx={{ cursor: "pointer" }}
           >
             <Typography textAlign="center" variant="body2">
-              See Less
+              See more
             </Typography>
-            <KeyboardArrowUp sx={{ color: theme.palette.primary.main }} />
+            <KeyboardArrowDown sx={{ color: theme.palette.primary.main }} />
           </Box>
         )}
-    </TableContainer>
-  );
+
+        {liquidityBootstrappingPools.length <= count &&
+          liquidityBootstrappingPools.length > tableLimit && (
+            <Box
+              onClick={handleSeeLess}
+              mt={2}
+              display="flex"
+              gap={1}
+              justifyContent="center"
+              sx={{ cursor: "pointer" }}
+            >
+              <Typography textAlign="center" variant="body2">
+                See Less
+              </Typography>
+              <KeyboardArrowUp sx={{ color: theme.palette.primary.main }} />
+            </Box>
+          )}
+      </TableContainer>
+    );
+  }
 };

@@ -6,10 +6,10 @@ import BigNumber from "bignumber.js";
 
 export function useAssetsOverview(limit: number = 5) {
   const { apollo } = useStore();
-  const assetsWithBalance = useAssetsWithBalance(DEFAULT_NETWORK_ID);
+  const assetsWithBalance = useAssetsWithBalance(DEFAULT_NETWORK_ID, true);
 
   const withBalance = useMemo(() => {
-    return assetsWithBalance.filter(i => i.balance.gt(0)).slice(0, limit).map(asset => {
+    return assetsWithBalance.slice(0, limit).map(asset => {
       let priceUsd = new BigNumber(0);
       if (apollo[asset.network[DEFAULT_NETWORK_ID]]) {
         priceUsd = new BigNumber(apollo[asset.network[DEFAULT_NETWORK_ID]])
