@@ -1,25 +1,23 @@
 import { PairAsset, BaseAsset } from "@/components/Atoms";
-import { BondPrincipalAsset } from "@/defi/types";
+import { LiquidityProviderToken, Asset } from "shared";
 
 const BondPrincipalAssetIcon = ({
-  principalAsset,
+  bondedAsset,
 }: {
-  principalAsset: BondPrincipalAsset;
+  bondedAsset: LiquidityProviderToken | Asset | undefined;
 }) => {
-  const { lpPrincipalAsset, simplePrincipalAsset } = principalAsset;
-  const { baseAsset, quoteAsset } = lpPrincipalAsset;
-
-  if (baseAsset && quoteAsset) {
-    return (
+  if (bondedAsset instanceof LiquidityProviderToken) {
+    const [base, quote] = bondedAsset.getUnderlyingAssets();
+    return base && quote && (
       <PairAsset
         assets={[
           {
-            icon: baseAsset.icon,
-            label: baseAsset.symbol,
+            icon: base.getIconUrl(),
+            label: base.getSymbol(),
           },
           {
-            icon: quoteAsset.icon,
-            label: quoteAsset.symbol,
+            icon: quote.getSymbol(),
+            label: quote.getSymbol(),
           },
         ]}
         separator="/"
@@ -27,11 +25,11 @@ const BondPrincipalAssetIcon = ({
     );
   }
 
-  if (simplePrincipalAsset) {
+  if (bondedAsset instanceof Asset) {
     return (
       <BaseAsset
-        label={simplePrincipalAsset.symbol}
-        icon={simplePrincipalAsset.icon}
+        label={bondedAsset.getSymbol()}
+        icon={bondedAsset.getIconUrl()}
       />
     );
   }

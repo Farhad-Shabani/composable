@@ -16,13 +16,13 @@ import { useRemoveLiquidityState } from "@/store/removeLiquidity/hooks";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useParachainApi, useSelectedAccount, useExecutor, getSigner, useSigner } from "substrate-react";
 import { useRouter } from "next/router";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { toChainUnits } from "@/defi/utils";
 import { setUiState } from "@/store/ui/ui.slice";
+import { Asset } from "shared";
 
 export type ConfirmingModalProps = {
-  baseAsset: MockedAsset;
-  quoteAsset: MockedAsset;
+  baseAsset: Asset;
+  quoteAsset: Asset;
   price1: BigNumber;
   price2: BigNumber;
   amount1: BigNumber;
@@ -140,8 +140,8 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
               variant: "h6",
             }}
             BalanceProps={{
-              title: <BaseAsset icon={baseAsset.icon} pr={1} />,
-              balance: `${baseAsset.symbol}`,
+              title: <BaseAsset icon={baseAsset.getIconUrl()} pr={1} />,
+              balance: `${baseAsset.getSymbol()}`,
               BalanceTypographyProps: {
                 variant: "body1",
               },
@@ -159,8 +159,8 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
               variant: "h6",
             }}
             BalanceProps={{
-              title: <BaseAsset icon={quoteAsset.icon} pr={1} />,
-              balance: `${quoteAsset.symbol}`,
+              title: <BaseAsset icon={quoteAsset.getIconUrl()} pr={1} />,
+              balance: `${quoteAsset.getSymbol()}`,
               BalanceTypographyProps: {
                 variant: "body1",
               },
@@ -187,7 +187,7 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
             mt={4}
             label={`Price`}
             BalanceProps={{
-              balance: `1 ${quoteAsset.symbol} = ${price1} ${baseAsset.symbol}`,
+              balance: `1 ${quoteAsset.getSymbol()} = ${price1} ${baseAsset.getSymbol()}`,
               BalanceTypographyProps: {
                 variant: "body1",
               },
@@ -198,7 +198,7 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
             mt={2}
             label=""
             BalanceProps={{
-              balance: `1 ${baseAsset.symbol} = ${price2} ${quoteAsset.symbol}`,
+              balance: `1 ${baseAsset.getSymbol()} = ${price2} ${quoteAsset.getSymbol()}`,
               BalanceTypographyProps: {
                 variant: "body1",
               },
@@ -236,8 +236,8 @@ export const ConfirmingModal: React.FC<ConfirmingModalProps> = ({
             Waiting for confirmation
           </Typography>
           <Typography variant="subtitle1" mt={2} color="text.secondary">
-            Removing {`${percentage.times(lpBalance)}`} {baseAsset.symbol}/
-            {quoteAsset.symbol}
+            Removing {`${percentage.times(lpBalance)}`} {baseAsset.getSymbol()}/
+            {quoteAsset.getSymbol()}
           </Typography>
           <Typography
             variant="body1"

@@ -1,28 +1,16 @@
 import useStore from "@/store/useStore";
-import { useEffect, useMemo } from "react";
-import { useParachainApi, useSelectedAccount } from "substrate-react";
+import BigNumber from "bignumber.js";
+import { useEffect } from "react";
+import { useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { fetchPoolLiquidity } from "@/defi/utils";
-import { fetchBalanceByAssetId } from "@/defi/utils";
-import _ from "lodash";
+import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 
-const PICK = ["poolId", "pair", "lpToken"];
 const Updater = () => {
-  const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
-  const { pools, putLiquidityInPoolRecord, setUserLpBalance, liquidityInPool } =
+  const { constantProductPools } = usePoolsSlice();
+  const { putLiquidityInPoolRecord, setUserLpBalance } =
     useStore();
-
-  /**
-   * Select pools tracking
-   * liquidity
-   */
-  const allPools = useMemo(() => {
-    return [
-      ...pools.constantProductPools.verified.map((p) => _.pick(p, PICK)),
-      ...pools.stableSwapPools.verified.map((p) => _.pick(p, PICK)),
-    ];
-  }, [pools]);
   /**
    * For each pool, fetch its
    * base and quote token amount
@@ -30,31 +18,25 @@ const Updater = () => {
    * (first call)
    */
   useEffect(() => {
-    if (allPools.length > 0 && parachainApi) {
-      fetchPoolLiquidity(parachainApi, allPools as any[]).then(
-        putLiquidityInPoolRecord
-      );
+    if (constantProductPools.length > 0) {
+      fetchPoolLiquidity(constantProductPools).then(putLiquidityInPoolRecord)
     }
-  }, [allPools, parachainApi, putLiquidityInPoolRecord]);
+  }, [constantProductPools, putLiquidityInPoolRecord]);
   /**
    * Fetch and update LP Balances within
    * zustand store
    */
   useEffect(() => {
-    if (allPools.length > 0 && selectedAccount !== undefined && parachainApi !== undefined) {
-      allPools.forEach((pool) => {
-        if (pool.poolId !== undefined && pool.pair !== undefined && pool.lpToken !== undefined) {
-          fetchBalanceByAssetId(
-            parachainApi,
-            selectedAccount.address,
-            pool.lpToken
-          ).then((lpBalance) => {
-            setUserLpBalance(pool.poolId as number, lpBalance);
-          });
-        }
-      });
+    if (constantProductPools.length > 0 && selectedAccount) {
+      for (const pool of constantProductPools) {
+        const lpToken = pool.getLiquidityProviderToken();
+        const poolId: BigNumber = pool.getPoolId(true) as BigNumber;
+        lpToken.balanceOf(selectedAccount.address).then(balance => {
+          setUserLpBalance(poolId.toNumber(), balance.toString());
+        })
+      }
     }
-  }, [parachainApi, allPools, selectedAccount, setUserLpBalance]);
+  }, [constantProductPools, selectedAccount, setUserLpBalance]);
 
   return null;
 };

@@ -1,14 +1,14 @@
 import { Executor, ConnectedAccount } from "substrate-react";
-import BigNumber from "bignumber.js";
-import router from "next/router";
 import { ApiPromise } from "@polkadot/api";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { toChainUnits } from "@/defi/utils";
 import { resetAddLiquiditySlice } from "@/store/addLiquidity/addLiquidity.slice";
 import { useSnackbar, VariantType } from "notistack";
 import { Signer } from "@polkadot/api/types";
 import { useCallback, useMemo } from "react";
 import { setUiState } from "@/store/ui/ui.slice";
+import { PabloConstantProductPool } from "shared";
+import BigNumber from "bignumber.js";
+import router from "next/router";
 
 const TxOrigin = "Add Liquidity";
 
@@ -46,7 +46,7 @@ export const useAddLiquidity = ({
   parachainApi: ApiPromise | undefined;
   assetOne: string | undefined;
   assetTwo: string | undefined;
-  pool: ConstantProductPool | StableSwapPool | undefined;
+  pool: PabloConstantProductPool | undefined;
   assetOneAmount: BigNumber;
   assetTwoAmount: BigNumber;
   lpReceiveAmount: BigNumber;
@@ -61,7 +61,8 @@ export const useAddLiquidity = ({
         quoteAmount: undefined,
       };
 
-    let isReversed = pool.pair.base.toString() !== assetOne;
+    const pair = pool.getPair();
+    let isReversed = pair.getBaseAsset().toString() !== assetOne;
     return {
       baseAmount: toChainUnits(
         isReversed ? assetTwoAmount : assetOneAmount
@@ -94,7 +95,8 @@ export const useAddLiquidity = ({
         SNACKBAR_TYPES.SUCCESS
       );
       resetAddLiquiditySlice();
-      router.push("/pool/select/" + pool?.poolId);
+      const poolId = pool?.getPoolId() as string;
+      router.push("/pool/select/" + poolId);
       setUiState({ isConfirmingSupplyModalOpen: false });
     },
     [pool, enqueueSnackbar]
@@ -131,7 +133,7 @@ export const useAddLiquidity = ({
 
       await executor.execute(
         parachainApi.tx.pablo.addLiquidity(
-          pool.poolId,
+          pool.getPoolId() as string,
           baseAmount,
           quoteAmount,
           _lpReceiveAmount,

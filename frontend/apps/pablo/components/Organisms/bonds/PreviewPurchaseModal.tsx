@@ -42,9 +42,10 @@ export const PreviewPurchaseModal: React.FC<PreviewPurchaseModalProps> = ({
     setUiState({ isOpenPreviewPurchaseModal: false })
   };
 
-  const principalPriceUSD = useUSDPriceByAssetId(bond.selectedBondOffer ?  bond.selectedBondOffer.asset : "none");
+  // WIP
+  const principalPriceUSD = new BigNumber(0);
   const bondMarketPrice = principalPriceUSD.times(bond.principalAssetPerBond);
-  const rewardPriceUSD = useUSDPriceByAssetId(bond.selectedBondOffer ?  bond.selectedBondOffer.reward.asset : "none");
+  const rewardPriceUSD = useUSDPriceByAssetId(bond.selectedBondOffer ?  bond.selectedBondOffer.getRewardAssetId() as string : "none");
   const totalRewardsPrice = rewardPriceUSD.times(bond.rewardAssetPerBond);
 
   return (
@@ -81,7 +82,7 @@ export const PreviewPurchaseModal: React.FC<PreviewPurchaseModalProps> = ({
           />
           <Label
             mt={2}
-            {...defaultLabelProps("You will get", `${rewardableTokens.times(amount)} ${bond.rewardAsset?.symbol}`)}
+            {...defaultLabelProps("You will get", `${rewardableTokens.times(amount)} ${bond.rewardAsset?.getSymbol()}`)}
           />
           <Label mt={2} {...defaultLabelProps("Bond Price", `$${bondMarketPrice.toFixed(2)}`)} />
           <Label

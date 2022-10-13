@@ -1,13 +1,10 @@
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
-import useStore from "@/store/useStore";
-import { useMemo } from "react";
+import { PabloConstantProductPool } from "shared";
+import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 
-export const useAllLpTokenRewardingPools = (): Array<StableSwapPool | ConstantProductPool> => {
+export const useAllLpTokenRewardingPools = (): Array<PabloConstantProductPool> => {
   const {
-    pools: { stableSwapPools, constantProductPools },
-  } = useStore();
+    constantProductPools
+  } = usePoolsSlice();
 
-  return useMemo(() => {
-    return [...constantProductPools.verified, ...stableSwapPools.verified];
-  }, [stableSwapPools, constantProductPools]);
+  return constantProductPools;
 };

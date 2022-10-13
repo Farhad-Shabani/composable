@@ -20,18 +20,12 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
   const theme = useTheme();
   const poolDetails = useLiquidityPoolDetails(poolId);
   const { baseAsset, quoteAsset, pool } = poolDetails;
-  const stakingRewardPool = useStakingRewardPool(pool ? pool.lpToken : "-");
-
+  const lpToken = pool?.getLiquidityProviderToken() ?? null;
+  const stakingRewardPool = useStakingRewardPool(lpToken?.getPicassoAssetId() as string ?? "-");
   const [amount, setAmount] = useState<BigNumber>(new BigNumber(0));
   const [valid, setValid] = useState<boolean>(false);
   const [selectedMultiplier, setSelectedMultiplier] = useState<number>(0);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
-
-  const principalAssetSymbol = useMemo(() => {
-    if (!baseAsset || !quoteAsset) return undefined;
-
-    return `${baseAsset.symbol}/${quoteAsset.symbol}`;
-  }, [baseAsset, quoteAsset]);
 
   const multipliers = useMemo(() => {
     return extractDurationPresets(stakingRewardPool);
@@ -76,7 +70,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
             TypographyProps: { color: "text.secondary" },
             BalanceProps: {
               title: <AccountBalanceWalletIcon color="primary" />,
-              balance: `${poolDetails.lpBalance} ${principalAssetSymbol}`,
+              balance: `${poolDetails.lpBalance} ${lpToken?.getSymbol()}`,
               BalanceTypographyProps: { color: "text.secondary" },
             },
           }}
@@ -84,15 +78,15 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
             assets:
               baseAsset && quoteAsset
                 ? [
-                    {
-                      icon: baseAsset.icon,
-                      label: baseAsset.symbol,
-                    },
-                    {
-                      icon: quoteAsset.icon,
-                      label: quoteAsset.symbol,
-                    },
-                  ]
+                  {
+                    icon: baseAsset.getIconUrl(),
+                    label: baseAsset.getSymbol(),
+                  },
+                  {
+                    icon: quoteAsset.getIconUrl(),
+                    label: quoteAsset.getSymbol(),
+                  },
+                ]
                 : [],
             separator: "/",
           }}
@@ -104,7 +98,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
           setMultiplier={setSelectedMultiplier}
           periodItems={multipliers}
           multiplier={selectedMultiplier}
-          principalAssetSymbol={principalAssetSymbol}
+          principalAssetSymbol={lpToken?.getSymbol()}
         />
       </Box>
 
@@ -116,7 +110,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
           onClick={handleStake}
           disabled={!valid}
         >
-          {`Stake ${principalAssetSymbol}`}
+          {`Stake ${lpToken?.getSymbol()}`}
         </Button>
       </Box>
 

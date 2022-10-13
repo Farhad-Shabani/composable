@@ -64,7 +64,7 @@ const SelectBond: NextPage = () => {
         <Box display="flex" flexDirection="column" alignItems="center">
           <PageTitle
             rewardAsset={bondOfferSelected.rewardAsset}
-            principalAsset={bondOfferSelected.principalAsset}
+            bondedAsset_s={bondOfferSelected.bondedAsset_s}
           />
         </Box>
 

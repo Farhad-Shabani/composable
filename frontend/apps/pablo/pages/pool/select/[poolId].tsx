@@ -38,7 +38,7 @@ const PoolDetailsPage: NextPage = () => {
       <Container maxWidth="lg">
         <Box display="flex" flexDirection="column" alignItems="center" mb={8}>
           <PageTitle
-            title={`${baseAsset?.symbol}/${quoteAsset?.symbol}` + " Pool"}
+            title={`${baseAsset?.getSymbol()}/${quoteAsset?.getSymbol()}` + " Pool"}
             subtitle="Earn tokens while adding liquidity."
           />
         </Box>

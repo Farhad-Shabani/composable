@@ -1,13 +1,14 @@
 import { TableCell, TableRow, Typography } from "@mui/material";
-import useBondOfferPrincipalAsset from "@/defi/hooks/bonds/useBondOfferPrincipalAsset";
-import { BondOffer } from "@/defi/types";
+import { BondOffer } from "shared";
 import {
   useBondOfferPriceInAmountOfPrincipalTokens,
   useBondOfferROI,
   useBondOfferTotalPurchased,
 } from "@/store/bond/bond.slice";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import BondPrincipalAssetIcon from "./BondPrincipalAssetIcon";
+import { useBondedAsset } from "@/defi/hooks";
+import { useState } from "react";
+import BigNumber from "bignumber.js";
 
 const BondOfferRow = ({
   bondOffer,
@@ -20,25 +21,27 @@ const BondOfferRow = ({
 }) => {
   const roi = useBondOfferROI(offerId);
   const totalPurchasedBonds = useBondOfferTotalPurchased(offerId);
-  const principalAsset = useBondOfferPrincipalAsset(bondOffer);
-  const principalAmountOfTokensRequiredToBuy =
-    useBondOfferPriceInAmountOfPrincipalTokens(offerId);
-  const principalAssetPriceInUSD = useUSDPriceByAssetId(bondOffer.asset);
+  const [assetPrice, setAssetPrice] = useState(new BigNumber(0));
+  const bondedAsset_s = useBondedAsset(bondOffer);
+  // [WIP]
+  const bondedAssetPriceInUSD = new BigNumber(0);
+  const principalAmountOfTokensRequiredToBuy = useBondOfferPriceInAmountOfPrincipalTokens(offerId);
+
 
   return (
     <TableRow
-      key={bondOffer.offerId.toString()}
-      onClick={() => handleBondClick(bondOffer.offerId.toString())}
+      key={bondOffer.getBondOfferId() as string}
+      onClick={() => handleBondClick(bondOffer.getBondOfferId() as string)}
       sx={{ cursor: "pointer" }}
     >
       <TableCell align="left">
-        <BondPrincipalAssetIcon principalAsset={principalAsset} />
+        <BondPrincipalAssetIcon bondedAsset={bondedAsset_s} />
       </TableCell>
       <TableCell align="left">
         <Typography variant="body2">
           $
           {principalAmountOfTokensRequiredToBuy
-            .times(principalAssetPriceInUSD)
+            .times(bondedAssetPriceInUSD)
             .toFormat(2)}
         </Typography>
       </TableCell>
@@ -52,7 +55,7 @@ const BondOfferRow = ({
           $
           {totalPurchasedBonds
             .times(principalAmountOfTokensRequiredToBuy)
-            .times(principalAssetPriceInUSD)
+            .times(bondedAssetPriceInUSD)
             .toFormat(2)}
         </Typography>
       </TableCell>

@@ -20,7 +20,6 @@ import { ConfirmingModal } from "../swap/ConfirmingModal";
 import { usePurchaseBond } from "@/defi/hooks/bonds";
 import { useUiSlice, setUiState } from "@/store/ui/ui.slice";
 import { usePendingExtrinsic, useSelectedAccount } from "substrate-react";
-import usePrincipalAssetSymbol from "@/defi/hooks/bonds/usePrincipalAssetSymbol";
 import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
 
 const containerBoxProps = (theme: Theme) =>
@@ -68,9 +67,8 @@ export const DepositForm: React.FC<DepositFormProps> = ({
   const [amount, setAmount] = useState<BigNumber>(new BigNumber(0));
   const [valid, setValid] = useState<boolean>(false);
 
-  const { rewardAsset } = bond;
   const soldOut = bond.selectedBondOffer
-    ? bond.selectedBondOffer.nbOfBonds.eq(0)
+    ? (bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber).eq(0)
     : true;
   const isWrongAmount = bond.roi.lt(0);
 
@@ -86,12 +84,11 @@ export const DepositForm: React.FC<DepositFormProps> = ({
 
   const principalBalance = useAssetBalance(
     DEFAULT_NETWORK_ID,
-    bond.selectedBondOffer ? bond.selectedBondOffer.asset : "0"
+    bond.bondedAsset_s ? bond.bondedAsset_s.getPicassoAssetId().toString() : "0"
   );
 
   const buttonText = soldOut ? "Sold out" : "Deposit";
   const disabled = !valid || soldOut;
-  const principalSymbol = usePrincipalAssetSymbol(bond.principalAsset);
   const vestingTime = useBondVestingTime(bond.selectedBondOffer);
 
   const youWillGet = useMemo(() => {
@@ -106,15 +103,15 @@ export const DepositForm: React.FC<DepositFormProps> = ({
       let amountOfBondsBuyable = principalBalance
         .div(bond.principalAssetPerBond)
         .decimalPlaces(0, BigNumber.ROUND_FLOOR);
-      return amountOfBondsBuyable.lt(bond.selectedBondOffer.nbOfBonds)
+      return amountOfBondsBuyable.lt(bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber)
         ? amountOfBondsBuyable
-        : bond.selectedBondOffer.nbOfBonds;
+        : bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber;
     }
     return new BigNumber(0);
   }, [principalBalance, bond]);
 
   const purchaseBond = usePurchaseBond(
-    bond.selectedBondOffer ? bond.selectedBondOffer.offerId : new BigNumber(-1),
+    bond.selectedBondOffer ? (bond.selectedBondOffer.getBondOfferId(true) as BigNumber) : new BigNumber(-1),
     amount
   );
 
@@ -148,7 +145,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
             onClick: () =>
               setAmount(
                 new BigNumber(
-                  bond.selectedBondOffer ? bond.selectedBondOffer.nbOfBonds : 0
+                  bond.selectedBondOffer ? bond.selectedBondOffer.getNumberOfBonds(true) : 0
                 )
               ),
             sx: {
@@ -160,9 +157,9 @@ export const DepositForm: React.FC<DepositFormProps> = ({
             BalanceProps: {
               title: <AccountBalanceWalletIcon color="primary" />,
               balance: `${bond.selectedBondOffer
-                  ? bond.selectedBondOffer.nbOfBonds
+                  ? bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber
                   : new BigNumber(0)
-                } ${principalSymbol} Bonds`,
+                } ${bond.bondedAsset_s?.getSymbol()} Bonds`,
             },
           }}
           disabled={soldOut}
@@ -183,13 +180,13 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         <Label
           {...defaultLabelProps(
             "Your balance",
-            `${principalBalance.toFixed(2)} ${principalSymbol}`
+            `${principalBalance.toFixed(2)} ${bond.bondedAsset_s?.getSymbol()}`
           )}
         />
         <Label
           {...defaultLabelProps(
             "You will get",
-            `${youWillGet.toFixed(2)} ${rewardAsset?.symbol}`
+            `${youWillGet.toFixed(2)} ${bond.bondedAsset_s?.getSymbol()}`
           )}
           mt={2}
         />
@@ -211,8 +208,8 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         bond={bond}
         rewardableTokens={
           bond.selectedBondOffer
-            ? bond.selectedBondOffer.reward.amount.div(
-              bond.selectedBondOffer.nbOfBonds
+            ? (bond.selectedBondOffer.getRewardAssetAmount(true) as BigNumber).div(
+              bond.selectedBondOffer.getNumberOfBonds()
             )
             : new BigNumber(0)
         }

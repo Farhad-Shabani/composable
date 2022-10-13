@@ -32,12 +32,10 @@ export const RemoveLiquidityForm = ({ ...rest }) => {
 
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
+
   const { poolId } = useRemoveLiquidityState();
   const { lpBalance, baseAsset, quoteAsset } = useLiquidityPoolDetails(poolId);
-
-  const {
-    isConfirmingModalOpen
-  } = useUiSlice();
+  const { isConfirmingModalOpen } = useUiSlice();
 
   const [percentage, setPercentage] = useState<number>(0);
   const [expectedRemoveAmountQuote, setExpectedRemoveAmountQuote] =
@@ -46,19 +44,17 @@ export const RemoveLiquidityForm = ({ ...rest }) => {
     useState<BigNumber>(new BigNumber(0));
 
   const [confirmed, setConfirmed] = useState<boolean>(false);
-
-  const debouncedPercentage = useDebounce(percentage, 500);
-
   const [priceOfBase, setPriceOfBase] = useState(new BigNumber(0));
   const [priceOfQuote, setPriceOfQuote] = useState(new BigNumber(0));
+  const debouncedPercentage = useDebounce(percentage, 500);
 
   useEffect(() => {
     if (poolId !== -1 && baseAsset && quoteAsset && parachainApi) {
       fetchSpotPrice(
         parachainApi,
         {
-          base: baseAsset.network[DEFAULT_NETWORK_ID],
-          quote: quoteAsset.network[DEFAULT_NETWORK_ID],
+          base: baseAsset.getPicassoAssetId().toString(),
+          quote: quoteAsset.getPicassoAssetId().toString(),
         },
         poolId
       ).then((basePrice) => {
@@ -83,8 +79,8 @@ export const RemoveLiquidityForm = ({ ...rest }) => {
         lpBalance.times(debouncedPercentage / 100)
       );
 
-      const b = baseAsset.network[DEFAULT_NETWORK_ID].toString();
-      const q = quoteAsset.network[DEFAULT_NETWORK_ID].toString();
+      const b = baseAsset.getPicassoAssetId().toString();
+      const q = quoteAsset.getPicassoAssetId().toString();
 
       parachainApi.rpc.pablo
         .simulateRemoveLiquidity(

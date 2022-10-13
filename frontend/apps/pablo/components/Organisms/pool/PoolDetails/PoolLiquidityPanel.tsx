@@ -56,12 +56,17 @@ export const PoolLiquidityPanel: React.FC<PoolDetailsProps> = ({
   const theme = useTheme();
   const { setRemoveLiquidity } = useRemoveLiquidityState();
   const poolDetails = useLiquidityPoolDetails(poolId);
+  const { pool } = poolDetails;
+
+  const pair = pool?.getPair() ?? null;
+  const base = pair?.getBaseAsset().toString() ?? "-";
+  const quote = pair?.getQuoteAsset().toString() ?? "-";
 
   const baseAssetPriceUSD = useUSDPriceByAssetId(
-    poolDetails.pool?.pair.base.toString() ?? "-1"
+    base
   );
   const quoteAssetPriceUSD = useUSDPriceByAssetId(
-    poolDetails.pool?.pair.quote.toString() ?? "-1"
+    quote
   );
 
   const liquidityProvided = useUserProvidedLiquidityByPool(poolId);
@@ -88,8 +93,8 @@ export const PoolLiquidityPanel: React.FC<PoolDetailsProps> = ({
   );
 
   const totalValueLocked = calculatePoolTotalValueLocked(
-    poolDetails.tokensLocked.tokenAmounts.baseAmount,
-    poolDetails.tokensLocked.tokenAmounts.baseAmount,
+    poolDetails.tokensLocked.baseAmount,
+    poolDetails.tokensLocked.baseAmount,
     baseAssetPriceUSD,
     quoteAssetPriceUSD
   );
@@ -152,8 +157,8 @@ export const PoolLiquidityPanel: React.FC<PoolDetailsProps> = ({
                   value={liquidityProvided.tokenAmounts.baseAmount.toFormat(2)}
                 >
                   <BaseAsset
-                    label={`Pooled ${poolDetails.baseAsset.symbol}`}
-                    icon={poolDetails.baseAsset.icon}
+                    label={`Pooled ${poolDetails.baseAsset.getSymbol()}`}
+                    icon={poolDetails.baseAsset.getIconUrl()}
                   />
                 </Item>
               )}
@@ -163,8 +168,8 @@ export const PoolLiquidityPanel: React.FC<PoolDetailsProps> = ({
                   mt={4}
                 >
                   <BaseAsset
-                    label={`Pooled ${poolDetails.quoteAsset.symbol}`}
-                    icon={poolDetails.quoteAsset.icon}
+                    label={`Pooled ${poolDetails.quoteAsset.getSymbol()}`}
+                    icon={poolDetails.quoteAsset.getIconUrl()}
                   />
                 </Item>
               )}

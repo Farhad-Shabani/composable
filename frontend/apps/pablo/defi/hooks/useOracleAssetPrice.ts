@@ -1,30 +1,18 @@
-import { useParachainApi } from "substrate-react";
 import { useEffect, useState } from "react";
-import { DEFAULT_NETWORK_ID, fetchOracleAssetPrice } from "../utils";
 import BigNumber from "bignumber.js";
-import { fromChainIdUnit } from "shared";
+import useStore from "@/store/useStore";
 
 export function useOracleAssetPrice(
-    assetId: BigNumber | string,
-    priceDecimals: number = 12
+    assetId: BigNumber | string
 ): BigNumber {
-    const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
+    const { apollo } = useStore();
     const [assetPrice, setAssetPrice] = useState(new BigNumber(0));
 
     useEffect(() => {
-        if (!parachainApi) return;
-
-        fetchOracleAssetPrice(
-            parachainApi,
-            assetId,
-            priceDecimals
-        ).then((oraclePrice) => {
-            setAssetPrice(oraclePrice.price);
-        }).catch((err) => {
-            console.error()
-        })
-
-    }, [assetId, parachainApi, priceDecimals]);
+        const _assetId = typeof assetId === "string" ? assetId : assetId.toString();
+        if (!apollo[_assetId]) return;
+        setAssetPrice(apollo[_assetId]);
+    }, [assetId, apollo]);
 
     return assetPrice;
 }

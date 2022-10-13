@@ -10,14 +10,13 @@ import {
   Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
 import BigNumber from "bignumber.js";
 import { useSigner, useExecutor, useParachainApi, useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils/constants";
 import { MockedAsset } from "@/store/assets/assets.types";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { useAddLiquidity } from "@/defi/hooks/pools/addLiquidity/useAddLiquidity";
 import { setUiState } from "@/store/ui/ui.slice";
+import { PabloConstantProductPool } from "shared";
 export interface SupplyModalProps {
   assetOne: MockedAsset | undefined;
   assetTwo: MockedAsset | undefined;
@@ -26,7 +25,7 @@ export interface SupplyModalProps {
   lpReceiveAmount: BigNumber;
   priceOneInTwo: BigNumber;
   priceTwoInOne: BigNumber;
-  pool: ConstantProductPool | StableSwapPool | undefined;
+  pool: PabloConstantProductPool | undefined;
   share: BigNumber;
 }
 

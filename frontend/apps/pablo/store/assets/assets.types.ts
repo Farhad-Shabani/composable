@@ -1,3 +1,6 @@
+import BigNumber from "bignumber.js";
+import { Asset } from "shared";
+
 export interface MockedAsset {
     name: string;
     decimals: number;
@@ -7,14 +10,15 @@ export interface MockedAsset {
 }
 
 export interface AssetsSlice {
+    assetsV1: Asset[],
+    setAssetsV1: (assets: Asset[]) => void;
     supportedAssets: MockedAsset[];
     assetBalances: Record<string, Record<string, string>>,
     apollo: {
-        [id: string]: string;
+        [id: string]: BigNumber;
     }
-    updateApolloPrice: (
-        assetId: string,
-        price: string
+    setPrices: (
+        priceMap: Record<string, BigNumber>
     ) => void;
     putAssetBalance: (
         networkId: string,

@@ -22,8 +22,7 @@ import { useSwaps } from "@/defi/hooks/swaps/useSwaps";
 import { usePabloSwap } from "@/defi/hooks/swaps/usePabloSwap";
 import { HighlightBox } from "@/components/Atoms/HighlightBox";
 import { setUiState, useUiSlice } from "@/store/ui/ui.slice";
-import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import _ from "lodash";
+import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 
 const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
   const isMobile = useMobile();
@@ -54,11 +53,11 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
     setAssetOneInputValid,
     setAssetTwoInputValid,
     assetOneInputValid,
-    assetTwoInputValid,
     flipAssetSelection,
-    isProcessing,
     percentageToSwap,
     priceImpact,
+    inputMode,
+    setInputMode
   } = useSwaps();
 
   const initiateSwapTx = usePabloSwap({
@@ -76,7 +75,6 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
 
   const { isSwapPreviewModalOpen } = useUiSlice();
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
-
 
   const handleButtonClick = () => {
     if (extensionStatus !== "connected") {
@@ -104,8 +102,6 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
     setUiState({ isTransactionSettingsModalOpen: true });
   };
 
-  const debouncedTokenAmountUpdate = _.debounce(onChangeTokenAmount, 1000);
-
   return (
     <HighlightBox margin="auto" {...boxProps}>
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -132,13 +128,10 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
           setValid={setAssetOneInputValid}
           noBorder
           value={assetOneAmount}
-          setValue={(val) => {
-            if (isProcessing) return;
-            debouncedTokenAmountUpdate("quote", val);
+          onMouseDown={() => {
+            setInputMode(1)
           }}
-          InputProps={{
-            disabled: isProcessing,
-          }}
+          setValue={inputMode === 1 ? onChangeTokenAmount : undefined}
           buttonLabel={assetOneInputValid ? "Max" : undefined}
           referenceText={
             assetOneInputValid ? `${percentageToSwap}%` : undefined
@@ -157,9 +150,7 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
               const balanceLimit = balance1.multipliedBy(
                 percentageToSwap / 100
               );
-              if (!isProcessing && balanceLimit.gt(0)) {
-                debouncedTokenAmountUpdate("quote", balanceLimit);
-              }
+              onChangeTokenAmount(balanceLimit)
             },
           }}
           CombinedSelectProps={{
@@ -235,15 +226,12 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
           setValid={setAssetTwoInputValid}
           noBorder
           value={assetTwoAmount}
-          setValue={(val) => {
-            if (isProcessing) return;
-            debouncedTokenAmountUpdate("base", val);
+          onMouseDown={() => {
+            setInputMode(2)
           }}
-          InputProps={{
-            disabled: isProcessing,
-          }}
+          setValue={inputMode === 2 ? onChangeTokenAmount : undefined}
           ButtonProps={{
-            onClick: () => { },
+            onClick: () => {},
           }}
           CombinedSelectProps={{
             value: selectedAssetTwoId,
@@ -296,11 +284,11 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
         {selectedAssetOne && selectedAssetTwo && (
           <>
             <Typography variant="body2">
-              1 {selectedAssetTwo.symbol} = {spotPrice.toFixed()}{" "}
+              1 {selectedAssetTwo.symbol} = {spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)}{" "}
               {selectedAssetOne.symbol}
             </Typography>
             <Tooltip
-              title={`1 ${selectedAssetOne?.symbol} = ${spotPrice.toFixed()} ${selectedAssetTwo.symbol
+              title={`1 ${selectedAssetOne?.symbol} = ${spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)} ${selectedAssetTwo.symbol
                 }`}
               placement="top"
             >

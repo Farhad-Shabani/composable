@@ -1,7 +1,6 @@
 import {
   LiquidityBootstrappingPool,
   ConstantProductPool,
-  StableSwapPool,
   PoolFeeConfig,
 } from "@/defi/types";
 import { humanizedBnToBn, humanizedPermillToBigNumber } from "shared";
@@ -91,18 +90,5 @@ export const decodeCpp = (
     lpToken: humanizedBnToBn(poolItem.lpToken).toString(),
     feeConfig: decodeFeeConfig(poolItem),
     baseWeight: humanizedPermillToBigNumber(poolItem.baseWeight).toString(),
-  };
-};
-
-export const decodeSsp = (poolItem: any, poolId: number): StableSwapPool => {
-  return {
-    poolId,
-    owner: poolItem.owner,
-    pair: decodePoolPair(poolItem),
-    lpToken: humanizedBnToBn(poolItem.lpToken).toString(),
-    amplificationCoefficient: humanizedBnToBn(
-      poolItem.amplificationCoefficient
-    ).toString(),
-    feeConfig: decodeFeeConfig(poolItem),
   };
 };

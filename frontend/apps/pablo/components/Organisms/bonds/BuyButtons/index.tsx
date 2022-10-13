@@ -1,3 +1,4 @@
+import { LiquidityProviderToken } from "@/../../packages/shared";
 import { BaseAsset, PairAsset } from "@/components/Atoms";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
 import { Button, Grid, GridProps } from "@mui/material";
@@ -47,8 +48,9 @@ export const BuyButtons: React.FC<BuyButtonsProps> = ({
     }
   };
 
-  const { baseAsset, quoteAsset } = bond.principalAsset.lpPrincipalAsset;
-  const isLpBond = baseAsset && quoteAsset;
+  const isLpBond = bond.bondedAsset_s instanceof LiquidityProviderToken ? bond.bondedAsset_s.getUnderlyingAssets() : null;
+  const baseAsset = isLpBond ? isLpBond[0] : null;
+  const quoteAsset = isLpBond ? isLpBond[1] : null;
   if (!isLpBond) return null;
 
   return (
@@ -57,8 +59,8 @@ export const BuyButtons: React.FC<BuyButtonsProps> = ({
         <Button {...buttonProps(onBuyHandler("token1"))}>
           {baseAsset && (
             <BaseAsset
-              icon={baseAsset.icon}
-              {...restAssetProps(baseAsset.symbol, iconSize)}
+              icon={baseAsset.getIconUrl()}
+              {...restAssetProps(baseAsset.getSymbol(), iconSize)}
             />
           )}
         </Button>
@@ -67,27 +69,27 @@ export const BuyButtons: React.FC<BuyButtonsProps> = ({
         <Button {...buttonProps(onBuyHandler("token2"))}>
           {quoteAsset && (
             <BaseAsset
-              icon={quoteAsset.icon}
-              {...restAssetProps(quoteAsset.symbol, iconSize)}
+              icon={quoteAsset.getIconUrl()}
+              {...restAssetProps(quoteAsset.getSymbol(), iconSize)}
             />
           )}
         </Button>
       </Grid>
       <Grid item {...threeColumnPageSize}>
         <Button {...buttonProps(onBuyHandler("lp"))}>
-          <PairAsset
+          {baseAsset && quoteAsset && <PairAsset
             assets={[
               {
-                icon: baseAsset.icon,
-                label: baseAsset.symbol,
+                icon: baseAsset.getIconUrl(),
+                label: baseAsset.getSymbol(),
               },
               {
-                icon: quoteAsset.icon,
-                label: quoteAsset.symbol,
+                icon: quoteAsset.getIconUrl(),
+                label: quoteAsset.getSymbol(),
               },
             ]}
             {...restAssetProps("Create LP", iconSize)}
-          />
+          />}
         </Button>
       </Grid>
     </Grid>

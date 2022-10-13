@@ -11,13 +11,14 @@ import {
   Tooltip,
   BoxProps,
 } from "@mui/material";
-import Image from "next/image";
+
 import { useRouter } from "next/router";
 import { InfoOutlined, KeyboardArrowDown } from "@mui/icons-material";
-import { ConstantProductPool, StableSwapPool, TableHeader } from "@/defi/types";
+import { TableHeader } from "@/defi/types";
+import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
+import { PabloConstantProductPool } from "shared";
 import LiquidityPoolRow from "./pool/LiquidityPoolRow";
 import React, { useState } from "react";
-import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
 
 
 type EmptyPlaceholderProps = BoxProps & { message: string }
@@ -49,7 +50,7 @@ const tableHeaders: TableHeader[] = [
 ];
 
 export type PoolsTableProps = {
-  liquidityPools: Array<StableSwapPool | ConstantProductPool>;
+  liquidityPools: Array<PabloConstantProductPool>;
   source: "user" | "pallet"
 };
 

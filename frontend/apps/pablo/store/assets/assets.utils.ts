@@ -1,10 +1,11 @@
+import BigNumber from "bignumber.js";
 import produce from "immer";
 import { AssetsSlice, MockedAsset } from "./assets.types";
 
 export const setApolloPrice = (
   assets: AssetsSlice["apollo"],
   assetId: string,
-  price: string
+  price: BigNumber
 ) => {
   return produce(assets, draft => {
     draft[assetId] = price;

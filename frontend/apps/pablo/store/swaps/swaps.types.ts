@@ -1,4 +1,4 @@
-import { ConstantProductPool, PoolFeeConfig, StableSwapPool } from "@/defi/types";
+import { PabloConstantProductPool } from "shared";
 import BigNumber from "bignumber.js";
 
 export type SwapsChartRange = "24h" | "1w" | "1m";
@@ -14,9 +14,9 @@ export interface SwapsSlice {
       base: string | "none";
       quote: string | "none";
     },
-    selectedPool: ConstantProductPool | StableSwapPool | undefined;
+    selectedPool: PabloConstantProductPool | undefined;
     setTokenAmounts: (tokeAmounts: {assetOneAmount: BigNumber; assetTwoAmount: BigNumber}) => void;
-    setSelectedPool: (pool: ConstantProductPool | StableSwapPool | undefined) => void;
+    setSelectedPool: (pool: PabloConstantProductPool | undefined) => void;
     flipAssetSelection: () => void;
     setSelectedAsset: (assetId: string | "none", side: SwapSide) => void;
     setSpotPrice: (spotPrice: BigNumber) => void;

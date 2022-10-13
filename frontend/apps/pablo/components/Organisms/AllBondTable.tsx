@@ -130,8 +130,8 @@ export const AllBondTable: React.FC = () => {
           <TableBody>
             {bondOffers.slice(0, count).map((bondOffer) => (
               <BondOfferRow
-                offerId={bondOffer.offerId.toString()}
-                key={bondOffer.offerId.toString()}
+                offerId={bondOffer.getBondOfferId() as string}
+                key={bondOffer.getBondOfferId() as string}
                 bondOffer={bondOffer}
                 handleBondClick={handleBondClick}
               />

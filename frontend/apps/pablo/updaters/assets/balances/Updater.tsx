@@ -4,11 +4,11 @@ import {
   useParachainApi,
   useSelectedAccount,
 } from "substrate-react";
-import useStore from "@/store/useStore";
-import { fetchBalanceByAssetId } from "@/defi/utils";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import _ from "lodash";
-import { useOnChainAssetIds } from "@/store/hooks/useOnChainAssetsIds";
+import { SUPPORTED_ASSETS } from "@/store/assets/assets.slice";
+import { Asset } from "shared";
+import useStore from "@/store/useStore";
+import BigNumber from "bignumber.js";
 
 function shouldUpdateBalances(tx: any, account: string): boolean {
   if (
@@ -27,25 +27,30 @@ function shouldUpdateBalances(tx: any, account: string): boolean {
 
 const processedTransactions: string[] = [];
 const Updater = () => {
-  const { putAssetBalance } = useStore();
+  const { putAssetBalance, setAssetsV1, assetsV1 } = useStore();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
-  const onChainAssetIds = useOnChainAssetIds();
   const extrinsicCalls = useExtrinsics();
 
+  useEffect(() => {
+    if (!parachainApi) return;
+    setAssetsV1(SUPPORTED_ASSETS.map((v) => (new Asset(
+      parachainApi,
+      new BigNumber(v.network["picasso"]),
+      v.name,
+      v.symbol,
+      v.icon
+    ))))
+  }, [parachainApi, setAssetsV1])
+
   const updateAllBalances = useCallback(async () => {
-    if (parachainApi && selectedAccount) {
-      let assets = Array.from(onChainAssetIds);
-      for (let index = 0; index < assets.length; index++) {
-        const balance = await fetchBalanceByAssetId(
-          parachainApi,
-          selectedAccount.address,
-          assets[index]
-        )
-        putAssetBalance(DEFAULT_NETWORK_ID, assets[index], balance);
+    if (assetsV1.length > 0 && selectedAccount) {
+      for (const asset of assetsV1) {
+        const assetBalance = await asset.balanceOf(selectedAccount.address);
+        putAssetBalance(DEFAULT_NETWORK_ID, asset.getPicassoAssetId() as string, assetBalance.toString())
       }
     }
-  }, [parachainApi, selectedAccount, onChainAssetIds, putAssetBalance])
+  }, [selectedAccount, assetsV1, putAssetBalance])
 
   useEffect(() => {
     if (updateAllBalances && typeof updateAllBalances === "function") {

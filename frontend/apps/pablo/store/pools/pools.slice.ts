@@ -10,18 +10,10 @@ import {
 
 const createPoolsSlice: StoreSlice<PoolsSlice> = (set) => ({
   pools: {
-    constantProductPools: {
-      verified: [],
-      unVerified: [],
-    },
     liquidityBootstrappingPools: {
       verified: [],
       unVerified: [],
       spotPrices: [],
-    },
-    stableSwapPools: {
-      verified: [],
-      unVerified: [],
     },
     setPoolsList: (
       pools: AnyPoolArray

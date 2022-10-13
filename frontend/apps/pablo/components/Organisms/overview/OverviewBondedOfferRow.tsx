@@ -3,12 +3,12 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { BondOffer } from "@/defi/types";
-import useBondOfferPrincipalAsset from "@/defi/hooks/bonds/useBondOfferPrincipalAsset";
-import BondPrincipalAssetIcon from "../bonds/BondPrincipalAssetIcon";
+import { BondOffer } from "shared";
+import { useBondedAsset } from "@/defi/hooks/bonds/useBondedAsset";
 import { useBondedOfferVestingState, useBondOfferROI } from "@/store/bond/bond.slice";
-import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
+import BondPrincipalAssetIcon from "../bonds/BondPrincipalAssetIcon";
+import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
 
 export const OverviewBondedOfferRow = ({
   bondOffer,
@@ -17,10 +17,10 @@ export const OverviewBondedOfferRow = ({
   offerId: string;
   bondOffer: BondOffer;
 }) => {
-  const principalAsset = useBondOfferPrincipalAsset(bondOffer);
+  const bondedAsset_s = useBondedAsset(bondOffer);
   const discount = useBondOfferROI(offerId);
   const vestingTime = useBondVestingTime(bondOffer);
-  const rewardAssetPriceUSD = useUSDPriceByAssetId(bondOffer.reward.asset);
+  const rewardAssetPriceUSD = useUSDPriceByAssetId(bondOffer.getRewardAssetId() as string);
 
   const {
     claimable
@@ -29,7 +29,7 @@ export const OverviewBondedOfferRow = ({
   return (
     <TableRow>
       <TableCell align="left">
-        <BondPrincipalAssetIcon principalAsset={principalAsset} />
+        <BondPrincipalAssetIcon bondedAsset={bondedAsset_s} />
       </TableCell>
       <TableCell align="left">
         <Typography variant="body1">{discount.toFixed(2)}%</Typography>

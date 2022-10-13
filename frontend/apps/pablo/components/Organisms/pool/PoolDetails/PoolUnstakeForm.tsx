@@ -66,11 +66,12 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
   ...boxProps
 }) => {
   const theme = useTheme();
-
   const { baseAsset, quoteAsset, pool } = useLiquidityPoolDetails(poolId);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
-  const positions = useXTokensList({ stakedAssetId: pool?.lpToken });
-  const collectionId = useStakingRewardPoolCollectionId(pool?.lpToken ?? "-");
+  const lpToken = pool?.getLiquidityProviderToken() ?? null;
+  const lpAssetId = lpToken?.getPicassoAssetId() as string ?? "-"
+  const positions = useXTokensList({ stakedAssetId: lpAssetId });
+  const collectionId = useStakingRewardPoolCollectionId(lpAssetId);
 
   const financialNftCollectionId = useMemo(() => {
     if (!collectionId) return undefined;
@@ -82,22 +83,17 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
     return undefined;
   }, [positions]);
 
-  const principalAssetSymbol = useMemo(() => {
-    if (!baseAsset || !quoteAsset) return undefined;
-    return `${baseAsset.symbol}/${quoteAsset.symbol}`;
-  }, [baseAsset, quoteAsset]);
-
   const pairAssets = useMemo(() => {
     if (!baseAsset || !quoteAsset) return [];
 
     return [
       {
-        icon: baseAsset.icon,
-        label: baseAsset.symbol,
+        icon: baseAsset.getIconUrl(),
+        label: baseAsset.getSymbol(),
       },
       {
-        icon: quoteAsset.icon,
-        label: quoteAsset.symbol,
+        icon: quoteAsset.getIconUrl(),
+        label: quoteAsset.getSymbol(),
       },
     ];
   }, [baseAsset, quoteAsset]);
@@ -134,7 +130,7 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
             color="text.secondary"
             textAlign={"center"}
           >
-            You don&apos;t currently have any {principalAssetSymbol} positions
+            You don&apos;t currently have any {lpToken?.getSymbol()} positions
             staked.
           </Typography>
         </Box>
@@ -171,7 +167,7 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
           onClick={handleUnStake}
           disabled={!hasStakedPositions}
         >
-          {`Unstake ${principalAssetSymbol}`}
+          {`Unstake ${lpToken?.getSymbol()}`}
         </Button>
       </Box>
 

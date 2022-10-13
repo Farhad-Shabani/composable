@@ -4,8 +4,8 @@ import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useAllLpTokenRewardingPools } from "./useAllLpTokenRewardingPools";
 import useStore from "@/store/useStore";
 import BigNumber from "bignumber.js";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { fetchLiquidityProvided } from "@/defi/subsquid/liquidity/helpers";
+import { BasePabloPool } from "shared";
 /**
  * Provides the amount of liquidity
  * added by the user, and its value in
@@ -46,8 +46,10 @@ export const useUserProvidedLiquidityByPool = (
    * whichever pool is
    * selected
    */
-  const pool = useMemo<StableSwapPool | ConstantProductPool | undefined>(() => {
-    return allPools.find((i) => i.poolId === poolId);
+  const pool = useMemo<BasePabloPool | undefined>(() => {
+    return allPools.find((i) => {
+      return (i.getPoolId(true) as BigNumber).toNumber() === poolId
+    });
   }, [poolId, allPools]);
   /**
    * hook defaults
@@ -69,13 +71,14 @@ export const useUserProvidedLiquidityByPool = (
   useEffect(() => {
     console.log("Query subsquid for user liquidity");
     if (pool && selectedAccount) {
+      const poolId = (pool.getPoolId(true) as BigNumber).toNumber()
       fetchLiquidityProvided(
         selectedAccount.address,
-        pool.poolId
+        poolId
       ).then((liqRecord) => {
         setUserProvidedTokenAmountInLiquidityPool(
-          pool.poolId,
-          liqRecord[pool.poolId]
+          poolId,
+          liqRecord[poolId]
         );
       });
     }
@@ -87,14 +90,15 @@ export const useUserProvidedLiquidityByPool = (
    */
   useEffect(() => {
     if (pool) {
-      if (userProvidedLiquidity[pool.poolId]) {
+      const poolId = (pool.getPoolId(true) as BigNumber).toNumber()
+      if (userProvidedLiquidity[poolId]) {
         setLiquidityProvided({
           tokenAmounts: {
             baseAmount: new BigNumber(
-              userProvidedLiquidity[pool.poolId].tokenAmounts.baseAmount
+              userProvidedLiquidity[poolId].tokenAmounts.baseAmount
             ),
             quoteAmount: new BigNumber(
-              userProvidedLiquidity[pool.poolId].tokenAmounts.quoteAmount
+              userProvidedLiquidity[poolId].tokenAmounts.quoteAmount
             ),
           },
         });
@@ -107,15 +111,18 @@ export const useUserProvidedLiquidityByPool = (
    * value (in USD) in zustand store
    */
   useEffect(() => {
-    if (pool && apollo[pool.pair.base.toString()]) {
-      setValue((v) => {
-        return {
-          ...v,
-          baseValue: new BigNumber(
-            liquidityProvided.tokenAmounts.baseAmount
-          ).times(apollo[pool.pair.base.toString()]),
-        };
-      });
+    if (pool) {
+      const base = pool.getPair().getBaseAsset().toString();
+      if (apollo[base]) {
+        setValue((v) => {
+          return {
+            ...v,
+            baseValue: new BigNumber(
+              liquidityProvided.tokenAmounts.baseAmount
+            ).times(apollo[base]),
+          };
+        });
+      }
     }
   }, [pool, apollo, liquidityProvided.tokenAmounts.baseAmount]);
   /**
@@ -124,15 +131,18 @@ export const useUserProvidedLiquidityByPool = (
    * value (in USD) in zustand store
    */
   useEffect(() => {
-    if (pool && apollo[pool.pair.quote.toString()]) {
-      setValue((v) => {
-        return {
-          ...v,
-          quoteValue: new BigNumber(
-            liquidityProvided.tokenAmounts.quoteAmount
-          ).times(apollo[pool.pair.quote.toString()]),
-        };
-      });
+    if (pool) {
+      const quote = pool.getPair().getQuoteAsset().toString();
+      if (apollo[quote]) {
+        setValue((v) => {
+          return {
+            ...v,
+            quoteValue: new BigNumber(
+              liquidityProvided.tokenAmounts.quoteAmount
+            ).times(apollo[quote]),
+          };
+        });
+      }
     }
   }, [pool, apollo, liquidityProvided.tokenAmounts.quoteAmount]);
 

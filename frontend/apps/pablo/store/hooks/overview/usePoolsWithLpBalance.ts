@@ -1,28 +1,35 @@
-import BigNumber from "bignumber.js";
-import { useMemo } from "react";
-import useStore from "@/store/useStore";
-import { useAllLpTokenRewardingPools } from "../useAllLpTokenRewardingPools";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
+import { useState } from "react";
+import { PabloConstantProductPool } from "shared";
+import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { useAsyncEffect } from "@/hooks/useAsyncEffect";
+import { useSelectedAccount } from "substrate-react";
+import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 
-export interface StableSwapPoolWithLpBalance extends StableSwapPool { lpBalance: BigNumber }
-export interface ConstantProductPoolWithLpBalance extends ConstantProductPool { lpBalance: BigNumber }
-
-export const usePoolsWithLpBalance = (): Array<StableSwapPoolWithLpBalance & ConstantProductPoolWithLpBalance> => {
+export const usePoolsWithLpBalance = (): Array<PabloConstantProductPool> => {
     const {
-        userLpBalances
-    } = useStore();
-    const lpRewardingPools = useAllLpTokenRewardingPools();
+        constantProductPools
+    } = usePoolsSlice();
+    const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
+    const [poolsWithLpBalance, setPoolsWithLpBalance] = useState<PabloConstantProductPool[]>([]);
 
-    const lpPools = useMemo(() => {
-        return lpRewardingPools.map(i => {
-            if (userLpBalances[i.poolId]) {
-                if (new BigNumber(userLpBalances[i.poolId]).gt(0)) {
-                    return { ...i, lpBalance: new BigNumber(userLpBalances[i.poolId]) };
-                }
+    useAsyncEffect(async (): Promise<void> => {
+        if (!selectedAccount) {
+            setPoolsWithLpBalance([]);
+            return;
+        }
+
+        let poolsWithBalance = [];
+        for (const pool of constantProductPools) {
+            const lpToken = pool.getLiquidityProviderToken();
+            const balance = await lpToken.balanceOf(selectedAccount.address);
+
+            if (balance.gt(0)) {
+                poolsWithBalance.push(pool)
             }
-            return null;
-        }).filter(i => i !== null) as Array<StableSwapPoolWithLpBalance & ConstantProductPoolWithLpBalance>;
-    }, [lpRewardingPools, userLpBalances]);
+        }
 
-    return lpPools;
+        setPoolsWithLpBalance(poolsWithBalance);
+    }, [constantProductPools, selectedAccount])
+
+    return poolsWithLpBalance;
 }

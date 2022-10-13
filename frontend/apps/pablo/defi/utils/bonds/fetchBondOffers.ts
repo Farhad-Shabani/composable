@@ -1,13 +1,16 @@
-import { BondOffer } from "@/defi/types/bonds";
+import { BondOffer } from "shared";
 import { ApiPromise } from "@polkadot/api";
-import { decodeBondOffer } from "./decode";
 
 export async function fetchBondOffer(parachainApi: ApiPromise, index: number): Promise<BondOffer | undefined> {
   let bondOffer: BondOffer | undefined = undefined;
   try {
     let offer = await parachainApi.query.bondedFinance.bondOffers(index);
-    const decodedOffer = decodeBondOffer(offer, index);
-    bondOffer = decodedOffer;
+    const [beneficiary, _offer] = offer.toJSON() as any;
+    bondOffer = BondOffer.fromJSON(
+      index,
+      beneficiary,
+      _offer
+    );
   } catch (err) {
     console.error(err);
   } finally {

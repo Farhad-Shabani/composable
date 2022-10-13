@@ -19,7 +19,6 @@ import { EventRecord } from "@polkadot/types/interfaces/system/types";
 import {
   addLiquidityToPoolViaPablo,
   createConstantProductPool,
-  createStableSwapPool,
   toChainUnits
 } from "@/defi/utils";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
@@ -186,7 +185,9 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
             address,
             baseWeight.toNumber()
           )
-          : createStableSwapPool(parachainApi, pair, fee, address);
+          : null;
+
+      if (call === null) return;
 
       executor
         .execute(

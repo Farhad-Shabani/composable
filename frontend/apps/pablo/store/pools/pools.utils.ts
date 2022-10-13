@@ -1,7 +1,5 @@
 import {
-  ConstantProductPool,
   LiquidityBootstrappingPool,
-  StableSwapPool,
 } from "@/defi/types";
 import produce from "immer";
 import { PoolsSlice } from "./pools.types";
@@ -9,21 +7,15 @@ import { PoolsSlice } from "./pools.types";
 export const setPoolsListVerified = (
   liquidityPoolsSlice: PoolsSlice["pools"],
   poolsList: Array<
-    ConstantProductPool | LiquidityBootstrappingPool | StableSwapPool
+    LiquidityBootstrappingPool
   >
 ) => {
   return produce(liquidityPoolsSlice, (draft) => {
-    draft.constantProductPools.verified = [];
-    draft.stableSwapPools.verified = [];
     draft.liquidityBootstrappingPools.verified = [];
 
     poolsList.forEach((pool) => {
       if ((pool as LiquidityBootstrappingPool).sale) {
         draft.liquidityBootstrappingPools.verified.push(pool as LiquidityBootstrappingPool);
-      } else if ((pool as ConstantProductPool).baseWeight) {
-        draft.constantProductPools.verified.push(pool as ConstantProductPool);
-      } else if ((pool as StableSwapPool).amplificationCoefficient) {
-        draft.stableSwapPools.verified.push(pool as StableSwapPool);
       }
     });
   });

@@ -10,13 +10,13 @@ import useStore from "@/store/useStore";
  */
 const Updater = () => {
   const { apollo, putPoolStats, poolStats, putPoolStatsValue } = useStore();
-  const allLpRewardingPools = useAllLpTokenRewardingPools();
+  const allPermissionedConstantProductPools = useAllLpTokenRewardingPools();
 
   useEffect(() => {
-    if (allLpRewardingPools.length) {
+    if (allPermissionedConstantProductPools.length) {
       let promises: Promise<PabloPoolQueryResponse[]>[] = [];
 
-      allLpRewardingPools.forEach((pool) => {
+      allPermissionedConstantProductPools.forEach((pool) => {
         promises.push(fetchPoolStats(pool as any));
       });
 
@@ -43,31 +43,32 @@ const Updater = () => {
         });
       });
     }
-  }, [allLpRewardingPools, putPoolStats]);
+  }, [allPermissionedConstantProductPools, putPoolStats]);
 
   useEffect(() => {
-    if (allLpRewardingPools.length) {
-      allLpRewardingPools.forEach((i) => {
+    if (allPermissionedConstantProductPools.length) {
+      allPermissionedConstantProductPools.forEach((i) => {
+        const id = (i.getPoolId(true) as BigNumber).toNumber();
 
-        if (poolStats[i.poolId]) {
-          let quoteId = i.pair.quote.toString();
+        if (poolStats[id]) {
+          let quoteId = i.getPair().getQuoteAsset().toString();
 
           if (apollo[quoteId]) {
             const totalVolumeValue = new BigNumber(
-              poolStats[i.poolId].totalVolume
+              poolStats[id].totalVolume
             )
               .times(apollo[quoteId])
               .toFixed(2);
-            const _24HrFeeValue = new BigNumber(poolStats[i.poolId]._24HrFee)
+            const _24HrFeeValue = new BigNumber(poolStats[id]._24HrFee)
               .times(apollo[quoteId])
               .toFixed(2);
             const _24HrVolumeValue = new BigNumber(
-              poolStats[i.poolId]._24HrVolume
+              poolStats[id]._24HrVolume
             )
               .times(apollo[quoteId])
               .toFixed(2);
 
-            putPoolStatsValue(i.poolId, {
+            putPoolStatsValue(id, {
               totalVolumeValue,
               _24HrFeeValue,
               _24HrVolumeValue,
@@ -76,7 +77,7 @@ const Updater = () => {
         }
       });
     }
-  }, [apollo, allLpRewardingPools, poolStats, putPoolStatsValue]);
+  }, [apollo, allPermissionedConstantProductPools, poolStats, putPoolStatsValue]);
 
   return null;
 };

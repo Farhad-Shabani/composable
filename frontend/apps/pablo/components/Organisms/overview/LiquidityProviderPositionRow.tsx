@@ -4,20 +4,22 @@ import {
   Typography,
 } from "@mui/material";
 import { PairAsset } from "@/components/Atoms";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import { useAsset } from "@/defi/hooks";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
+import { PabloConstantProductPool } from "shared";
+import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
+import { useLpTokenPrice } from "@/defi/hooks/useLpTokenPrice";
 import BigNumber from "bignumber.js";
-import { ConstantProductPoolWithLpBalance, StableSwapPoolWithLpBalance } from "@/store/hooks/overview/usePoolsWithLpBalance";
 
 const LiquidityProviderPositionRow = ({
   pool,
 }: {
-  pool: StableSwapPoolWithLpBalance | ConstantProductPoolWithLpBalance
+  pool: PabloConstantProductPool
 }) => {
-  const baseAsset = useAsset(pool.pair.base.toString());
-  const quoteAsset = useAsset(pool.pair.quote.toString());
-  const lpPrice = useUSDPriceByAssetId(pool.lpToken);
+  const pair = pool.getPair();
+  const baseAsset = useAsset(pair.getBaseAsset().toString());
+  const quoteAsset = useAsset(pair.getQuoteAsset().toString());
+  const lpTokenUserBalance = useLpTokenUserBalance(pool);
+  const lpTokenPrice = useLpTokenPrice(pool);
   const apr = new BigNumber(0);
 
   return (
@@ -35,15 +37,15 @@ const LiquidityProviderPositionRow = ({
       </TableCell>
       <TableCell align="left">
         <Typography variant="body1">
-          ${lpPrice ? lpPrice.toFormat(2) : " - "}
+          ${lpTokenPrice.toFormat(2)}
         </Typography>
       </TableCell>
       <TableCell align="left">
-        <Typography variant="body1">{pool.lpBalance.toFormat(2)}</Typography>
+        <Typography variant="body1">{lpTokenUserBalance.toFormat(2)}</Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="body1">
-          ${lpPrice.times(pool.lpBalance).toFormat(2)}
+          ${lpTokenPrice.times(lpTokenUserBalance).toFormat(2)}
         </Typography>
       </TableCell>
       <TableCell align="left">

@@ -37,17 +37,20 @@ const Updater = () => {
 
   useEffect(() => {
     const roiRecord = bondOffers.reduce((acc, bondOffer) => {
+      const rewardAsset = bondOffer.getRewardAssetId() as string;
+      const bondedAsset = bondOffer.getbondedAssetId() as string;
+      const bondOfferId = bondOffer.getBondOfferId() as string;
       const principalAssetPrinceInUSD: BigNumber =
-        new BigNumber(apollo[bondOffer.asset]) || new BigNumber(0);
+        new BigNumber(apollo[bondedAsset]) || new BigNumber(0);
       const rewardAssetPriceInUSD =
-        new BigNumber(apollo[bondOffer.reward.asset]) || new BigNumber(0);
-      const rewardAssetAmountPerBond = bondOffer.reward.amount.div(
-        bondOffer.nbOfBonds
+        new BigNumber(apollo[rewardAsset]) || new BigNumber(0);
+      const rewardAssetAmountPerBond = (bondOffer.getRewardAssetAmount(true) as BigNumber).div(
+        bondOffer.getBondPrice(true)
       );
-      const principalAssetAmountPerBond: BigNumber = bondOffer.bondPrice;
+      const principalAssetAmountPerBond: BigNumber = bondOffer.getBondPrice(true) as BigNumber;
       return {
         ...acc,
-        [bondOffer.offerId.toString()]: calculateBondROI(
+        [bondOfferId]: calculateBondROI(
           principalAssetPrinceInUSD,
           rewardAssetPriceInUSD,
           principalAssetAmountPerBond,

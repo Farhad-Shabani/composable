@@ -1,7 +1,7 @@
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
+import { PabloConstantProductPool } from "shared";
+import { SwapSide, SwapsSlice } from "./swaps.types";
 import BigNumber from "bignumber.js";
 import produce from "immer";
-import { SwapSide, SwapsSlice } from "./swaps.types";
 
 export const putAssetId = (
   swapState: SwapsSlice["swaps"],
@@ -19,7 +19,7 @@ export const putAssetId = (
 
 export const putSelectedPool = (
   swapState: SwapsSlice["swaps"],
-  pool: ConstantProductPool | StableSwapPool | undefined
+  pool: PabloConstantProductPool | undefined
 ) => {
   return produce(swapState, (draft) => {
     draft.selectedPool = pool

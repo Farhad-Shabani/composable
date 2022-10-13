@@ -67,13 +67,13 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
   ...boxProps
 }) => {
   const theme = useTheme();
-
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const poolDetails = useLiquidityPoolDetails(poolId);
   const userProvidedLiquidity = useUserProvidedLiquidityByPool(poolId);
-
   const { baseAsset, quoteAsset, pool } = poolDetails;
-  const stakingRewardsPool = useStakingRewardPool(pool ? pool.lpToken : "-");
+  const lpToken = pool?.getLiquidityProviderToken();
+  const lpAssetId = lpToken?.getPicassoAssetId() as string ?? "-";
+  const stakingRewardsPool = useStakingRewardPool(lpAssetId);
   const rewardAssets = useAssets(stakingRewardsPool ? Object.keys(stakingRewardsPool.rewards) : []);
 
   // WIP - awaiting Andres' subsquid changes
@@ -90,9 +90,7 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
     <BoxWrapper {...boxProps}>
       <Item
         value={`$${lpDeposit}`}
-        intro={`${lpDeposit} ${baseAsset?.symbol}/${
-          quoteAsset?.symbol
-        }`}
+        intro={`${lpDeposit} ${lpToken?.getSymbol()}`}
       >
         <Typography variant="h6">Your deposits</Typography>
       </Item>
@@ -104,12 +102,12 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
           <PairAsset 
           assets={[
             {
-              icon: baseAsset.icon,
-              label: baseAsset.symbol,
+              icon: baseAsset.getIconUrl(),
+              label: baseAsset.getSymbol(),
             },
             {
-              icon: quoteAsset.icon,
-              label: quoteAsset.symbol,
+              icon: quoteAsset.getIconUrl(),
+              label: quoteAsset.getSymbol(),
             },
           ]}
           separator="/"

@@ -15,7 +15,6 @@ import { fromChainUnits } from "../../units";
 import { createPabloPoolAccountId } from "../misc";
 import { lbpCalculatePriceAtBlock } from "./weightCalculator";
 import BigNumber from "bignumber.js";
-import moment from "moment";
 
 export function transformPabloTransaction(
   tx: PabloTransactions,

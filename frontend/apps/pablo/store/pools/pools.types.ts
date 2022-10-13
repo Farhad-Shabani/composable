@@ -1,4 +1,4 @@
-import { ConstantProductPool, LiquidityBootstrappingPool, StableSwapPool } from "@/defi/types";
+import { LiquidityBootstrappingPool } from "@/defi/types";
 
 export interface LiquidityBootstrappingPoolStats {
     startBalances: {
@@ -24,18 +24,10 @@ export type LiquidityPoolType =
 
 export interface PoolsSlice {
     pools: {
-        constantProductPools: {
-            verified: ConstantProductPool[];
-            unVerified: ConstantProductPool[];
-        },
         liquidityBootstrappingPools: {
             verified: LiquidityBootstrappingPool[];
             unVerified: LiquidityBootstrappingPool[];
             spotPrices: [number, string][]
-        },
-        stableSwapPools: {
-            verified: StableSwapPool[];
-            unVerified: StableSwapPool[];
         },
         setPoolsList: (
             pools: AnyPoolArray
@@ -47,4 +39,4 @@ export interface PoolsSlice {
     }
 }
 
-export type AnyPoolArray = Array<ConstantProductPool | LiquidityBootstrappingPool | StableSwapPool>
+export type AnyPoolArray = Array<LiquidityBootstrappingPool>

@@ -1,7 +1,6 @@
 import { useParachainApi, useSelectedAccount } from "substrate-react";
-import { DEFAULT_NETWORK_ID, fetchOwnedFinancialNfts } from "@/defi/utils";
+import { DEFAULT_NETWORK_ID, fetchOwnedFinancialNfts, PBLO_ASSET_ID } from "@/defi/utils";
 import { fetchStakingRewardPools } from "@/defi/utils/stakingRewards";
-import { useOnChainAssetIds } from "@/store/hooks/useOnChainAssetsIds";
 import { fetchStakingPositionHistory } from "@/defi/subsquid/stakingRewards/queries";
 import { resetOwnedFinancialNfts, setOwnedFinancialNfts } from "@/store/financialNfts/financialNfts.slice";
 import { ApiPromise } from "@polkadot/api";
@@ -13,7 +12,8 @@ import {
   resetStakingRewardPools,
   resetStakingRewardPoolStakedPositionsHistory,
 } from "@/store/stakingRewards/stakingRewards.slice";
-import { useTotalXTokensIssued } from "@/defi/hooks/stakingRewards/useTotalXTokensIssued";
+import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
+import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 
 export function updateStakingRewardPool(
   api: ApiPromise,
@@ -52,14 +52,13 @@ export function updateOwnedFinancialNfts(
 
 const Updater = () => {
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
-  const onChainAssetIds = useOnChainAssetIds();
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
 
   useEffect(() => {
-    if (parachainApi && onChainAssetIds.size > 0) {
-      updateStakingRewardPools(parachainApi, Array.from(onChainAssetIds));
+    if (parachainApi) {
+      updateStakingRewardPools(parachainApi, [PBLO_ASSET_ID]);
     }
-  }, [parachainApi, onChainAssetIds]);
+  }, [parachainApi]);
 
   useEffect(() => {
     if (selectedAccount) {
@@ -72,6 +71,18 @@ const Updater = () => {
       updateOwnedFinancialNfts(parachainApi, selectedAccount.address);
     }
   }, [parachainApi, selectedAccount]);
+
+  const lpRewardingPools = useAllLpTokenRewardingPools();
+  useAsyncEffect(async (): Promise<void> => {
+    if (lpRewardingPools.length > 0) {
+      for (const lpRewardingPool of lpRewardingPools) {
+        updateStakingRewardPool(
+          lpRewardingPool.getApi(),
+          lpRewardingPool.getLiquidityProviderToken().getPicassoAssetId() as string
+        )
+      }
+    }
+  }, [lpRewardingPools])
 
   return null;
 };

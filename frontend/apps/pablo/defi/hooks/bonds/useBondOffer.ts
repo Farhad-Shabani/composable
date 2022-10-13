@@ -1,13 +1,8 @@
-import { BondOffer, BondPrincipalAsset, VestingSchedule } from "@/defi/types";
+import { Asset, BondOffer } from "shared";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
-import { MockedAsset } from "@/store/assets/assets.types";
 import {
   calculateBondROI,
-  decodeBondOffer,
-  DEFAULT_NETWORK_ID,
-  getBondPrincipalAsset,
-  matchAssetByPicassoId,
+  DEFAULT_NETWORK_ID
 } from "@/defi/utils";
 import { useParachainApi } from "substrate-react";
 import useStore from "@/store/useStore";
@@ -18,63 +13,49 @@ import {
   useBondedOfferVestingSchedules,
   useBondOffersSlice,
 } from "@/store/bond/bond.slice";
+import { useBondedAsset } from "./useBondedAsset";
 
 export default function useBondOffer(offerId: string) {
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
 
-  const { supportedAssets, apollo } = useStore();
+  const { assetsV1, apollo } = useStore();
   const { bondOffers } = useBondOffersSlice();
   const vestingScheduleIds = useBondedOfferVestingScheduleIds(offerId);
   const vestingSchedules = useBondedOfferVestingSchedules(offerId);
-  const lpRewardingPools = useAllLpTokenRewardingPools();
 
   const [selectedBondOffer, setSelectedBondOffer] = useState<
     BondOffer | undefined
   >(undefined);
 
   useEffect(() => {
-    let offer = bondOffers.find((o) => o.offerId.toString() === offerId);
+    let offer = bondOffers.find((o) => o.getBondOfferId() === offerId);
     if (offer) {
       setSelectedBondOffer(offer);
     }
   }, [bondOffers, offerId]);
 
-  const principalAsset: BondPrincipalAsset = useMemo<BondPrincipalAsset>(() => {
-    if (selectedBondOffer) {
-      return getBondPrincipalAsset(
-        selectedBondOffer,
-        supportedAssets,
-        lpRewardingPools
-      );
-    } else {
-      return {
-        lpPrincipalAsset: {
-          baseAsset: undefined,
-          quoteAsset: undefined,
-        },
-        simplePrincipalAsset: undefined,
-      };
-    }
-  }, [supportedAssets, lpRewardingPools, selectedBondOffer]);
+  const bondedAsset_s = useBondedAsset(selectedBondOffer);
 
-  const rewardAsset = useMemo<MockedAsset | undefined>(() => {
-    if (supportedAssets.length && selectedBondOffer) {
-      return supportedAssets.find((a) =>
-        matchAssetByPicassoId(a, selectedBondOffer.reward.asset)
-      );
+  const rewardAsset = useMemo<Asset | undefined>(() => {
+    if (assetsV1.length > 0 && selectedBondOffer) {
+      return assetsV1.find(asset => (asset.getPicassoAssetId(true) as BigNumber).eq(
+        selectedBondOffer.getRewardAssetId(true) as BigNumber
+      ))
     }
-  }, [supportedAssets, selectedBondOffer]);
+  }, [assetsV1, selectedBondOffer]);
 
   const rewardAssetPerBond = useMemo(() => {
     if (selectedBondOffer) {
-      return selectedBondOffer.reward.amount.div(selectedBondOffer.nbOfBonds);
+      return (selectedBondOffer.getRewardAssetAmount(true) as BigNumber).div(
+        selectedBondOffer.getNumberOfBonds(true) as BigNumber
+      )
     }
     return new BigNumber(0);
   }, [selectedBondOffer]);
 
   const principalAssetPerBond = useMemo(() => {
     if (selectedBondOffer) {
-      return selectedBondOffer.bondPrice;
+      return selectedBondOffer.getBondPrice(true) as BigNumber;
     }
     return new BigNumber(0);
   }, [selectedBondOffer]);
@@ -83,14 +64,15 @@ export default function useBondOffer(offerId: string) {
     if (parachainApi && selectedBondOffer) {
       try {
         const bondOffer = await parachainApi.query.bondedFinance.bondOffers(
-          selectedBondOffer.offerId.toString()
-        );
-        const decodedOffer = decodeBondOffer(
-          bondOffer,
-          selectedBondOffer.offerId.toNumber()
+          selectedBondOffer.getBondOfferId() as string
         );
 
-        updateExistingBondOffer(decodedOffer);
+        const [beneficiary, _offer] = bondOffer.toJSON() as any;
+        updateExistingBondOffer(BondOffer.fromJSON(
+          (selectedBondOffer.getBondOfferId(true) as BigNumber).toNumber(),
+          beneficiary,
+          _offer
+        ));
       } catch (err) {
         console.error(err);
       }
@@ -98,15 +80,16 @@ export default function useBondOffer(offerId: string) {
   }, [selectedBondOffer, parachainApi]);
 
   const roi = useMemo(() => {
-    if (principalAssetPerBond.gt(0) && rewardAssetPerBond.gt(0)) {
+    if (principalAssetPerBond.gt(0) && rewardAssetPerBond.gt(0) && selectedBondOffer) {
+      const bondedAsset = selectedBondOffer?.getbondedAssetId() as string;
+      const rewardAsset = selectedBondOffer?.getRewardAssetId() as string;
       if (
-        selectedBondOffer &&
-        apollo[selectedBondOffer.asset] &&
-        apollo[selectedBondOffer.reward.asset]
+        apollo[bondedAsset] &&
+        apollo[rewardAsset]
       ) {
         return calculateBondROI(
-          new BigNumber(apollo[selectedBondOffer.asset]),
-          new BigNumber(apollo[selectedBondOffer.reward.asset]),
+          new BigNumber(apollo[bondedAsset]),
+          new BigNumber(apollo[rewardAsset]),
           principalAssetPerBond,
           rewardAssetPerBond
         );
@@ -117,7 +100,6 @@ export default function useBondOffer(offerId: string) {
 
   return {
     selectedBondOffer,
-    principalAsset,
     rewardAsset,
     updateBondInfo,
     principalAssetPerBond,
@@ -125,6 +107,7 @@ export default function useBondOffer(offerId: string) {
     roi,
     vestingSchedules,
     vestingScheduleIds,
+    bondedAsset_s
   };
 }
 

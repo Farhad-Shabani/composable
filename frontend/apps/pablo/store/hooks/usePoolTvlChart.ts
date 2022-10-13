@@ -1,9 +1,9 @@
 import { DEFI_CONFIG } from "@/defi/config";
 import { queryLiquidityByPoolId } from "@/defi/subsquid/liquidity/queries";
-import BigNumber from "bignumber.js";
 import { useState, useEffect } from "react";
 import { useLiquidityPoolDetails } from "./useLiquidityPoolDetails";
 import { processSubsquidChartData } from "@/defi/utils/charts";
+import BigNumber from "bignumber.js";
 
 export const usePoolTvlChart = (poolId: number) => {
   const poolDetails = useLiquidityPoolDetails(poolId);
@@ -16,7 +16,7 @@ export const usePoolTvlChart = (poolId: number) => {
 
   useEffect(() => {
     if (poolId !== -1 && poolDetails.quoteAsset) {
-      const quoteDecs = new BigNumber(10).pow(poolDetails.quoteAsset.decimals);
+      const quoteDecs = new BigNumber(10).pow(poolDetails.quoteAsset.getDecimals());
       queryLiquidityByPoolId(poolId)
         .then((response) => {
           const { pabloPools } = response.data;

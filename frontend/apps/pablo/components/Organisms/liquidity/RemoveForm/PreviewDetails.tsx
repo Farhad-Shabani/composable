@@ -8,10 +8,11 @@ import {
 import BigNumber from "bignumber.js";
 import { MockedAsset } from "@/store/assets/assets.types";
 import millify from "millify";
+import { Asset } from "shared";
 
 export type PreviewDetailsProps = {
-  token1: MockedAsset | undefined,
-  token2: MockedAsset | undefined,
+  token1: Asset | undefined,
+  token2: Asset | undefined,
   lpToRemove: BigNumber,
   expectedReceiveAmountToken1: BigNumber,
   expectedReceiveAmountToken2: BigNumber,
@@ -43,12 +44,12 @@ export const PreviewDetails: React.FC<PreviewDetailsProps> = ({
           <PairAsset
             assets={[
               {
-                icon: token1.icon,
-                label: token1.symbol,
+                icon: token1.getIconUrl(),
+                label: token1.getSymbol(),
               },
               {
-                icon: token2.icon,
-                label: token2.symbol,
+                icon: token2.getIconUrl(),
+                label: token2.getSymbol(),
               },
             ]}
             separator="/"
@@ -65,7 +66,7 @@ export const PreviewDetails: React.FC<PreviewDetailsProps> = ({
           },
         }}
       >
-        <BaseAsset icon={token1?.icon} label={`Expected ` + token1?.symbol} />
+        <BaseAsset icon={token1?.getIconUrl()} label={`Expected ` + token1?.getSymbol()} />
       </Label>
 
       <Label
@@ -77,14 +78,14 @@ export const PreviewDetails: React.FC<PreviewDetailsProps> = ({
           },
         }}
       >
-        <BaseAsset icon={token2?.icon} label={`Expected ` + token2?.symbol} />
+        <BaseAsset icon={token2?.getIconUrl()} label={`Expected ` + token2?.getSymbol()} />
       </Label>
 
       <Label
         mt={4}
         label={`Price`}
         BalanceProps={{
-          balance: `1 ${token2?.symbol} = ${price2} ${token1?.symbol}`,
+          balance: `1 ${token2?.getSymbol()} = ${price2} ${token1?.getSymbol()}`,
           BalanceTypographyProps: {
             variant: "body2",
           },
@@ -95,7 +96,7 @@ export const PreviewDetails: React.FC<PreviewDetailsProps> = ({
         mt={2}
         label=""
         BalanceProps={{
-          balance: `1 ${token1?.symbol} = ${price1} ${token2?.symbol}`,
+          balance: `1 ${token1?.getSymbol()} = ${price1} ${token2?.getSymbol()}`,
           BalanceTypographyProps: {
             variant: "body2",
           },

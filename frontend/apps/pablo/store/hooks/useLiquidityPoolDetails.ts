@@ -1,39 +1,40 @@
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
 import BigNumber from "bignumber.js";
 import { useState, useEffect, useMemo } from "react";
 import { useAllLpTokenRewardingPools } from "./useAllLpTokenRewardingPools";
-import { useLiquidityByPool } from "./useLiquidityByPool";
 import { DailyRewards } from "../poolStats/poolStats.types";
 import { calculatePoolStats, fetchPoolStats } from "@/defi/utils/pablo";
-import { MockedAsset } from "../assets/assets.types";
-import { matchAssetByPicassoId } from "@/defi/utils";
-import useStore from "../useStore";
 import { useStakingRewardPool } from "../stakingRewards/stakingRewards.slice";
+import { Asset, PabloConstantProductPool } from "shared";
+import { useLiquidity } from "@/defi/hooks/useLiquidity";
+import useStore from "../useStore";
 
 export const useLiquidityPoolDetails = (poolId: number) => {
-  const { poolStats, poolStatsValue, userLpBalances, putPoolStats, supportedAssets } = useStore();
+  const { poolStats, poolStatsValue, userLpBalances, putPoolStats, assetsV1 } = useStore();
 
   const allLpRewardingPools = useAllLpTokenRewardingPools();
   const [pool, setPool] =
-    useState<StableSwapPool | ConstantProductPool | undefined>(undefined);
+    useState<PabloConstantProductPool | undefined>(undefined);
 
-  const stakingRewardPool = useStakingRewardPool(pool ? pool.lpToken : "-");
-  const tokensLocked = useLiquidityByPool(pool);
+  const stakingRewardPool = useStakingRewardPool(pool ? pool.getLiquidityProviderToken().getPicassoAssetId() as string : "-");
+  const tokensLocked = useLiquidity(pool);
 
   const [baseAsset, setBaseAsset] =
-    useState<MockedAsset | undefined>(undefined);
+    useState<Asset | undefined>(undefined);
   const [quoteAsset, setQuoteAsset] =
-    useState<MockedAsset | undefined>(undefined);
+    useState<Asset | undefined>(undefined);
 
   useEffect(() => {
-    let matchingPool: StableSwapPool | ConstantProductPool | undefined =
-      allLpRewardingPools.find((p) => p.poolId === poolId);
+    let matchingPool: PabloConstantProductPool | undefined =
+      allLpRewardingPools.find((p) => {
+        return (p.getPoolId(true) as BigNumber).eq(new BigNumber(poolId))
+      });
 
     if (matchingPool) {
-      let base = matchingPool.pair.base.toString();
-      let quote = matchingPool.pair.quote.toString();
-      const baseAsset = supportedAssets.find(asset => matchAssetByPicassoId(asset, base))
-      const quoteAsset = supportedAssets.find(asset => matchAssetByPicassoId(asset, quote))
+      const pair = matchingPool.getPair();
+      let base = pair.getBaseAsset();
+      let quote = pair.getQuoteAsset();
+      const baseAsset = assetsV1.find(asset => (base.eq(asset.getPicassoAssetId(true))))
+      const quoteAsset = assetsV1.find(asset => (quote.eq(asset.getPicassoAssetId(true))))
       setPool(matchingPool);
       setBaseAsset(baseAsset);
       setQuoteAsset(quoteAsset);
@@ -42,14 +43,14 @@ export const useLiquidityPoolDetails = (poolId: number) => {
       setBaseAsset(undefined);
       setQuoteAsset(undefined);
     }
-  }, [poolId, allLpRewardingPools, supportedAssets]);
+  }, [poolId, allLpRewardingPools, assetsV1]);
 
   useEffect(() => {
     if (pool) {
       fetchPoolStats(pool).then((poolStates) => {
         const poolStats = calculatePoolStats(poolStates);
         if (poolStats) {
-          putPoolStats(pool.poolId, poolStats)
+          putPoolStats((pool.getPoolId(true) as BigNumber).toNumber(), poolStats)
         }
       })
     }
@@ -84,8 +85,9 @@ export const useLiquidityPoolDetails = (poolId: number) => {
 
   const lpBalance = useMemo(() => {
     if (pool) {
-      if (userLpBalances[pool.poolId]) {
-        return new BigNumber(userLpBalances[pool.poolId]);
+      const poolId = (pool.getPoolId(true) as BigNumber).toNumber();
+      if (userLpBalances[poolId]) {
+        return new BigNumber(userLpBalances[poolId]);
       }
     }
     return new BigNumber(0);

@@ -1,5 +1,6 @@
+import { BasePabloPool } from "@/../../packages/shared";
 import { PabloTransactions } from "@/defi/subsquid/pools/queries";
-import { ConstantProductPool, StableSwapPool } from "@/defi/types";
+import { ConstantProductPool } from "@/defi/types";
 import {
   createPabloPoolAccountId,
   fetchAssetBalance,
@@ -10,14 +11,7 @@ import { ApiPromise } from "@polkadot/api";
 import BigNumber from "bignumber.js";
 
 export async function fetchPoolLiquidity(
-  parachainApi: ApiPromise,
-  pools: {
-    poolId: string | number;
-    pair: {
-      base: number;
-      quote: number;
-    };
-  }[]
+  pools: BasePabloPool[]
 ): Promise<Record<string, { baseAmount: BigNumber; quoteAmount: BigNumber }>> {
   let liquidityRecord: Record<
     string,
@@ -26,11 +20,18 @@ export async function fetchPoolLiquidity(
 
   for (const pool of pools) {
     try {
-      const poolAccountId = createPabloPoolAccountId(parachainApi, Number(pool.poolId));
-      const baseLiq = await fetchAssetBalance(parachainApi, poolAccountId, pool.pair.base.toString())
-      const quoteLiq = await fetchAssetBalance(parachainApi, poolAccountId, pool.pair.quote.toString())
+      const api = pool.getApi();
+      const pair = pool.getPair();
+      const poolId = pool.getPoolId().toString();
+      
+      const base = pair.getBaseAsset().toString();
+      const quote = pair.getQuoteAsset().toString();
+      
+      const poolAccountId = createPabloPoolAccountId(api, Number(poolId));
+      const baseLiq = await fetchAssetBalance(api, poolAccountId, base);
+      const quoteLiq = await fetchAssetBalance(api, poolAccountId, quote);
 
-      liquidityRecord[pool.poolId] = {
+      liquidityRecord[poolId] = {
         baseAmount: baseLiq,
         quoteAmount: quoteLiq
       }
@@ -43,7 +44,7 @@ export async function fetchPoolLiquidity(
 }
 
 export async function fetchAndUpdatePoolLiquidity(
-  pool: ConstantProductPool | StableSwapPool,
+  pool: ConstantProductPool,
   setTokenAmountInLiquidityPool: (
     poolId: number,
     amounts: {

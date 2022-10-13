@@ -15,6 +15,7 @@ import { TableHeader } from "@/defi/types";
 import { useBondOffersSlice } from "@/store/bond/bond.slice";
 import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
 import BondedOfferRow from "./bonds/BondedOfferRow";
+import BigNumber from "bignumber.js";
 
 const tableHeaders: TableHeader[] = [
   {
@@ -40,7 +41,7 @@ export const YourBondTable: React.FC = () => {
 
   const myOffers = useMemo(() => {
     return bondOffers.filter((bondOffer) => {
-      const offerId = bondOffer.offerId.toString();
+      const offerId = bondOffer.getBondOfferId() as string;
       return offerId in bondedOfferVestingScheduleIds;
     });
   }, [bondOffers, bondedOfferVestingScheduleIds]);
@@ -76,10 +77,10 @@ export const YourBondTable: React.FC = () => {
           <TableBody>
             {myOffers.map((bond) => (
               <BondedOfferRow
-                key={bond.offerId.toString()}
+                key={bond.getBondOfferId() as string}
                 bondOffer={bond}
                 handleBondedOfferRowClick={() =>
-                  handleRowClick(bond.offerId.toNumber())
+                  handleRowClick((bond.getBondOfferId() as BigNumber).toNumber())
                 }
               />
             ))}

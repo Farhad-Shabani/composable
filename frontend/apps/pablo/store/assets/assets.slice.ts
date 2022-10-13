@@ -1,3 +1,4 @@
+import { Asset } from "shared";
 import { StoreSlice } from "../types";
 import { AssetsSlice, MockedAsset } from "./assets.types";
 import { putAssetBalance, setApolloPrice } from "./assets.utils";
@@ -66,12 +67,17 @@ export const SUPPORTED_ASSETS: MockedAsset[] = [
 ]
 
 const createAssetsSlice: StoreSlice<AssetsSlice> = (set) => ({
+  assetsV1: [],
+  setAssetsV1: (assets: Asset[]) => set((prev: AssetsSlice) => ({
+    ...prev,
+    assetsV1: assets
+  })),
   supportedAssets: SUPPORTED_ASSETS,
   assetBalances: {},
   apollo: {},
-  updateApolloPrice: (assetId: string, price: string) =>
+  setPrices: (map) =>
     set((prev: AssetsSlice) => ({
-      apollo: setApolloPrice(prev.apollo, assetId, price),
+      apollo: map,
     })),
   putAssetBalance: (networkId, assetId, balance) => set((prevSlice: AssetsSlice) => ({
     assetBalances: putAssetBalance(prevSlice.assetBalances, networkId, assetId, balance)

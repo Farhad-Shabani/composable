@@ -1,5 +1,5 @@
 
 export * from "./useBondOffer";
-export * from "./useBondOfferPrincipalAsset";
+export * from "./useBondedAsset";
 export * from "./usePrincipalAssetSymbol";
 export * from "./usePurchaseBond";

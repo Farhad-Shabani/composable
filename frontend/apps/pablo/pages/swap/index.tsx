@@ -27,7 +27,7 @@ const Swap: NextPage = () => {
               <SwapChart height={610}/>
             </Grid>
             <Grid item {...twoColumnPageSize}>
-              <SwapForm/>
+              <SwapForm />
             </Grid>
           </Grid>
           {/* {message.text && (
