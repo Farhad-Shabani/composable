@@ -8,14 +8,14 @@ export function useBondedAsset(
 ): LiquidityProviderToken | Asset | undefined {
     const { assetsV1 } = useStore();
     const lpRewardingPools = usePoolsSlice().constantProductPools;
-    
+
     if (!bondOffer) return undefined;
 
     const isLpBasedBond: PabloConstantProductPool | undefined =
         lpRewardingPools.find(
             (pool: PabloConstantProductPool) =>
-                (pool.getLiquidityProviderToken().getPicassoAssetId(true) as BigNumber)
-                    .eq(bondOffer.getBondOfferId(true) as BigNumber)
+            (pool.getLiquidityProviderToken().getPicassoAssetId(true) as BigNumber)
+            .eq(bondOffer.getbondedAssetId(true) as BigNumber)
         );
 
     if (isLpBasedBond) {

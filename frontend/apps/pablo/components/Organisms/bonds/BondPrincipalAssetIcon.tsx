@@ -16,7 +16,7 @@ const BondPrincipalAssetIcon = ({
             label: base.getSymbol(),
           },
           {
-            icon: quote.getSymbol(),
+            icon: quote.getIconUrl(),
             label: quote.getSymbol(),
           },
         ]}
