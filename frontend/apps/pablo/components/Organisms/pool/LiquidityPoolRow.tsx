@@ -1,7 +1,7 @@
 import { TableCell, TableRow, Box, Typography } from "@mui/material";
 import { useAsset, useAssets } from "@/defi/hooks";
 import { PairAsset } from "@/components/Atoms";
-import { useLiquidityPoolStats } from "@/store/hooks/useLiquidityPoolStats";
+import { useLiquidityPoolStats } from "@/defi/hooks/useLiquidityPoolStats";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import {
   calculatePoolTotalValueLocked,
@@ -65,12 +65,12 @@ const LiquidityPoolRow = ({
           <PairAsset
             assets={[
               {
-                icon: baseAsset.icon,
-                label: baseAsset.symbol,
+                icon: baseAsset.getIconUrl(),
+                label: baseAsset.getSymbol(),
               },
               {
-                icon: quoteAsset.icon,
-                label: quoteAsset.symbol,
+                icon: quoteAsset.getIconUrl(),
+                label: quoteAsset.getSymbol(),
               },
             ]}
             separator="/"

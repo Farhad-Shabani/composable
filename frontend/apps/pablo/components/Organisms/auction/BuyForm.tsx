@@ -14,19 +14,18 @@ import {
   TransactionSettings,
 } from "@/components";
 import { useMobile } from "@/hooks/responsive";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getFullHumanizedDateDiff } from "shared";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { ConfirmingModal } from "../swap/ConfirmingModal";
-import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
+import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { useAuctionBuyForm } from "@/defi/hooks/auctions/useAuctionBuyForm";
 import { useDotSamaContext } from "substrate-react";
 import { usePabloSwap } from "@/defi/hooks/swaps/usePabloSwap";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
-import _ from "lodash";
-import useStore from "@/store/useStore";
 import { setUiState } from "@/store/ui/ui.slice";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import _ from "lodash";
 
 export type BuyFormProps = {
   auction: LiquidityBootstrappingPool;
@@ -58,10 +57,10 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
   } = useAuctionBuyForm();
 
   const priceUSDBase = useUSDPriceByAssetId(
-    baseAsset ? baseAsset.network[DEFAULT_NETWORK_ID] : "none"
+    baseAsset ? baseAsset.getPicassoAssetId() as string : "none"
   );
   const priceUSDQuote = useUSDPriceByAssetId(
-    quoteAsset ? quoteAsset.network[DEFAULT_NETWORK_ID] : "none"
+    quoteAsset ? quoteAsset.getPicassoAssetId() as string : "none"
   );
 
   const isActive: boolean =
@@ -133,7 +132,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
             },
           }}
           CombinedSelectProps={{
-            value: quoteAsset ? quoteAsset.network[DEFAULT_NETWORK_ID] : "",
+            value: quoteAsset?.getPicassoAssetId() as string ?? "",
             dropdownModal: true,
             forceHiddenLabel: isMobile ? true : false,
             options: [
@@ -147,9 +146,9 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
               ...(quoteAsset
                 ? [
                     {
-                      value: quoteAsset.network[DEFAULT_NETWORK_ID],
-                      icon: quoteAsset.icon,
-                      label: quoteAsset.symbol,
+                      value: quoteAsset.getPicassoAssetId(),
+                      icon: quoteAsset.getIconUrl(),
+                      label: quoteAsset.getSymbol(),
                     },
                   ]
                 : []),
@@ -211,8 +210,8 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
             assets: baseAsset
               ? [
                   {
-                    icon: baseAsset.icon,
-                    label: baseAsset.symbol,
+                    icon: baseAsset.getIconUrl(),
+                    label: baseAsset.getSymbol(),
                   },
                 ]
               : [],
@@ -240,7 +239,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
             disabled={isPendingBuy || isBuyButtonDisabled}
             onClick={initiateBuyTx}
           >
-            Buy {baseAsset ? baseAsset.symbol : ""}
+            Buy {baseAsset?.getSymbol() ?? ""}
           </Button>
         )}
 

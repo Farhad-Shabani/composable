@@ -1,4 +1,4 @@
-import { CustomRpcBalance } from "@/../../packages/defi-interfaces";
+import { CustomRpcBalance } from "defi-interfaces";
 import { StakingPositionHistory, StakingRewardPool } from "@/defi/types";
 import { ApiPromise } from "@polkadot/api";
 import { BN } from "bn.js";

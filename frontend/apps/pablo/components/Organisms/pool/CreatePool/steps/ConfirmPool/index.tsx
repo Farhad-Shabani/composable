@@ -90,7 +90,7 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const usdAmount1 = baseLiquidity.multipliedBy(baseTokenUSDPrice);
   const usdAmount2 = quoteLiquidity.multipliedBy(quoteTokenUSDPrice);
 
-  const poolName = `${_baseAsset?.symbol}-${_quoteAsset?.symbol}`;
+  const poolName = `${_baseAsset?.getSymbol()}-${_quoteAsset?.getSymbol()}`;
 
   const buttonText = () => {
     // if (isConfirmed) {
@@ -228,8 +228,8 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
         <Label {...labelProps(undefined, `${baseLiquidity}`, 600)} mt={3}>
           {_baseAsset && (
             <BaseAsset
-              icon={_baseAsset.icon}
-              label={_baseAsset.symbol}
+              icon={_baseAsset.getIconUrl()}
+              label={_baseAsset.getSymbol()}
             />
           )}
         </Label>
@@ -246,8 +246,8 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
         <Label {...labelProps(undefined, `${quoteLiquidity}`, 600)} mt={2}>
           {_quoteAsset && (
             <BaseAsset
-              icon={_quoteAsset.icon}
-              label={_quoteAsset.symbol}
+              icon={_quoteAsset.getIconUrl()}
+              label={_quoteAsset.getSymbol()}
             />
           )}
         </Label>

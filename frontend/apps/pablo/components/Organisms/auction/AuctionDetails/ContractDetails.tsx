@@ -1,14 +1,14 @@
 import { Box, BoxProps, Grid, Typography, useTheme } from "@mui/material";
 import { BaseAsset, Link } from "@/components";
+import { useCallback } from "react";
+import { Asset } from "shared";
+import { LiquidityBootstrappingPool } from "@/defi/types/pablo/LiquidityBootstrappingPool";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import { useCallback } from "react";
-import { MockedAsset } from "@/store/assets/assets.types";
-import { LiquidityBootstrappingPool } from "@/defi/types/pablo/LiquidityBootstrappingPool";
 
 export type ContractDetailsProps = {
   auction: LiquidityBootstrappingPool;
-  baseAsset: MockedAsset | undefined;
+  baseAsset: Asset | undefined;
 } & BoxProps;
 
 export const ContractDetails: React.FC<ContractDetailsProps> = ({
@@ -32,8 +32,8 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
         <Grid item xs={12} sm={12} md={6}>
           {baseAsset && (
             <BaseAsset
-              icon={baseAsset.icon}
-              label={`${baseAsset.name} Token`}
+              icon={baseAsset.getIconUrl()}
+              label={`${baseAsset.getName()} Token`}
               LabelProps={{ variant: "h6" }}
             />
           )}
@@ -69,7 +69,7 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
             </Typography>
             <Box display="flex" alignItems="center" gap={1.5} mt={2}>
               <Typography variant="subtitle1">
-                {`${baseAsset?.symbol ?? ""} on polkascan`}
+                {`${baseAsset?.getSymbol() ?? ""} on polkascan`}
               </Typography>
               <Link href={getTokenLink()} target="_blank">
                 <OpenInNewRoundedIcon />

@@ -15,7 +15,7 @@ import { AuctionPriceChart } from "@/components/Organisms/auction/AuctionPriceCh
 import { useEffect } from "react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { useParachainApi, useSelectedAccount } from "substrate-react";
-import { useAssets } from "@/defi/hooks/assets/useAsset";
+import { useAssets } from "@/defi/hooks";
 import { useRouter } from "next/router";
 import AuctionDetailTabs from "@/components/Organisms/auction/AuctionDetailTabs";
 import moment from "moment-timezone";

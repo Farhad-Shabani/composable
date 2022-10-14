@@ -80,13 +80,13 @@ export const StakeForm: React.FC<
           TypographyProps: { color: "text.secondary" },
           BalanceProps: {
             title: <AccountBalanceWalletIcon color="primary" />,
-            balance: `${balance} ${pabloAsset?.symbol}`,
+            balance: `${balance} ${pabloAsset?.getSymbol()}`,
             BalanceTypographyProps: { color: "text.secondary" },
           },
         }}
         EndAdornmentAssetProps={{
           assets: pabloAsset
-            ? [{ icon: pabloAsset.icon, label: pabloAsset.symbol }]
+            ? [{ icon: pabloAsset.getIconUrl(), label: pabloAsset.getSymbol() }]
             : [],
         }}
       />

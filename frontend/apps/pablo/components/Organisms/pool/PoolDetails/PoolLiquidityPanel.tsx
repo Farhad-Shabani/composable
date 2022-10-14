@@ -11,19 +11,18 @@ import { BaseAsset } from "@/components/Atoms";
 import { BoxWrapper } from "../../BoxWrapper";
 import { useRouter } from "next/router";
 import { DonutChart } from "@/components/Atoms/DonutChart";
-import { useLiquidityPoolDetails } from "@/store/hooks/useLiquidityPoolDetails";
+import { useLiquidityPoolDetails } from "@/defi/hooks/useLiquidityPoolDetails";
 import { PoolDetailsProps } from "./index";
 import { useRemoveLiquidityState } from "@/store/removeLiquidity/hooks";
 import {
   setManualPoolSearch,
   setPool,
 } from "@/store/addLiquidity/addLiquidity.slice";
-import { useUserProvidedLiquidityByPool } from "@/store/hooks/useUserProvidedLiquidityByPool";
+import { useUserProvidedLiquidityByPool } from "@/defi/hooks/useUserProvidedLiquidityByPool";
 import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { calculatePoolTotalValueLocked } from "@/defi/utils";
 import { useLiquidity } from "@/defi/hooks/useLiquidity";
-import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
-import { useLpTokenPrice } from "@/defi/hooks/useLpTokenPrice";
+import { useLpTokenPrice, useLpTokenUserBalance } from "@/defi/hooks";
 
 const twoColumnPageSize = {
   sm: 12,

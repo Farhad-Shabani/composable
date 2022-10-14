@@ -91,8 +91,8 @@ const SimilarPoolsStep: React.FC<SimilarPoolsStepProps> = ({
         {_baseAsset && _quoteAsset && (
           <PairAsset
             assets={[
-              { icon: _baseAsset.icon, label: _baseAsset.symbol },
-              { icon: _quoteAsset.icon, label: _quoteAsset.symbol },
+              { icon: _baseAsset.getIconUrl(), label: _baseAsset.getSymbol() },
+              { icon: _quoteAsset.getIconUrl(), label: _quoteAsset.getSymbol() },
             ]}
             iconSize={32}
             LabelProps={{ variant: "body1" }}

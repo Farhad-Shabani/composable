@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import { ApiPromise } from "@polkadot/api";
 import { fromChainIdUnit } from "../unit";
 
 type OfferMaturity = { finite: { returnIn: BigNumber } } | "Infinite";
@@ -48,6 +49,41 @@ export class BondOffer {
   protected readonly __nbOfBonds: BigNumber;
   protected readonly __maturity: OfferMaturity;
   protected readonly __reward: BondOfferReward;
+
+  static async fetchBondOffer(
+    api: ApiPromise,
+    index: number
+  ): Promise<BondOffer | null> {
+      let bondOffer: BondOffer | null = null;
+      try {
+        let offer = await api.query.bondedFinance.bondOffers(index);
+        const [beneficiary, _offer] = offer.toJSON() as any;
+        bondOffer = BondOffer.fromJSON(
+          index,
+          beneficiary,
+          _offer
+        );
+      } catch (err) {
+        console.error(err);
+      } finally {
+        return bondOffer;
+      }
+  }
+
+  static async fetchBondOffers(parachainApi: ApiPromise): Promise<BondOffer[]> {
+    try {
+      const bondOfferCount = await parachainApi.query.bondedFinance.bondOfferCount();
+      let offerPromises = [];
+      for (let i = 1; i <= bondOfferCount.toNumber(); i++) {
+        offerPromises.push(BondOffer.fetchBondOffer(parachainApi, i));
+      }
+      let bonds = await Promise.all(offerPromises);
+      return bonds.filter(bond => !!bond) as BondOffer[];
+    } catch (ex) {
+      console.error(ex);
+      return [];
+    }
+  }
 
   static fromJSON(index: number, beneficiary: string, offer: any): BondOffer {
     try {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PabloConstantProductPool } from "shared";
 import { useSelectedAccount } from "substrate-react";
-import { DEFAULT_NETWORK_ID } from "../utils";
+import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import BigNumber from "bignumber.js";
 
 export function useLpTokenUserBalance(

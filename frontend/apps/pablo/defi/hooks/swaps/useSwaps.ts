@@ -1,4 +1,4 @@
-import { PabloConstantProductPool } from "shared";
+import { Asset, PabloConstantProductPool } from "shared";
 import { Option } from "@/components/types";
 import {
   calculator,
@@ -6,7 +6,6 @@ import {
 } from "@/defi/utils";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { useParachainApi } from "substrate-react";
@@ -14,9 +13,9 @@ import { useAsset } from "../assets/useAsset";
 import { useFilteredAssetListDropdownOptions } from "../assets/useFilteredAssetListDropdownOptions";
 import { usePriceImpact } from "./usePriceImpact";
 import { useLiquidity } from "../useLiquidity";
+import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 import useStore from "@/store/useStore";
 import BigNumber from "bignumber.js";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 
 export function useSwaps(): {
   balance1: BigNumber;
@@ -24,8 +23,8 @@ export function useSwaps(): {
   changeAsset: (side: "base" | "quote", asset: string | "none") => void;
   selectedAssetOneId: string | "none";
   selectedAssetTwoId: string | "none";
-  selectedAssetOne: MockedAsset | undefined;
-  selectedAssetTwo: MockedAsset | undefined;
+  selectedAssetOne: Asset | undefined;
+  selectedAssetTwo: Asset | undefined;
   assetListOne: Option[];
   assetListTwo: Option[];
   assetOneAmount: BigNumber;

@@ -13,15 +13,14 @@ import CloseIcon from "@mui/icons-material/Close";
 import { SwapSummary } from "./SwapSummary";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import BigNumber from "bignumber.js";
-import { MockedAsset } from "@/store/assets/assets.types";
+import { Asset } from "shared";
 import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
-import useStore from "@/store/useStore";
 import { setUiState } from "@/store/ui/ui.slice";
 
 export type PreviewModalProps = {
   setConfirmed?: (confirmed: boolean) => any;
-  baseAsset: MockedAsset | undefined;
-  quoteAsset: MockedAsset | undefined;
+  baseAsset: Asset | undefined;
+  quoteAsset: Asset | undefined;
   baseAssetAmount: BigNumber;
   quoteAmount: BigNumber;
   feeCharged: BigNumber;
@@ -83,7 +82,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         <Label
           mt={4}
           BalanceProps={{
-            title: quoteAsset?.symbol,
+            title: quoteAsset?.getSymbol(),
             TitleTypographyProps: {
               variant: "body1",
               color: "text.primary",
@@ -91,7 +90,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
           }}
         >
           <BaseAsset
-            icon={quoteAsset?.icon}
+            icon={quoteAsset?.getIconUrl()}
             label={quoteAmount.toFixed()}
             LabelProps={{ variant: "body1" }}
           />
@@ -114,7 +113,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         <Label
           mt={4}
           BalanceProps={{
-            title: baseAsset?.symbol,
+            title: baseAsset?.getSymbol(),
             TitleTypographyProps: {
               variant: "body1",
               color: "text.primary",
@@ -122,7 +121,7 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
           }}
         >
           <BaseAsset
-            icon={baseAsset?.icon}
+            icon={baseAsset?.getIconUrl()}
             label={baseAssetAmount.toFixed()}
             LabelProps={{ variant: "body1" }}
           />

@@ -11,17 +11,19 @@ const Updater = () => {
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
 
   const apollo = useMemo(() => {
-    if (!parachainApi) return null;
+    if (!parachainApi || assetsV1.length === 0) return null;
 
-    return new Apollo(parachainApi);
-  }, [parachainApi]);
+    const apollo = new Apollo(parachainApi)
+    apollo.getPrice(assetsV1).then(setPrices);
+    return apollo;
+  }, [parachainApi, assetsV1, setPrices]);
 
   const lastUpdatedBlocked = useRef<BigNumber>(new BigNumber(-1));
 
   const updateAssetPrices = useCallback(async () => {
     if (!apollo || assetsV1.length == 0) return;
 
-    apollo.getPrice(assetsV1).then(setPrices)
+    apollo.getPrice(assetsV1).then(setPrices);
   }, [apollo, assetsV1, setPrices]);
 
   const currentBlockNumber = useBlockNumber(DEFAULT_NETWORK_ID);

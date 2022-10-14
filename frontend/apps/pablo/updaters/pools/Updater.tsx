@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import useStore from "@/store/useStore";
 import { useParachainApi } from "substrate-react";
-import { fetchPools } from "@/defi/utils";
+import { LiquidityPoolFactory } from "shared";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useRouter } from "next/router";
 import { setPermissionedConstantProductPools } from "@/store/pools/pools.v1.slice";
@@ -11,7 +11,6 @@ import { setPermissionedConstantProductPools } from "@/store/pools/pools.v1.slic
  */
 const Updater = () => {
   const {
-    pools,
     assetsV1
   } = useStore();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
@@ -20,7 +19,7 @@ const Updater = () => {
   const updatePools = useCallback((url) => {
     if (parachainApi && assetsV1.length > 0 && (!hasFetchedOnce.current || url === "/pool")) {
       if (!hasFetchedOnce.current) hasFetchedOnce.current = true;
-      fetchPools(parachainApi, assetsV1).then((pools) => {
+      LiquidityPoolFactory.fetchPermissionedPools(parachainApi, assetsV1).then((pools) => {
         setPermissionedConstantProductPools(pools.uniswapConstantProduct);
       });
     }

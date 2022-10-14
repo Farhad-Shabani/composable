@@ -12,7 +12,7 @@ import {
   resetStakingRewardPools,
   resetStakingRewardPoolStakedPositionsHistory,
 } from "@/store/stakingRewards/stakingRewards.slice";
-import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
+import { useAllLpTokenRewardingPools } from "@/defi/hooks/useAllLpTokenRewardingPools";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 
 export function updateStakingRewardPool(

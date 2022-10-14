@@ -16,7 +16,7 @@ import { ConfirmingModal } from "./ConfirmingModal";
 import { PreviewDetails } from "./PreviewDetails";
 import { useRemoveLiquidityState } from "@/store/removeLiquidity/hooks";
 import useDebounce from "@/hooks/useDebounce";
-import { useLiquidityPoolDetails } from "@/store/hooks/useLiquidityPoolDetails";
+import { useLiquidityPoolDetails } from "@/defi/hooks";
 import {
   fetchSpotPrice,
   fromRemoveLiquiditySimulationResult,
@@ -25,7 +25,7 @@ import {
 import { useParachainApi, useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useUiSlice, setUiState } from "@/store/ui/ui.slice";
-import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
+import { useLpTokenUserBalance } from "@/defi/hooks";
 
 export const RemoveLiquidityForm = ({ ...rest }) => {
   const theme = useTheme();

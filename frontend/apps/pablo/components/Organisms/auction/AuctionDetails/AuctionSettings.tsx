@@ -5,7 +5,7 @@ import {
   Typography, 
   useTheme, 
 } from "@mui/material";
-import { MockedAsset } from "@/store/assets/assets.types";
+import { Asset } from "shared";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { LiquidityBootstrappingPoolStatistics } from "@/store/auctions/auctions.types";
 import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
@@ -13,8 +13,8 @@ import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 export type AuctionSettingsProps = {
   auction: LiquidityBootstrappingPool,
   stats: LiquidityBootstrappingPoolStatistics,
-  baseAsset: MockedAsset | undefined,
-  quoteAsset: MockedAsset | undefined,
+  baseAsset: Asset | undefined,
+  quoteAsset: Asset | undefined,
 } & BoxProps;
 
 export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
@@ -38,7 +38,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
             Start weights
           </Typography>
           <Typography variant="subtitle1" mt={1}>
-            {`${auction.sale.initialWeight}% ${baseAsset?.symbol} + ${100 - auction.sale.initialWeight}% ${quoteAsset?.symbol}`}
+            {`${auction.sale.initialWeight}% ${baseAsset?.getSymbol()} + ${100 - auction.sale.initialWeight}% ${quoteAsset?.getSymbol()}`}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -46,7 +46,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
             End weights
           </Typography>
           <Typography variant="subtitle1" mt={1}>
-          {`${auction.sale.finalWeight}% ${baseAsset?.symbol} + ${100 - auction.sale.finalWeight}% ${quoteAsset?.symbol}`}
+          {`${auction.sale.finalWeight}% ${baseAsset?.getSymbol()} + ${100 - auction.sale.finalWeight}% ${quoteAsset?.getSymbol()}`}
           </Typography>
         </Grid>
       </Grid>
@@ -94,7 +94,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
           <Typography variant="body1" color="text.secondary">
-            Trading fee (collected by {baseAsset?.symbol} project)
+            Trading fee (collected by {baseAsset?.getSymbol()} project)
           </Typography>
           <Typography variant="subtitle1" mt={1}>
             {auction.feeConfig.feeRate} %

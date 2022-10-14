@@ -1,10 +1,10 @@
+import { Asset } from "shared";
 import { fetchAuctionTrades } from "@/defi/subsquid/auctions/helpers";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { calculator, DEFAULT_NETWORK_ID, fetchSpotPrice } from "@/defi/utils";
 import { fetchAndExtractAuctionStats } from "@/defi/utils/pablo/auctions";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { useAssetBalance } from "@/store/assets/hooks";
 import {
   setAuctionsSlice,
@@ -43,8 +43,8 @@ export const useAuctionBuyForm = (): {
   setIsValidBaseInput: (validity: boolean) => void;
   isValidQuoteInput: boolean;
   setIsValidQuoteInput: (validity: boolean) => void;
-  quoteAsset: MockedAsset | undefined;
-  baseAsset: MockedAsset | undefined;
+  quoteAsset: Asset | undefined;
+  baseAsset: Asset | undefined;
   minimumReceived: BigNumber;
   baseAmount: BigNumber;
   quoteAmount: BigNumber;
@@ -72,11 +72,11 @@ export const useAuctionBuyForm = (): {
 
   const balanceBase = useAssetBalance(
     DEFAULT_NETWORK_ID,
-    baseAsset ? baseAsset.network[DEFAULT_NETWORK_ID] : "none"
+    baseAsset ? baseAsset.getPicassoAssetId() as string : "none"
   );
   const balanceQuote = useAssetBalance(
     DEFAULT_NETWORK_ID,
-    quoteAsset ? quoteAsset.network[DEFAULT_NETWORK_ID] : "none"
+    quoteAsset ? quoteAsset.getPicassoAssetId() as string : "none"
   );
 
   const [isValidBaseInput, setIsValidBaseInput] = useState(false);

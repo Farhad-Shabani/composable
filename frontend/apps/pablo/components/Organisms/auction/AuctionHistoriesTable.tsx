@@ -19,14 +19,13 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { getShortAddress } from "shared";
 import BigNumber from "bignumber.js";
-import { MockedAsset } from "@/store/assets/assets.types";
-import { DEFAULT_NETWORK_ID } from "@/defi/utils";
+import { Asset } from "shared";
 import { PoolTradeHistory } from "@/store/auctions/auctions.types";
 
 export type AuctionHistoriesTableProps = {
   auction: LiquidityBootstrappingPool,
-  baseAsset?: MockedAsset,
-  quoteAsset?: MockedAsset,
+  baseAsset?: Asset,
+  quoteAsset?: Asset,
   history: PoolTradeHistory[],
   historiesTableLimit?: number,
 } & TableContainerProps;
@@ -85,7 +84,7 @@ export const AuctionHistoriesTable: React.FC<AuctionHistoriesTableProps> = ({
             </TableCell>
             <TableCell align="center">
               <Typography variant="body1">
-                {`${baseAsset?.symbol} Price`}
+                {`${baseAsset?.getSymbol()} Price`}
               </Typography>  
             </TableCell>
             <TableCell align="right" sx={{paddingRight: theme.spacing(4)}}>
@@ -99,7 +98,7 @@ export const AuctionHistoriesTable: React.FC<AuctionHistoriesTableProps> = ({
           {history.slice(0, count).map((history, index) => {
             let historyBase = undefined, historyQuote = undefined;
             if (baseAsset && quoteAsset) {
-              if(history.quoteAssetId.toString() === quoteAsset.network[DEFAULT_NETWORK_ID]) {
+              if(history.quoteAssetId.toString() === quoteAsset.getPicassoAssetId() as string) {
                 historyBase = baseAsset;
                 historyQuote = quoteAsset;
               } else {
@@ -128,12 +127,12 @@ export const AuctionHistoriesTable: React.FC<AuctionHistoriesTableProps> = ({
                 </TableCell>
                 <TableCell align="center">
                   <Typography variant="body1">
-                    {`${history.quoteAssetAmount} ${historyQuote?.symbol}`}
+                    {`${history.quoteAssetAmount} ${historyQuote?.getSymbol()}`}
                   </Typography>
                 </TableCell>
                 <TableCell align="center">
                   <Typography variant="body1">
-                    {`${history.baseAssetAmount} ${historyBase?.symbol}`}
+                    {`${history.baseAssetAmount} ${historyBase?.getSymbol()}`}
                   </Typography>
                 </TableCell>
                 <TableCell align="center">

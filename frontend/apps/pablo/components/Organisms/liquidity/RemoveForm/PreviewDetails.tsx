@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 
 import BigNumber from "bignumber.js";
-import { MockedAsset } from "@/store/assets/assets.types";
 import millify from "millify";
 import { Asset } from "shared";
 

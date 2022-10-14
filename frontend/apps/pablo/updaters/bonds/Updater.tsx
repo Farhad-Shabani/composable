@@ -5,7 +5,6 @@ import {
   calculateBondROI,
   calculateVestingState,
   DEFAULT_NETWORK_ID,
-  fetchBondOffers,
   fetchVestingSchedulesByBondOffers,
 } from "@/defi/utils";
 import {
@@ -23,6 +22,7 @@ import {
   fetchTotalPurchasedBondsByOfferIds,
   extractUserBondedFinanceVestingScheduleAddedEvents,
 } from "@/defi/subsquid/bonds/helpers";
+import { BondOffer } from "shared";
 import { useBlockInterval } from "@/defi/hooks";
 import useBlockNumber from "@/defi/hooks/useBlockNumber";
 import { AVERAGE_BLOCK_TIME } from "@/defi/utils/constants";
@@ -70,7 +70,7 @@ const Updater = () => {
    */
   useEffect(() => {
     if (parachainApi) {
-      fetchBondOffers(parachainApi).then(putBondOffers);
+      BondOffer.fetchBondOffers(parachainApi).then(putBondOffers);
     }
   }, [parachainApi]);
   /**

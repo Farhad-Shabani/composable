@@ -1,6 +1,6 @@
 import { BaseAsset, PairAsset } from "@/components/Atoms";
-import { useLiquidityPoolDetails } from "@/store/hooks/useLiquidityPoolDetails";
-import { useUserProvidedLiquidityByPool } from "@/store/hooks/useUserProvidedLiquidityByPool";
+import { useLiquidityPoolDetails } from "@/defi/hooks/useLiquidityPoolDetails";
+import { useUserProvidedLiquidityByPool } from "@/defi/hooks/useUserProvidedLiquidityByPool";
 import {
   alpha,
   Box,

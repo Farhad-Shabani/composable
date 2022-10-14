@@ -1,11 +1,11 @@
 import BigNumber from "bignumber.js";
 import { useState, useEffect, useMemo } from "react";
 import { useAllLpTokenRewardingPools } from "./useAllLpTokenRewardingPools";
-import { DailyRewards } from "../poolStats/poolStats.types";
 import { calculatePoolStats, fetchPoolStats } from "@/defi/utils/pablo";
-import { useStakingRewardPool } from "../stakingRewards/stakingRewards.slice";
 import { Asset, PabloConstantProductPool } from "shared";
-import useStore from "../useStore";
+import { DailyRewards } from "@/store/poolStats/poolStats.types";
+import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slice";
+import useStore from "@/store/useStore";
 
 export const useLiquidityPoolDetails = (poolId: number) => {
   const { poolStats, poolStatsValue, userLpBalances, putPoolStats, assetsV1 } = useStore();

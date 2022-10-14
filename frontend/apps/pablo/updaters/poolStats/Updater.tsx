@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useAllLpTokenRewardingPools } from "../../store/hooks/useAllLpTokenRewardingPools";
 import { fetchPoolStats, calculatePoolStats, PabloPoolQueryResponse } from "@/defi/utils/pablo/pools/stats";
 import BigNumber from "bignumber.js";
 import useStore from "@/store/useStore";
+import { useAllLpTokenRewardingPools } from "@/defi/hooks";
 
 /**
  * Updates zustand store with all pools from pablo pallet

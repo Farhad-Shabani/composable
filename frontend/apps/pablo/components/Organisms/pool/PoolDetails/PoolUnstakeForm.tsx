@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useMemo } from "react";
 import { PoolDetailsProps } from "./index";
-import { useLiquidityPoolDetails } from "@/store/hooks/useLiquidityPoolDetails";
+import { useLiquidityPoolDetails } from "@/defi/hooks/useLiquidityPoolDetails";
 import { useXTokensList } from "@/defi/hooks/financialNfts";
 import { useStakingRewardPoolCollectionId } from "@/store/stakingRewards/stakingRewards.slice";
 import { useUnstake } from "@/defi/hooks/stakingRewards";

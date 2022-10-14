@@ -16,7 +16,7 @@ import { ConnectWalletFeaturedBox } from "@/components/Organisms/ConnectWalletFe
 import { useDotSamaContext } from "substrate-react";
 import { resetAddLiquiditySlice } from "@/store/addLiquidity/addLiquidity.slice";
 import { HighlightBox } from "@/components/Atoms/HighlightBox";
-import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
+import { useAllLpTokenRewardingPools } from "@/defi/hooks/useAllLpTokenRewardingPools";
 import { PoolsTable } from "@/components/Organisms/PoolsTable";
 import { usePoolsWithLpBalance } from "@/defi/hooks/overview/usePoolsWithLpBalance";
 import Default from "@/components/Templates/Default";

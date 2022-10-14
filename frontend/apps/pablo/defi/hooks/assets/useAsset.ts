@@ -1,24 +1,15 @@
-import { DEFAULT_NETWORK_ID, matchAssetByPicassoId } from "@/defi/utils";
+import { Asset } from "shared";
+import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { MockedAsset } from "@/store/assets/assets.types";
-import useStore from "@/store/useStore";
 import { useMemo } from "react";
+import useStore from "@/store/useStore";
 
-export function useAsset(assetId: string): MockedAsset | undefined {
-    const { supportedAssets } = useStore();
+export function useAsset(assetId: string): Asset | undefined {
+    const { assetsV1 } = useStore();
 
-    const selectedAsset = useMemo(() => {
-        return supportedAssets.find(asset => matchAssetByPicassoId(asset, assetId));
-    }, [supportedAssets, assetId]);
+    const asset = useMemo(() => {
+        return assetsV1.find(_asset => _asset.getPicassoAssetId() as string === assetId)
+    }, [assetsV1, assetId]);
 
-    return selectedAsset;
-}
-
-export function useAssets(assetIds: string[]): MockedAsset[] {
-    const { supportedAssets } = useStore();
-
-    const selectedAsset = useMemo(() => {
-        return supportedAssets.filter(asset => assetIds.includes(asset.network[DEFAULT_NETWORK_ID]));
-    }, [supportedAssets, assetIds]);
-
-    return selectedAsset;
+    return asset;
 }

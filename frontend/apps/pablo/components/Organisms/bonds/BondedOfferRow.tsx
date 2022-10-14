@@ -18,12 +18,12 @@ const BondedOfferRow = ({ bondOffer, handleBondedOfferRowClick }: { bondOffer: B
       </TableCell>
       <TableCell align="left">
         <Typography variant="body2">
-          {claimable.toFixed(2)} {rewardAsset?.symbol}
+          {claimable.toFixed(2)} {rewardAsset?.getSymbol()}
         </Typography>
       </TableCell>
       <TableCell align="left">
         <Typography variant="body2">
-          {pendingRewards.toFixed(2)} {rewardAsset?.symbol.toUpperCase()}
+          {pendingRewards.toFixed(2)} {rewardAsset?.getSymbol()}
         </Typography>
       </TableCell>
       <TableCell align="left">

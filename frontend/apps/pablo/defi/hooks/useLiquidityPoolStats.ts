@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { PoolStats } from "../poolStats/poolStats.types";
 import { PabloConstantProductPool } from "@/../../packages/shared";
 import BigNumber from "bignumber.js";
 import useStore from "@/store/useStore";
+import { PoolStats } from "@/store/poolStats/poolStats.types";
 
 export const useLiquidityPoolStats = (pool: PabloConstantProductPool): PoolStats | undefined => {
   const { poolStats } = useStore();

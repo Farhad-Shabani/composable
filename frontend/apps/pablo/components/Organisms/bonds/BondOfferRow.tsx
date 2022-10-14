@@ -7,7 +7,7 @@ import {
 } from "@/store/bond/bond.slice";
 import BondPrincipalAssetIcon from "./BondPrincipalAssetIcon";
 import { useBondedAsset } from "@/defi/hooks";
-import { useAssetPrice } from "@/defi/hooks/useAssetPrice";
+import { useAssetPrice } from "@/defi/hooks";
 
 const BondOfferRow = ({
   bondOffer,

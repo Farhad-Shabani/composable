@@ -1,13 +1,9 @@
-import { BasePabloPool } from "@/../../packages/shared";
+import { Asset, BasePabloPool } from "shared";
 import { PabloTransactions } from "@/defi/subsquid/pools/queries";
-import { ConstantProductPool } from "@/defi/types";
 import {
   createPabloPoolAccountId,
-  fetchAssetBalance,
-  fetchBalanceByAssetId,
   fromChainUnits,
 } from "@/defi/utils";
-import { ApiPromise } from "@polkadot/api";
 import BigNumber from "bignumber.js";
 
 export async function fetchPoolLiquidity(
@@ -24,12 +20,12 @@ export async function fetchPoolLiquidity(
       const pair = pool.getPair();
       const poolId = pool.getPoolId().toString();
       
-      const base = pair.getBaseAsset().toString();
-      const quote = pair.getQuoteAsset().toString();
+      const base = pair.getBaseAsset();
+      const quote = pair.getQuoteAsset();
       
       const poolAccountId = createPabloPoolAccountId(api, Number(poolId));
-      const baseLiq = await fetchAssetBalance(api, poolAccountId, base);
-      const quoteLiq = await fetchAssetBalance(api, poolAccountId, quote);
+      const baseLiq = await new Asset(api, base, "", "", "").balanceOf(poolAccountId)
+      const quoteLiq = await new Asset(api, quote, "", "", "").balanceOf(poolAccountId)
 
       liquidityRecord[poolId] = {
         baseAmount: baseLiq,
@@ -41,43 +37,6 @@ export async function fetchPoolLiquidity(
   }
 
   return liquidityRecord;
-}
-
-export async function fetchAndUpdatePoolLiquidity(
-  pool: ConstantProductPool,
-  setTokenAmountInLiquidityPool: (
-    poolId: number,
-    amounts: {
-      baseAmount?: string | undefined;
-      quoteAmount?: string | undefined;
-    }
-  ) => void,
-  parachainApi: ApiPromise
-): Promise<void> {
-  try {
-    const poolAccount = createPabloPoolAccountId(parachainApi, pool.poolId);
-    const liqBase = await fetchBalanceByAssetId(
-      parachainApi,
-      poolAccount,
-      pool.pair.base.toString()
-    );
-    const liqQuote = await fetchBalanceByAssetId(
-      parachainApi,
-      poolAccount,
-      pool.pair.quote.toString()
-    );
-
-    setTokenAmountInLiquidityPool(pool.poolId, {
-      baseAmount: liqBase,
-      quoteAmount: liqQuote,
-    });
-  } catch (err) {
-    console.error(err)
-    setTokenAmountInLiquidityPool(pool.poolId, {
-      baseAmount: "0",
-      quoteAmount: "0",
-    });
-  }
 }
 
 export function calculateProvidedLiquidity(

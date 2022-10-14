@@ -231,7 +231,7 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
           }}
           setValue={inputMode === 2 ? onChangeTokenAmount : undefined}
           ButtonProps={{
-            onClick: () => {},
+            onClick: () => { },
           }}
           CombinedSelectProps={{
             value: selectedAssetTwoId,
@@ -284,11 +284,11 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
         {selectedAssetOne && selectedAssetTwo && (
           <>
             <Typography variant="body2">
-              1 {selectedAssetTwo.symbol} = {spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)}{" "}
-              {selectedAssetOne.symbol}
+              1 {selectedAssetTwo.getSymbol()} = {spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)}{" "}
+              {selectedAssetOne.getSymbol()}
             </Typography>
             <Tooltip
-              title={`1 ${selectedAssetOne?.symbol} = ${spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)} ${selectedAssetTwo.symbol
+              title={`1 ${selectedAssetOne?.getSymbol()} = ${spotPrice.toFixed(DEFAULT_UI_FORMAT_DECIMALS)} ${selectedAssetTwo.getSymbol()
                 }`}
               placement="top"
             >

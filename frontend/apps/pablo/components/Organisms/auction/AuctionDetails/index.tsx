@@ -7,14 +7,14 @@ import { LaunchDescription } from "./LaunchDescription";
 import { LaunchDetails } from "./LaunchDetails";
 import { AuctionSettings } from "./AuctionSettings";
 import { AuctionStatistics } from "./AuctionStatistics";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { LiquidityBootstrappingPoolStatistics } from "@/store/auctions/auctions.types";
+import { Asset } from "shared";
 
 export type AuctionDetailsProps = {
   auction: LiquidityBootstrappingPool,
-  baseAsset?: MockedAsset,
-  quoteAsset?: MockedAsset,
+  baseAsset?: Asset,
+  quoteAsset?: Asset,
   stats: LiquidityBootstrappingPoolStatistics,
 } & BoxProps;
 

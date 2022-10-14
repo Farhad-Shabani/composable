@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import BigNumber from "bignumber.js";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { PoolDetailsProps } from "./index";
-import { useLiquidityPoolDetails } from "@/store/hooks/useLiquidityPoolDetails";
+import { useLiquidityPoolDetails } from "@/defi/hooks/useLiquidityPoolDetails";
 import { useStake } from "@/defi/hooks/stakingRewards";
 import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slice";
 import { usePendingExtrinsic, useSelectedAccount } from "substrate-react";
@@ -12,7 +12,7 @@ import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { ConfirmingModal } from "../../swap/ConfirmingModal";
 import { SelectLockPeriod } from "@/components";
 import { extractDurationPresets } from "@/defi/utils/stakingRewards/durationPresets";
-import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
+import { useLpTokenUserBalance } from "@/defi/hooks";
 
 export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
   poolId,

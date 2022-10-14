@@ -1,6 +1,6 @@
 import React from "react";
 import { CircularProgress } from "@/components/Atoms";
-import { ModalProps, Modal, Link } from "@/components/Molecules";
+import { ModalProps, Modal } from "@/components/Molecules";
 import { 
   alpha,
   Box,
@@ -50,7 +50,7 @@ export const ConfirmingSupplyModal: React.FC<SupplyModalProps & ModalProps> = ({
             Waiting for confirmation
           </Typography>
           <Typography variant="subtitle1" mt={2} color="text.secondary">
-            Adding {`${assetOneAmount}`} {assetOne?.symbol} and {`${assetTwoAmount}`} {assetTwo?.symbol}
+            Adding {`${assetOneAmount}`} {assetOne?.getSymbol()} and {`${assetTwoAmount}`} {assetTwo?.getSymbol()}
           </Typography>
           <Typography 
             variant="body1" 

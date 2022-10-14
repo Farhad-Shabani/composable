@@ -19,9 +19,9 @@ import { TransactionSettings } from "@/components/Organisms/TransactionSettings"
 import useStore from "@/store/useStore";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
 import { setUiState } from "@/store/ui/ui.slice";
+import { Asset } from "shared";
 
 const selectLabelProps = (valid: boolean, label: string, balance: string) =>
   ({
@@ -62,20 +62,20 @@ const priceLabelProps = (label: string, balance?: string) =>
   } as const);
 
 const combinedSelectProps = (
-  asset: MockedAsset | undefined,
+  asset: Asset | undefined,
   isMobile?: boolean
 ) =>
   ({
-    value: asset?.network?.[DEFAULT_NETWORK_ID] || "",
+    value: asset?.getPicassoAssetId() as string || "",
     dropdownModal: true,
     forceHiddenLabel: isMobile ? true : false,
     options: asset
       ? [
           {
-            value: asset.network?.[DEFAULT_NETWORK_ID],
-            label: asset.name,
-            shortLabel: asset.symbol,
-            icon: asset.icon,
+            value: asset?.getPicassoAssetId() as string,
+            label: asset?.getName(),
+            shortLabel: asset.getSymbol(),
+            icon: asset.getIconUrl(),
           },
         ]
       : [],

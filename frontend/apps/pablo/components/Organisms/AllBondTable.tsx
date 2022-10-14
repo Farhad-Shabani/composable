@@ -16,7 +16,6 @@ import { TableHeader } from "@/defi/types";
 import { useRouter } from "next/router";
 import {
   DEFAULT_NETWORK_ID,
-  fetchBondOffers,
   fetchVestingSchedulesByBondOffers,
 } from "@/defi/utils";
 import {
@@ -33,6 +32,7 @@ import {
   putBondOffers,
 } from "@/store/bond/bond.slice";
 import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
+import { BondOffer } from "shared";
 
 const tableHeaders: TableHeader[] = [
   {
@@ -63,9 +63,8 @@ export const AllBondTable: React.FC = () => {
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
 
   useEffect(() => {
-    if (parachainApi) {
-      fetchBondOffers(parachainApi).then(putBondOffers);
-    }
+    if (!parachainApi) return;
+    BondOffer.fetchBondOffers(parachainApi).then(putBondOffers);
   }, [parachainApi]);
 
   useEffect(() => {
