@@ -77,7 +77,7 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
   const rewardAssets = useAssets(stakingRewardsPool ? Object.keys(stakingRewardsPool.rewards) : []);
 
   // WIP - awaiting Andres' subsquid changes
-  const lpDeposit = new BigNumber(0);
+  const lpStaked = new BigNumber(0);
   const handleClaimRewards = useClaimStakingRewards({})
 
   const isPendingClaimStakingRewards = usePendingExtrinsic(
@@ -89,13 +89,13 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
   return (
     <BoxWrapper {...boxProps}>
       <Item
-        value={`$${lpDeposit}`}
-        intro={`${lpDeposit} ${lpToken?.getSymbol()}`}
+        value={`$${lpStaked}`}
+        intro={`${lpStaked} ${lpToken?.getSymbol()}`}
       >
         <Typography variant="h6">Your deposits</Typography>
       </Item>
       <Item
-        value={userProvidedLiquidity.tokenAmounts.baseAmount.toFormat()}
+        value={lpStaked.toFormat()}
         mt={4.375}
       >
         {baseAsset && quoteAsset && (

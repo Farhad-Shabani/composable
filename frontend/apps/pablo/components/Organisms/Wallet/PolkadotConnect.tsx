@@ -43,7 +43,7 @@ const Status = () => {
 
   useEffect(() => {
     if (assetsWithBalance.length > 0) {
-      setSelectedAsset(assetsWithBalance[0].symbol);
+      setSelectedAsset(assetsWithBalance[0].getSymbol());
     }
   }, [assetsWithBalance]);
 
@@ -62,11 +62,11 @@ const Status = () => {
           setValue={setSelectedAsset}
           options={assetsWithBalance.map((asset) => {
             return {
-              value: asset.symbol,
-              label: asset.balance.lte(1000)
-                ? asset.balance.toFixed(2)
-                : asset.balance.div(1000).toFixed(2) + "K",
-              icon: asset.icon,
+              value: asset.getSymbol(),
+              label: asset.getBalance().lte(1000)
+                ? asset.getBalance().toFixed(2)
+                : asset.getBalance().div(1000).toFixed(2) + "K",
+              icon: asset.getIconUrl(),
             };
           })}
           sx={{

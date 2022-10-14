@@ -1,32 +1,29 @@
-import { MockedAsset } from "@/store/assets/assets.types";
+import { useMemo } from "react";
+import { OwnedAsset } from "shared";
 import BigNumber from "bignumber.js";
 import useStore from "@/store/useStore";
-import { useMemo } from "react";
 
-type AssetWithBalance = MockedAsset & { balance: BigNumber };
-
-export function useAssetsWithBalance(networkId: string, filterBalance: boolean = false): AssetWithBalance[] {
+export function useAssetsWithBalance(networkId: string, filterBalance: boolean = false): OwnedAsset[] {
     const {
         assetBalances,
-        supportedAssets
+        assetsV1
     } = useStore();
 
     const assetsWithBalance = useMemo(() => {
-        const withBalance = supportedAssets.map(asset => {
+        const withBalance = assetsV1.map(asset => {
             let balance = new BigNumber(0);
-            if(assetBalances[networkId]?.[asset.network[networkId]]) {
-                balance = new BigNumber(assetBalances[networkId][asset.network[networkId]])
+            const assetId = asset.getPicassoAssetId() as string;
+
+            if (assetBalances[networkId]?.[assetId]) {
+                balance = new BigNumber(assetBalances[networkId]?.[assetId])
             }
 
-            return {
-                ...asset,
-                balance
-            }
+            return OwnedAsset.fromAsset(asset, balance);
         })
 
-        let filteredBalance = filterBalance ? withBalance.filter(a => a.balance.gt(0)) : withBalance;
+        let filteredBalance = filterBalance ? withBalance.filter(a => a.getBalance().gt(0)) : withBalance;
         return filteredBalance;
-    }, [assetBalances, supportedAssets, networkId]);
+    }, [assetsV1, filterBalance, assetBalances, networkId]);
 
     return assetsWithBalance;
 }

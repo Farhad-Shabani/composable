@@ -10,6 +10,7 @@ export class Asset {
   protected readonly __symbol: string;
   protected readonly __iconUrl: string;
   protected readonly __decimals: number = 12;
+  protected __price: BigNumber = new BigNumber(0);
   protected __parachainAssetIds: Map<string, BigNumber>;
   /**
    * Transform assets list
@@ -120,5 +121,55 @@ export class Asset {
     const id = this.__parachainAssetIds.get(chainId);
     if (!id) throw new Error(`Id not set for ${chainId}`);
     return inBn ? id : id.toString();
+  }
+
+  getApi(): ApiPromise {
+    return this.__api;
+  }
+
+  getPrice(): BigNumber {
+    return this.__price;
+  }
+
+  setPrice(price: BigNumber | string) {
+    this.__price = new BigNumber(price)
+  }
+}
+
+export class OwnedAsset extends Asset {
+  protected __balance: BigNumber;
+
+  static fromAsset(asset: Asset, balance: BigNumber): OwnedAsset {
+    return new OwnedAsset(
+      asset.getApi(),
+      asset.getPicassoAssetId(true) as BigNumber,
+      asset.getName(),
+      asset.getSymbol(),
+      asset.getIconUrl(),
+      balance
+    )
+  }
+
+  constructor(
+    api: ApiPromise,
+    picassoAssetId: BigNumber,
+    name: string,
+    symbol: string,
+    iconUrl: string,
+    balance: BigNumber,
+  ) {
+    super(
+      api,
+      picassoAssetId,
+      name,
+      symbol,
+      iconUrl
+    );
+
+    this.__balance = balance;
+  }
+
+  getBalance(): BigNumber {
+    return this.__balance;
   }
 }

@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { DEFI_CONFIG } from "../config";
 import { useFilteredAssetListDropdownOptions } from "../hooks/assets/useFilteredAssetListDropdownOptions";
 
-export * from "./bonds";
+
 export * from "./pablo";
 export * from "./vesting";
 export * from "./stakingRewards";

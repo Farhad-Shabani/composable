@@ -25,6 +25,7 @@ import {
 import { useParachainApi, useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useUiSlice, setUiState } from "@/store/ui/ui.slice";
+import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
 
 export const RemoveLiquidityForm = ({ ...rest }) => {
   const theme = useTheme();
@@ -34,7 +35,8 @@ export const RemoveLiquidityForm = ({ ...rest }) => {
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
 
   const { poolId } = useRemoveLiquidityState();
-  const { lpBalance, baseAsset, quoteAsset } = useLiquidityPoolDetails(poolId);
+  const { baseAsset, quoteAsset, pool } = useLiquidityPoolDetails(poolId);
+  const lpBalance = useLpTokenUserBalance(pool);
   const { isConfirmingModalOpen } = useUiSlice();
 
   const [percentage, setPercentage] = useState<number>(0);

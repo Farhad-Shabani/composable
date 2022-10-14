@@ -1,18 +1,17 @@
-import { DEFAULT_NETWORK_ID, matchAssetByPicassoId } from "@/defi/utils";
 import useStore from "@/store/useStore";
 import { useMemo } from "react";
 
 export function useFilteredAssetListDropdownOptions(assetId: string) {
-    const { supportedAssets } = useStore();
+    const { assetsV1 } = useStore();
 
     const assetOptions = useMemo(() => {
-        return supportedAssets.filter(asset => !matchAssetByPicassoId(asset, assetId)).map((asset) => ({
-            value: asset.network[DEFAULT_NETWORK_ID],
-            label: asset.name,
-            shortLabel: asset.symbol,
-            icon: asset.icon,
+        return assetsV1.filter(asset => asset.getPicassoAssetId() as string === assetId).map((asset) => ({
+            value: asset.getPicassoAssetId() as string,
+            label: asset.getName(),
+            shortLabel: asset.getSymbol(),
+            icon: asset.getIconUrl(),
           }));
-    }, [supportedAssets, assetId]);
+    }, [assetsV1, assetId]);
 
     return assetOptions;
 }

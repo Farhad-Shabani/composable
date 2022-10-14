@@ -5,7 +5,6 @@ import { DailyRewards } from "../poolStats/poolStats.types";
 import { calculatePoolStats, fetchPoolStats } from "@/defi/utils/pablo";
 import { useStakingRewardPool } from "../stakingRewards/stakingRewards.slice";
 import { Asset, PabloConstantProductPool } from "shared";
-import { useLiquidity } from "@/defi/hooks/useLiquidity";
 import useStore from "../useStore";
 
 export const useLiquidityPoolDetails = (poolId: number) => {
@@ -16,8 +15,6 @@ export const useLiquidityPoolDetails = (poolId: number) => {
     useState<PabloConstantProductPool | undefined>(undefined);
 
   const stakingRewardPool = useStakingRewardPool(pool ? pool.getLiquidityProviderToken().getPicassoAssetId() as string : "-");
-  const tokensLocked = useLiquidity(pool);
-
   const [baseAsset, setBaseAsset] =
     useState<Asset | undefined>(undefined);
   const [quoteAsset, setQuoteAsset] =
@@ -83,23 +80,11 @@ export const useLiquidityPoolDetails = (poolId: number) => {
     };
   }, [poolStats, poolStatsValue, poolId]);
 
-  const lpBalance = useMemo(() => {
-    if (pool) {
-      const poolId = (pool.getPoolId(true) as BigNumber).toNumber();
-      if (userLpBalances[poolId]) {
-        return new BigNumber(userLpBalances[poolId]);
-      }
-    }
-    return new BigNumber(0);
-  }, [pool, userLpBalances]);
-
   return {
     stakingRewardPool,
     baseAsset,
     quoteAsset,
     pool,
-    lpBalance,
-    tokensLocked,
     poolStats: _poolStats,
   };
 };

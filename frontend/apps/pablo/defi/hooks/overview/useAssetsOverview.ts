@@ -2,7 +2,6 @@ import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useMemo } from "react";
 import { useAssetsWithBalance } from "@/defi/hooks";
 import useStore from "@/store/useStore";
-import BigNumber from "bignumber.js";
 
 export function useAssetsOverview(limit: number = 5) {
   const { apollo } = useStore();
@@ -10,14 +9,9 @@ export function useAssetsOverview(limit: number = 5) {
 
   const withBalance = useMemo(() => {
     return assetsWithBalance.slice(0, limit).map(asset => {
-      let priceUsd = new BigNumber(0);
-      if (apollo[asset.network[DEFAULT_NETWORK_ID]]) {
-        priceUsd = new BigNumber(apollo[asset.network[DEFAULT_NETWORK_ID]])
-      }
-      return {
-        ...asset,
-        priceUsd
-      }
+      const assetId = asset.getPicassoAssetId() as string;
+      asset.setPrice(apollo[assetId]);
+      return asset;
     })
   }, [assetsWithBalance, apollo, limit]);
 

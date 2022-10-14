@@ -19,7 +19,7 @@ const LiquidityProviderPositionRow = ({
   const baseAsset = useAsset(pair.getBaseAsset().toString());
   const quoteAsset = useAsset(pair.getQuoteAsset().toString());
   const lpTokenUserBalance = useLpTokenUserBalance(pool);
-  const lpTokenPrice = useLpTokenPrice(pool);
+  const lpTokenPrice = useLpTokenPrice(pool.getLiquidityProviderToken());
   const apr = new BigNumber(0);
 
   return (

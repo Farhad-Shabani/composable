@@ -1,7 +1,7 @@
 import { DEFI_CONFIG } from "@/defi/config";
 import { queryLiquidityByPoolId } from "@/defi/subsquid/liquidity/queries";
 import { useState, useEffect } from "react";
-import { useLiquidityPoolDetails } from "./useLiquidityPoolDetails";
+import { useLiquidityPoolDetails } from "../../store/hooks/useLiquidityPoolDetails";
 import { processSubsquidChartData } from "@/defi/utils/charts";
 import BigNumber from "bignumber.js";
 

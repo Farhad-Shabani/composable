@@ -13,7 +13,7 @@ export function useLiquidity(
     const reset = useCallback(() => {
         setBaseAmount(new BigNumber(0));
         setQuoteAmount(new BigNumber(0));
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (!liquidityPool || !assetsV1.length) {
@@ -32,8 +32,9 @@ export function useLiquidity(
             asset.getPicassoAssetId(true) as BigNumber
         ));
 
-        if (baseAsset) baseAsset.balanceOf(liquidityPool.getAccountId()).then(setBaseAmount)
-        if (quoteAsset) quoteAsset.balanceOf(liquidityPool.getAccountId()).then(setQuoteAmount)
+        const accountId = liquidityPool.getAccountId();
+        if (baseAsset) baseAsset.balanceOf(accountId).then(setBaseAmount)
+        if (quoteAsset) quoteAsset.balanceOf(accountId).then(setQuoteAmount)
 
     }, [liquidityPool, assetsV1, reset]);
 

@@ -7,8 +7,7 @@ import {
 } from "@/store/bond/bond.slice";
 import BondPrincipalAssetIcon from "./BondPrincipalAssetIcon";
 import { useBondedAsset } from "@/defi/hooks";
-import { useState } from "react";
-import BigNumber from "bignumber.js";
+import { useAssetPrice } from "@/defi/hooks/useAssetPrice";
 
 const BondOfferRow = ({
   bondOffer,
@@ -21,12 +20,9 @@ const BondOfferRow = ({
 }) => {
   const roi = useBondOfferROI(offerId);
   const totalPurchasedBonds = useBondOfferTotalPurchased(offerId);
-  const [assetPrice, setAssetPrice] = useState(new BigNumber(0));
   const bondedAsset_s = useBondedAsset(bondOffer);
-  // [WIP]
-  const bondedAssetPriceInUSD = new BigNumber(0);
+  const bondedAssetPriceInUSD = useAssetPrice(bondedAsset_s);
   const principalAmountOfTokensRequiredToBuy = useBondOfferPriceInAmountOfPrincipalTokens(offerId);
-
 
   return (
     <TableRow

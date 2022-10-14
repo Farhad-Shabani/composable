@@ -12,6 +12,7 @@ import { DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { ConfirmingModal } from "../../swap/ConfirmingModal";
 import { SelectLockPeriod } from "@/components";
 import { extractDurationPresets } from "@/defi/utils/stakingRewards/durationPresets";
+import { useLpTokenUserBalance } from "@/defi/hooks/useLpTokenUserBalance";
 
 export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
   poolId,
@@ -21,6 +22,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
   const poolDetails = useLiquidityPoolDetails(poolId);
   const { baseAsset, quoteAsset, pool } = poolDetails;
   const lpToken = pool?.getLiquidityProviderToken() ?? null;
+  const lpBalance = useLpTokenUserBalance(pool);
   const stakingRewardPool = useStakingRewardPool(lpToken?.getPicassoAssetId() as string ?? "-");
   const [amount, setAmount] = useState<BigNumber>(new BigNumber(0));
   const [valid, setValid] = useState<boolean>(false);
@@ -53,14 +55,14 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
     <Box {...boxProps}>
       <Box>
         <BigNumberInput
-          maxValue={poolDetails.lpBalance}
+          maxValue={lpBalance}
           setValid={setValid}
           noBorder
           value={amount}
           setValue={setAmount}
           buttonLabel={"Max"}
           ButtonProps={{
-            onClick: () => setAmount(poolDetails.lpBalance),
+            onClick: () => setAmount(lpBalance),
             sx: {
               padding: theme.spacing(1),
             },
@@ -70,7 +72,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
             TypographyProps: { color: "text.secondary" },
             BalanceProps: {
               title: <AccountBalanceWalletIcon color="primary" />,
-              balance: `${poolDetails.lpBalance} ${lpToken?.getSymbol()}`,
+              balance: `${lpBalance} ${lpToken?.getSymbol()}`,
               BalanceTypographyProps: { color: "text.secondary" },
             },
           }}

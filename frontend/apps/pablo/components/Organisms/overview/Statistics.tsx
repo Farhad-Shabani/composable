@@ -1,7 +1,7 @@
 import { Grid, Typography, useTheme } from "@mui/material";
 import { GridProps } from "@mui/system";
 import { HighlightBox } from "@/components/Atoms/HighlightBox";
-import { useOracleAssetPrice } from "@/defi/hooks/useOracleAssetPrice";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 import { PBLO_ASSET_ID } from "@/defi/utils";
 import BigNumber from "bignumber.js";
 
@@ -36,7 +36,7 @@ const Item: React.FC<ItemProps> = ({ label, value }) => {
 export const Statistics: React.FC<GridProps> = ({ ...gridProps }) => {
   const theme = useTheme();
 
-  const PBLO_PRICE = useOracleAssetPrice(PBLO_ASSET_ID);
+  const PBLO_PRICE = useAssetIdOraclePrice(PBLO_ASSET_ID);
   const totalValueLocked = new BigNumber(0);
   const tradingVolume24hrs = new BigNumber(0);
 

@@ -18,7 +18,7 @@ import { resetAddLiquiditySlice } from "@/store/addLiquidity/addLiquidity.slice"
 import { HighlightBox } from "@/components/Atoms/HighlightBox";
 import { useAllLpTokenRewardingPools } from "@/store/hooks/useAllLpTokenRewardingPools";
 import { PoolsTable } from "@/components/Organisms/PoolsTable";
-import { usePoolsWithLpBalance } from "@/store/hooks/overview/usePoolsWithLpBalance";
+import { usePoolsWithLpBalance } from "@/defi/hooks/overview/usePoolsWithLpBalance";
 import Default from "@/components/Templates/Default";
 import useStore from "@/store/useStore";
 

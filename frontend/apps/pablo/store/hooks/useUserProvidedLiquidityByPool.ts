@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useAllLpTokenRewardingPools } from "./useAllLpTokenRewardingPools";
-import useStore from "@/store/useStore";
-import BigNumber from "bignumber.js";
 import { fetchLiquidityProvided } from "@/defi/subsquid/liquidity/helpers";
 import { BasePabloPool } from "shared";
+import useStore from "@/store/useStore";
+import BigNumber from "bignumber.js";
 /**
  * Provides the amount of liquidity
  * added by the user, and its value in
@@ -20,17 +20,12 @@ export const useUserProvidedLiquidityByPool = (
   poolId: number
 ): {
   tokenAmounts: { baseAmount: BigNumber; quoteAmount: BigNumber };
-  value: { baseValue: BigNumber; quoteValue: BigNumber };
 } => {
   /**
    * selected account on UI
    */
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const {
-    apollo,
-    /**
-     * actual provided liquidity from zustand
-     */
     userProvidedLiquidity,
     /**
      * set amounts, used in first effect
@@ -59,10 +54,6 @@ export const useUserProvidedLiquidityByPool = (
       baseAmount: new BigNumber(0),
       quoteAmount: new BigNumber(0),
     },
-  });
-  const [value, setValue] = useState({
-    baseValue: new BigNumber(0),
-    quoteValue: new BigNumber(0),
   });
   /**
    * Fetch user provided liquidity
@@ -105,46 +96,6 @@ export const useUserProvidedLiquidityByPool = (
       }
     }
   }, [pool, userProvidedLiquidity]);
-  /**
-   * Update user base asset
-   * provided liquidity
-   * value (in USD) in zustand store
-   */
-  useEffect(() => {
-    if (pool) {
-      const base = pool.getPair().getBaseAsset().toString();
-      if (apollo[base]) {
-        setValue((v) => {
-          return {
-            ...v,
-            baseValue: new BigNumber(
-              liquidityProvided.tokenAmounts.baseAmount
-            ).times(apollo[base]),
-          };
-        });
-      }
-    }
-  }, [pool, apollo, liquidityProvided.tokenAmounts.baseAmount]);
-  /**
-   * Update user quote asset
-   * provided liquidity
-   * value (in USD) in zustand store
-   */
-  useEffect(() => {
-    if (pool) {
-      const quote = pool.getPair().getQuoteAsset().toString();
-      if (apollo[quote]) {
-        setValue((v) => {
-          return {
-            ...v,
-            quoteValue: new BigNumber(
-              liquidityProvided.tokenAmounts.quoteAmount
-            ).times(apollo[quote]),
-          };
-        });
-      }
-    }
-  }, [pool, apollo, liquidityProvided.tokenAmounts.quoteAmount]);
 
-  return { tokenAmounts: liquidityProvided.tokenAmounts, value };
+  return { tokenAmounts: liquidityProvided.tokenAmounts };
 };

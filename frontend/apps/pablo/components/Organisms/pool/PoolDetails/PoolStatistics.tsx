@@ -15,6 +15,8 @@ import { useStakingRewardsPoolApy } from "@/defi/hooks/stakingRewards/useStaking
 import { useMemo } from "react";
 import BigNumber from "bignumber.js";
 import millify from "millify";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
+import { useLiquidity } from "@/defi/hooks/useLiquidity";
 
 const twoColumnPageSize = {
   sm: 12,
@@ -59,16 +61,18 @@ export const PoolStatistics: React.FC<PoolDetailsProps> = ({
   poolId,
   ...boxProps
 }) => {
-  const { pool, poolStats, tokensLocked } = useLiquidityPoolDetails(poolId);
+  const { pool, poolStats } = useLiquidityPoolDetails(poolId);
 
   const pair = pool?.getPair() ?? null;
   const base = pair?.getBaseAsset().toString() ?? "-";
   const quote = pair?.getQuoteAsset().toString() ?? "-";
 
-  const baseAssetPriceUSD = useUSDPriceByAssetId(
+  const { baseAmount, quoteAmount } = useLiquidity(pool);
+
+  const baseAssetPriceUSD = useAssetIdOraclePrice(
     base
   );
-  const quoteAssetPriceUSD = useUSDPriceByAssetId(
+  const quoteAssetPriceUSD = useAssetIdOraclePrice(
     quote
   );
 
@@ -87,8 +91,8 @@ export const PoolStatistics: React.FC<PoolDetailsProps> = ({
             label="Pool value"
             value={`$${millify(
               calculatePoolTotalValueLocked(
-                tokensLocked.baseAmount,
-                tokensLocked.quoteAmount,
+                baseAmount,
+                quoteAmount,
                 baseAssetPriceUSD,
                 quoteAssetPriceUSD
               ).toNumber()
