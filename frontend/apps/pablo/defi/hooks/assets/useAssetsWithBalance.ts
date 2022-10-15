@@ -6,11 +6,11 @@ import useStore from "@/store/useStore";
 export function useAssetsWithBalance(networkId: string, filterBalance: boolean = false): OwnedAsset[] {
     const {
         assetBalances,
-        assetsV1
+        assets
     } = useStore();
 
     const assetsWithBalance = useMemo(() => {
-        const withBalance = assetsV1.map(asset => {
+        const withBalance = assets.map(asset => {
             let balance = new BigNumber(0);
             const assetId = asset.getPicassoAssetId() as string;
 
@@ -23,7 +23,7 @@ export function useAssetsWithBalance(networkId: string, filterBalance: boolean =
 
         let filteredBalance = filterBalance ? withBalance.filter(a => a.getBalance().gt(0)) : withBalance;
         return filteredBalance;
-    }, [assetsV1, filterBalance, assetBalances, networkId]);
+    }, [assets, filterBalance, assetBalances, networkId]);
 
     return assetsWithBalance;
 }

@@ -67,12 +67,11 @@ export const SUPPORTED_ASSETS: MockedAsset[] = [
 ]
 
 const createAssetsSlice: StoreSlice<AssetsSlice> = (set) => ({
-  assetsV1: [],
+  assets: [],
   setAssetsV1: (assets: Asset[]) => set((prev: AssetsSlice) => ({
     ...prev,
-    assetsV1: assets
+    assets
   })),
-  supportedAssets: SUPPORTED_ASSETS,
   assetBalances: {},
   apollo: {},
   setPrices: (map) =>

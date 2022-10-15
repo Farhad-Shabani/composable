@@ -18,7 +18,7 @@ import { useBondedAsset } from "./useBondedAsset";
 export default function useBondOffer(offerId: string) {
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
 
-  const { assetsV1, apollo } = useStore();
+  const { assets, apollo } = useStore();
   const { bondOffers } = useBondOffersSlice();
   const vestingScheduleIds = useBondedOfferVestingScheduleIds(offerId);
   const vestingSchedules = useBondedOfferVestingSchedules(offerId);
@@ -37,12 +37,12 @@ export default function useBondOffer(offerId: string) {
   const bondedAsset_s = useBondedAsset(selectedBondOffer);
 
   const rewardAsset = useMemo<Asset | undefined>(() => {
-    if (assetsV1.length > 0 && selectedBondOffer) {
-      return assetsV1.find(asset => (asset.getPicassoAssetId(true) as BigNumber).eq(
+    if (assets.length > 0 && selectedBondOffer) {
+      return assets.find(asset => (asset.getPicassoAssetId(true) as BigNumber).eq(
         selectedBondOffer.getRewardAssetId(true) as BigNumber
       ))
     }
-  }, [assetsV1, selectedBondOffer]);
+  }, [assets, selectedBondOffer]);
 
   const rewardAssetPerBond = useMemo(() => {
     if (selectedBondOffer) {

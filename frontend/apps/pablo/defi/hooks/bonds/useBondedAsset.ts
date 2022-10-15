@@ -6,7 +6,7 @@ import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 export function useBondedAsset(
     bondOffer?: BondOffer
 ): LiquidityProviderToken | Asset | undefined {
-    const { assetsV1 } = useStore();
+    const { assets } = useStore();
     const lpRewardingPools = usePoolsSlice().constantProductPools;
 
     if (!bondOffer) return undefined;
@@ -21,7 +21,7 @@ export function useBondedAsset(
     if (isLpBasedBond) {
         return isLpBasedBond.getLiquidityProviderToken();
     } else {
-        return assetsV1.find(asset => {
+        return assets.find(asset => {
             (asset.getPicassoAssetId(true) as BigNumber).eq(bondOffer.getbondedAssetId(true) as BigNumber)
         })
     }

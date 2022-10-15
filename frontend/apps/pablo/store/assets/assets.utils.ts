@@ -12,15 +12,6 @@ export const setApolloPrice = (
   });
 };
 
-export const putSupportedAssets = (
-  assets: AssetsSlice["supportedAssets"],
-  assetsList: MockedAsset[]
-) => {
-  return produce(assets, draft => {
-    draft = [...assetsList];
-  });
-};
-
 export const putAssetBalance = (
   assets: AssetsSlice["assetBalances"],
   network: string,

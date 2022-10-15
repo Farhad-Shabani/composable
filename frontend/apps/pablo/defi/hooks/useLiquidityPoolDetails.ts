@@ -8,7 +8,7 @@ import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slic
 import useStore from "@/store/useStore";
 
 export const useLiquidityPoolDetails = (poolId: number) => {
-  const { poolStats, poolStatsValue, userLpBalances, putPoolStats, assetsV1 } = useStore();
+  const { poolStats, poolStatsValue, userLpBalances, putPoolStats, assets } = useStore();
 
   const allLpRewardingPools = useAllLpTokenRewardingPools();
   const [pool, setPool] =
@@ -30,8 +30,8 @@ export const useLiquidityPoolDetails = (poolId: number) => {
       const pair = matchingPool.getPair();
       let base = pair.getBaseAsset();
       let quote = pair.getQuoteAsset();
-      const baseAsset = assetsV1.find(asset => (base.eq(asset.getPicassoAssetId(true))))
-      const quoteAsset = assetsV1.find(asset => (quote.eq(asset.getPicassoAssetId(true))))
+      const baseAsset = assets.find(asset => (base.eq(asset.getPicassoAssetId(true))))
+      const quoteAsset = assets.find(asset => (quote.eq(asset.getPicassoAssetId(true))))
       setPool(matchingPool);
       setBaseAsset(baseAsset);
       setQuoteAsset(quoteAsset);
@@ -40,7 +40,7 @@ export const useLiquidityPoolDetails = (poolId: number) => {
       setBaseAsset(undefined);
       setQuoteAsset(undefined);
     }
-  }, [poolId, allLpRewardingPools, assetsV1]);
+  }, [poolId, allLpRewardingPools, assets]);
 
   useEffect(() => {
     if (pool) {

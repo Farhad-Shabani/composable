@@ -6,7 +6,7 @@ import useStore from "@/store/useStore";
 export function useLiquidity(
     liquidityPool: BasePabloPool | undefined
 ): { baseAmount: BigNumber; quoteAmount: BigNumber } {
-    const { assetsV1 } = useStore();
+    const { assets } = useStore();
     const [baseAmount, setBaseAmount] = useState(new BigNumber(0));
     const [quoteAmount, setQuoteAmount] = useState(new BigNumber(0));
 
@@ -16,7 +16,7 @@ export function useLiquidity(
     }, []);
 
     useEffect(() => {
-        if (!liquidityPool || !assetsV1.length) {
+        if (!liquidityPool || !assets.length) {
             reset();
             return;
         }
@@ -24,11 +24,11 @@ export function useLiquidity(
         const base = liquidityPool.getPair().getBaseAsset();
         const quote = liquidityPool.getPair().getQuoteAsset();
 
-        const baseAsset = assetsV1.find(asset => base.eq(
+        const baseAsset = assets.find(asset => base.eq(
             asset.getPicassoAssetId(true) as BigNumber
         ));
 
-        const quoteAsset = assetsV1.find(asset => quote.eq(
+        const quoteAsset = assets.find(asset => quote.eq(
             asset.getPicassoAssetId(true) as BigNumber
         ));
 
@@ -36,7 +36,7 @@ export function useLiquidity(
         if (baseAsset) baseAsset.balanceOf(accountId).then(setBaseAmount)
         if (quoteAsset) quoteAsset.balanceOf(accountId).then(setQuoteAmount)
 
-    }, [liquidityPool, assetsV1, reset]);
+    }, [liquidityPool, assets, reset]);
 
     return { baseAmount, quoteAmount };
 }

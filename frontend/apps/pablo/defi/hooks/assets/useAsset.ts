@@ -3,11 +3,11 @@ import { useMemo } from "react";
 import useStore from "@/store/useStore";
 
 export function useAsset(assetId: string): Asset | undefined {
-    const { assetsV1 } = useStore();
+    const { assets } = useStore();
 
     const asset = useMemo(() => {
-        return assetsV1.find(_asset => _asset.getPicassoAssetId() as string === assetId)
-    }, [assetsV1, assetId]);
+        return assets.find(_asset => _asset.getPicassoAssetId() as string === assetId)
+    }, [assets, assetId]);
 
     return asset;
 }

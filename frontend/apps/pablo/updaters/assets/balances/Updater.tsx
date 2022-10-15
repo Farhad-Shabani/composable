@@ -27,7 +27,7 @@ function shouldUpdateBalances(tx: any, account: string): boolean {
 
 const processedTransactions: string[] = [];
 const Updater = () => {
-  const { putAssetBalance, setAssetsV1, assetsV1 } = useStore();
+  const { putAssetBalance, setAssetsV1, assets } = useStore();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const extrinsicCalls = useExtrinsics();
@@ -44,13 +44,13 @@ const Updater = () => {
   }, [parachainApi, setAssetsV1])
 
   const updateAllBalances = useCallback(async () => {
-    if (assetsV1.length > 0 && selectedAccount) {
-      for (const asset of assetsV1) {
+    if (assets.length > 0 && selectedAccount) {
+      for (const asset of assets) {
         const assetBalance = await asset.balanceOf(selectedAccount.address);
         putAssetBalance(DEFAULT_NETWORK_ID, asset.getPicassoAssetId() as string, assetBalance.toString())
       }
     }
-  }, [selectedAccount, assetsV1, putAssetBalance])
+  }, [selectedAccount, assets, putAssetBalance])
 
   useEffect(() => {
     if (updateAllBalances && typeof updateAllBalances === "function") {

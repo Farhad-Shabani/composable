@@ -7,24 +7,24 @@ import useStore from "@/store/useStore";
 import { Apollo } from "shared";
 
 const Updater = () => {
-  const { setPrices, assetsV1 } = useStore();
+  const { setPrices, assets } = useStore();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
 
   const apollo = useMemo(() => {
-    if (!parachainApi || assetsV1.length === 0) return null;
+    if (!parachainApi || assets.length === 0) return null;
 
     const apollo = new Apollo(parachainApi)
-    apollo.getPrice(assetsV1).then(setPrices);
+    apollo.getPrice(assets).then(setPrices);
     return apollo;
-  }, [parachainApi, assetsV1, setPrices]);
+  }, [parachainApi, assets, setPrices]);
 
   const lastUpdatedBlocked = useRef<BigNumber>(new BigNumber(-1));
 
   const updateAssetPrices = useCallback(async () => {
-    if (!apollo || assetsV1.length == 0) return;
+    if (!apollo || assets.length == 0) return;
 
-    apollo.getPrice(assetsV1).then(setPrices);
-  }, [apollo, assetsV1, setPrices]);
+    apollo.getPrice(assets).then(setPrices);
+  }, [apollo, assets, setPrices]);
 
   const currentBlockNumber = useBlockNumber(DEFAULT_NETWORK_ID);
 

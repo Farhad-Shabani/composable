@@ -11,19 +11,19 @@ import { setPermissionedConstantProductPools } from "@/store/pools/pools.v1.slic
  */
 const Updater = () => {
   const {
-    assetsV1
+    assets
   } = useStore();
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
   const hasFetchedOnce = useRef(false);
 
   const updatePools = useCallback((url) => {
-    if (parachainApi && assetsV1.length > 0 && (!hasFetchedOnce.current || url === "/pool")) {
+    if (parachainApi && assets.length > 0 && (!hasFetchedOnce.current || url === "/pool")) {
       if (!hasFetchedOnce.current) hasFetchedOnce.current = true;
-      LiquidityPoolFactory.fetchPermissionedPools(parachainApi, assetsV1).then((pools) => {
+      LiquidityPoolFactory.fetchPermissionedPools(parachainApi, assets).then((pools) => {
         setPermissionedConstantProductPools(pools.uniswapConstantProduct);
       });
     }
-  }, [parachainApi, assetsV1]);
+  }, [parachainApi, assets]);
 
   /**
    * Populate all pools

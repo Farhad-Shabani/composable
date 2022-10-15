@@ -10,9 +10,8 @@ export interface MockedAsset {
 }
 
 export interface AssetsSlice {
-    assetsV1: Asset[],
+    assets: Asset[],
     setAssetsV1: (assets: Asset[]) => void;
-    supportedAssets: MockedAsset[];
     assetBalances: Record<string, Record<string, string>>,
     apollo: {
         [id: string]: BigNumber;
