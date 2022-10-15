@@ -14,7 +14,7 @@ import BigNumber from "bignumber.js";
  * get BondOfferId from VestingSchedule Account
  * returns -1 if invalid account
  * @param vestingScheduleSubAccount UInt8Array
- * @returns BigNumber
+ * @returns {BigNumber}
  */
 export function getBondOfferIdByVestingScheduleAccount(
   parachainApi: ApiPromise,
