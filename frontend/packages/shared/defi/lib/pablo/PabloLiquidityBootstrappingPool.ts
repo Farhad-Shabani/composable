@@ -7,10 +7,10 @@ import BigNumber from "bignumber.js";
 import BN from "bn.js";
 
 class LiquidityBootstrappingPoolSaleConfig {
-    start: BigNumber;
-    end: BigNumber;
-    initialWeight: number;
-    finalWeight: number;
+    readonly start: BigNumber;
+    readonly end: BigNumber;
+    readonly initialWeight: number;
+    readonly finalWeight: number;
 
     static fromJSON(saleConfig: {
         start: string | number;
