@@ -9,7 +9,6 @@ import {
 import { useLiquidityPoolDetails } from "@/defi/hooks/useLiquidityPoolDetails";
 import { PoolDetailsProps } from "./index";
 import { BaseAsset } from "@/components/Atoms";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { calculatePoolTotalValueLocked } from "@/defi/utils";
 import { useStakingRewardsPoolApy } from "@/defi/hooks/stakingRewards/useStakingRewardsPoolApy";
 import { useMemo } from "react";

@@ -1,6 +1,4 @@
 import { Asset } from "shared";
-import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import { MockedAsset } from "@/store/assets/assets.types";
 import { useMemo } from "react";
 import useStore from "@/store/useStore";
 

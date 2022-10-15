@@ -5,8 +5,8 @@ import BigNumber from "bignumber.js";
 export type VestingScheduleType = "block" | "moment";
 
 export class VesingScheduleWindow {
-    protected __start: BigNumber;
-    protected __period: BigNumber;
+    protected readonly __start: BigNumber;
+    protected readonly __period: BigNumber;
 
     static fromJSON(scheduleWindow: any): VesingScheduleWindow {
         try {
@@ -49,13 +49,13 @@ export class VesingScheduleWindow {
 }
 
 export class VestingSchedule {
-    protected __api: ApiPromise;
-    protected __perPeriod: BigNumber;
-    protected __periodCount: BigNumber;
-    protected __alreadyClaimed: BigNumber;
-    protected __vestingScheduleId: BigNumber;
-    protected __type: VestingScheduleType;
-    protected __window: VesingScheduleWindow;
+    protected readonly __api: ApiPromise;
+    protected readonly __perPeriod: BigNumber;
+    protected readonly __periodCount: BigNumber;
+    protected readonly __alreadyClaimed: BigNumber;
+    protected readonly __vestingScheduleId: BigNumber;
+    protected readonly __type: VestingScheduleType;
+    protected readonly __window: VesingScheduleWindow;
 
     static async fromAddressAndAssetId(
         api: ApiPromise,

@@ -2,10 +2,10 @@ import React from "react";
 import { ModalProps, Modal } from "@/components/Molecules";
 import { Label } from "@/components/Atoms";
 import { Box, Typography, useTheme, Button } from "@mui/material";
-import BigNumber from "bignumber.js";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { setUiState } from "@/store/ui/ui.slice";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
+import BigNumber from "bignumber.js";
 
 const defaultLabelProps = (label: string, balance: string) =>
   ({
@@ -45,7 +45,7 @@ export const PreviewPurchaseModal: React.FC<PreviewPurchaseModalProps> = ({
   // WIP
   const principalPriceUSD = new BigNumber(0);
   const bondMarketPrice = principalPriceUSD.times(bond.principalAssetPerBond);
-  const rewardPriceUSD = useUSDPriceByAssetId(bond.selectedBondOffer ?  bond.selectedBondOffer.getRewardAssetId() as string : "none");
+  const rewardPriceUSD = useAssetIdOraclePrice(bond.selectedBondOffer ?  bond.selectedBondOffer.getRewardAssetId() as string : "none");
   const totalRewardsPrice = rewardPriceUSD.times(bond.rewardAssetPerBond);
 
   return (

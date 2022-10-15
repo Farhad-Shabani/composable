@@ -1,14 +1,44 @@
-import { MockedAsset } from "@/store/assets/assets.types";
-import { useEffect, useMemo } from "react";
+import BigNumber from "bignumber.js";
+import { useMemo } from "react";
 import { useAssets } from "../assets";
 import { useStakingPositions } from "./useStakingPositions";
-import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import BigNumber from "bignumber.js";
 import { Stake, StakingRewardPool } from "@/defi/types";
-import { fromChainIdUnit } from "@/../../packages/shared";
+import { Asset, fromChainIdUnit } from "shared";
+import { ApiPromise } from "@polkadot/api";
 
-export interface ClaimableAsset extends MockedAsset {
-  claimable: BigNumber;
+class ClaimableAsset extends Asset {
+  protected __claimable: BigNumber;
+
+  static fromAsset(asset: Asset, claimable: BigNumber): ClaimableAsset {
+    return new ClaimableAsset(
+      asset.getApi(),
+      asset.getPicassoAssetId(true) as BigNumber,
+      asset.getName(),
+      asset.getSymbol(),
+      asset.getIconUrl(),
+      claimable
+    )
+  }
+
+  constructor(
+    api: ApiPromise,
+    picassoAssetId: BigNumber,
+    name: string,
+    symbol: string,
+    iconUrl: string,
+    claimableAmount: BigNumber
+  ) {
+    super(api, picassoAssetId, name, symbol, iconUrl);
+    this.__claimable = claimableAmount;
+  }
+
+  setClaimable(claimableAmount: BigNumber) {
+    this.__claimable = claimableAmount;
+  }
+
+  getClaimable(): BigNumber {
+    return this.__claimable;
+  }
 }
 
 type ClaimableRewardsProps = {
@@ -96,8 +126,9 @@ export function useClaimableRewards({
   return useMemo(() => {
     let financialNftInstanceId = "-";
     const claimableAssets = rewardAssets.map((asset) => {
-      const assetId = asset.network[DEFAULT_NETWORK_ID];
-      let claimable = new BigNumber(0);
+      const assetId = asset.getPicassoAssetId() as string;
+      let claimableAmount = new BigNumber(0);
+      const claimableAsset = ClaimableAsset.fromAsset(asset, claimableAmount);
       if (claimableAmounts.length > 0) {
         const claimableFromStake = claimableAmounts.find(
           ([_assetId, _val]) => _assetId === assetId
@@ -105,11 +136,11 @@ export function useClaimableRewards({
 
         if (claimableFromStake) {
           financialNftInstanceId = claimableFromStake[2];
-          claimable = claimableFromStake[1];
+          claimableAsset.setClaimable(claimableFromStake[1]);
         }
       }
 
-      return { ...asset, claimable };
+      return claimableAsset;
     });
 
     return { claimableAssets, financialNftInstanceId };

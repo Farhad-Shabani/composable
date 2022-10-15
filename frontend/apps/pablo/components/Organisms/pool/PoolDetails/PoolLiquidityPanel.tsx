@@ -19,10 +19,9 @@ import {
   setPool,
 } from "@/store/addLiquidity/addLiquidity.slice";
 import { useUserProvidedLiquidityByPool } from "@/defi/hooks/useUserProvidedLiquidityByPool";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { calculatePoolTotalValueLocked } from "@/defi/utils";
 import { useLiquidity } from "@/defi/hooks/useLiquidity";
-import { useLpTokenPrice, useLpTokenUserBalance } from "@/defi/hooks";
+import { useAssetIdOraclePrice, useLpTokenPrice, useLpTokenUserBalance } from "@/defi/hooks";
 
 const twoColumnPageSize = {
   sm: 12,
@@ -69,10 +68,10 @@ export const PoolLiquidityPanel: React.FC<PoolDetailsProps> = ({
   const base = pair?.getBaseAsset().toString() ?? "-";
   const quote = pair?.getQuoteAsset().toString() ?? "-";
 
-  const baseAssetPriceUSD = useUSDPriceByAssetId(
+  const baseAssetPriceUSD = useAssetIdOraclePrice(
     base
   );
-  const quoteAssetPriceUSD = useUSDPriceByAssetId(
+  const quoteAssetPriceUSD = useAssetIdOraclePrice(
     quote
   );
 

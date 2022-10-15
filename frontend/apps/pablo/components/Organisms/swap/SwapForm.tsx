@@ -58,7 +58,7 @@ const SwapForm: React.FC<BoxProps> = ({ ...boxProps }) => {
     priceImpact,
     inputMode,
     setInputMode
-  } = useSwaps();
+  } = useSwaps({ selectedAccount });
 
   const initiateSwapTx = usePabloSwap({
     baseAssetId: selectedAssetTwoId,

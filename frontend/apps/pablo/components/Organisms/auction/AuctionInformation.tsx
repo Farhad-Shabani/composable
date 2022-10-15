@@ -2,20 +2,20 @@ import { Box, BoxProps, Typography, useTheme, Grid } from "@mui/material";
 import { getFullHumanizedDateDiff } from "shared";
 import { nFormatter } from "shared";
 import { useMemo } from "react";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { useAuctionSpotPrice } from "@/defi/hooks/auctions";
-import { MockedAsset } from "@/store/assets/assets.types";
+import { Asset } from "shared";
 import { LiquidityBootstrappingPool } from "@/defi/types";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { LiquidityBootstrappingPoolStatistics } from "@/store/auctions/auctions.types";
 import BigNumber from "bignumber.js";
 import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import useBlockNumber from "@/defi/hooks/useBlockNumber";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 
 export type AuctionInformationProps = {
   auction: LiquidityBootstrappingPool;
-  baseAsset?: MockedAsset;
-  quoteAsset?: MockedAsset;
+  baseAsset?: Asset;
+  quoteAsset?: Asset;
   stats: LiquidityBootstrappingPoolStatistics;
 } & BoxProps;
 
@@ -54,7 +54,7 @@ export const AuctionInformation: React.FC<AuctionInformationProps> = ({
   };
 
   const spotPrice = useAuctionSpotPrice(auction.poolId);
-  const quoteAssetPrice = useUSDPriceByAssetId(auction.pair.quote.toString());
+  const quoteAssetPrice = useAssetIdOraclePrice(auction.pair.quote.toString());
 
   let {
     tokenRaised,
@@ -181,7 +181,7 @@ export const AuctionInformation: React.FC<AuctionInformationProps> = ({
             <Typography variant="h6">{tokenRaised}</Typography>
           </Box>
           <Typography variant="body1" color="text.secondary" fontWeight="bold">
-            {quoteAsset?.symbol}
+            {quoteAsset?.getSymbol()}
           </Typography>
         </Grid>
       </Grid>

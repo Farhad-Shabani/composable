@@ -6,9 +6,9 @@ import {
 } from "@/defi/utils";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
-import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
+import { useAssetBalance, useAssetIdOraclePrice } from "@/defi/hooks";
 import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
-import { useParachainApi } from "substrate-react";
+import { ConnectedAccount, useParachainApi } from "substrate-react";
 import { useAsset } from "../assets/useAsset";
 import { useFilteredAssetListDropdownOptions } from "../assets/useFilteredAssetListDropdownOptions";
 import { usePriceImpact } from "./usePriceImpact";
@@ -17,7 +17,7 @@ import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
 import useStore from "@/store/useStore";
 import BigNumber from "bignumber.js";
 
-export function useSwaps(): {
+export function useSwaps({ selectedAccount }: { selectedAccount?: ConnectedAccount; }): {
   balance1: BigNumber;
   balance2: BigNumber;
   changeAsset: (side: "base" | "quote", asset: string | "none") => void;
@@ -95,17 +95,15 @@ export function useSwaps(): {
     setSelectedAsset(id, "base");
   };
 
-  const asset1PriceUsd = useUSDPriceByAssetId(selectedAssetOneId);
-  const asset2PriceUsd = useUSDPriceByAssetId(selectedAssetTwoId);
-
   const selectedAssetOne = useAsset(selectedAssetOneId);
   const selectedAssetTwo = useAsset(selectedAssetTwoId);
-
+  const asset1PriceUsd = useAssetIdOraclePrice(selectedAssetOneId);
+  const asset2PriceUsd = useAssetIdOraclePrice(selectedAssetTwoId);
+  const balance1 = useAssetBalance(selectedAccount?.address, selectedAssetOne);
+  const balance2 = useAssetBalance(selectedAccount?.address, selectedAssetTwo);
   const assetListOne = useFilteredAssetListDropdownOptions(selectedAssetTwoId);
   const assetListTwo = useFilteredAssetListDropdownOptions(selectedAssetOneId);
-
-  const balance1 = useAssetBalance(DEFAULT_NETWORK_ID, selectedAssetOneId);
-  const balance2 = useAssetBalance(DEFAULT_NETWORK_ID, selectedAssetTwoId);
+  
 
   const updateSpotPrice = useCallback(async () => {
     if (selectedPool) {

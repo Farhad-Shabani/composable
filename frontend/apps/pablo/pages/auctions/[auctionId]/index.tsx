@@ -79,7 +79,7 @@ const Auction: NextPage = () => {
           >
             <Box display="flex" alignItems="center">
               <Typography variant="h5" pr={4}>
-                {baseAsset?.symbol} Token Launch Auction
+                {baseAsset?.getSymbol()} Token Launch Auction
               </Typography>
               <AuctionStatusIndicator
                 auction={activePool}

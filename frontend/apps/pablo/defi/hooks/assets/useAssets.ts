@@ -1,14 +1,13 @@
-import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import { MockedAsset } from "@/store/assets/assets.types";
+import { Asset } from "shared";
 import { useMemo } from "react";
 import useStore from "@/store/useStore";
 
-export function useAssets(assetIds: string[]): MockedAsset[] {
-    const { supportedAssets } = useStore();
+export function useAssets(assetIds: string[]): Asset[] {
+    const { assetsV1 } = useStore();
 
-    const selectedAsset = useMemo(() => {
-        return supportedAssets.filter(asset => assetIds.includes(asset.network[DEFAULT_NETWORK_ID]));
-    }, [supportedAssets, assetIds]);
+    const _assets = useMemo(() => {
+        return assetsV1.filter(asset => assetIds.includes(asset.getPicassoAssetId() as string));
+    }, [assetsV1, assetIds]);
 
-    return selectedAsset;
+    return _assets;
 }

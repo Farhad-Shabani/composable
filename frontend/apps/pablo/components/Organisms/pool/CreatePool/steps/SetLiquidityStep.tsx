@@ -18,10 +18,10 @@ import { useMobile } from "@/hooks/responsive";
 import { TransactionSettings } from "@/components/Organisms/TransactionSettings";
 import useStore from "@/store/useStore";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
-import { useAssetBalance, useUSDPriceByAssetId } from "@/store/assets/hooks";
-import { useAsset } from "@/defi/hooks/assets/useAsset";
+import { useAsset, useAssetBalance, useAssetIdOraclePrice } from "@/defi/hooks";
 import { setUiState } from "@/store/ui/ui.slice";
 import { Asset } from "shared";
+import { useSelectedAccount } from "substrate-react";
 
 const selectLabelProps = (valid: boolean, label: string, balance: string) =>
   ({
@@ -89,6 +89,7 @@ const SetLiquidityStep: React.FC<BoxProps> = ({ ...boxProps }) => {
   const theme = useTheme();
   const isMobile = useMobile();
 
+  const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const { createPool } = useStore();
 
   const baseAmount = useMemo(() => {
@@ -99,17 +100,24 @@ const SetLiquidityStep: React.FC<BoxProps> = ({ ...boxProps }) => {
     return new BigNumber(createPool.liquidity.quoteAmount);
   }, [createPool.liquidity.quoteAmount]);
 
-  const balance1 = useAssetBalance(DEFAULT_NETWORK_ID, createPool.baseAsset);
-  const balance2 = useAssetBalance(DEFAULT_NETWORK_ID, createPool.quoteAsset);
-
   const [valid1, setValid1] = useState<boolean>(false);
   const [valid2, setValid2] = useState<boolean>(false);
 
-  const tokenToUSD1 = useUSDPriceByAssetId(createPool.baseAsset);
-  const tokenToUSD2 = useUSDPriceByAssetId(createPool.quoteAsset);
+  const tokenToUSD1 = useAssetIdOraclePrice(createPool.baseAsset);
+  const tokenToUSD2 = useAssetIdOraclePrice(createPool.quoteAsset);
 
   const _baseAsset = useAsset(createPool.baseAsset);
   const _quoteAsset = useAsset(createPool.quoteAsset);
+
+  const balance1 = useAssetBalance(
+    selectedAccount?.address,
+    _baseAsset
+  )
+
+  const balance2 = useAssetBalance(
+    selectedAccount?.address,
+    _quoteAsset
+  )
 
   const validToken1 = createPool.baseAsset !== "none";
   const validToken2 = createPool.quoteAsset !== "none";

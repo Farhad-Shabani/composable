@@ -53,16 +53,18 @@ export class LiquidityPoolFactory {
             }
 
             let allConstantProductPools = await Promise.all(fetchPoolPromises);
-            allConstantProductPools = allConstantProductPools.filter(x => x !== null);
-            let isPermissionedPools = allConstantProductPools.map(pool => {
-                return dexRouter.isPermissioned(pool as BasePabloPool)
-            });
+            let isPermissionedPools = allConstantProductPools
+                .filter(x => x !== null)
+                .map(pool => {
+                    return dexRouter.isPermissioned(pool as BasePabloPool)
+                });
 
             const permissionedStatus = await Promise.all(isPermissionedPools);
             const uniswapConstantProduct = allConstantProductPools.filter((basePool) => {
                 if (basePool) {
                     const poolId: BigNumber = basePool.getPoolId(true) as BigNumber;
-                    const isPermissionedStatus = permissionedStatus.find((_permissionedStatus) => (_permissionedStatus.poolId.eq(poolId)))
+                    const isPermissionedStatus = permissionedStatus
+                        .find((_permissionedStatus) => (_permissionedStatus.poolId.eq(poolId)))
                     return isPermissionedStatus && isPermissionedStatus.isPermissioned
                 }
                 return false

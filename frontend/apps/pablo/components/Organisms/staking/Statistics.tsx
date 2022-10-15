@@ -106,7 +106,7 @@ export const StakingStatistics: React.FC<
     return (
       <Box {...defaultFlexBoxProps} p={3}>
         {assets.map((asset) => {
-          const assetApy = apy[asset.network[DEFAULT_NETWORK_ID]];
+          const assetApy = apy[asset.getPicassoAssetId() as string];
           return (
             <TokenValue
               token={asset}

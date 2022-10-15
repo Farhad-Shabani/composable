@@ -16,7 +16,7 @@ import { PoolDetailsProps } from "./index";
 import { BoxWrapper } from "../../BoxWrapper";
 import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slice";
 import { useAssets } from "@/defi/hooks";
-import { MockedAsset } from "@/store/assets/assets.types";
+import { Asset } from "shared";
 import { useClaimStakingRewards } from "@/defi/hooks/stakingRewards/useClaimStakingRewards";
 import { ConfirmingModal } from "../../swap/ConfirmingModal";
 import { usePendingExtrinsic, useSelectedAccount } from "substrate-react";
@@ -140,11 +140,11 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
       <Item mt={4} mb={4} value={`$${0}`}>
         <Typography variant="h6">Your rewards</Typography>
       </Item>
-      {rewardAssets.map(({ name, icon, symbol }: MockedAsset) => (
-        <Item value={new BigNumber(0).toString()} mt={2} key={name}>
+      {rewardAssets.map((asset: Asset) => (
+        <Item value={new BigNumber(0).toString()} mt={2} key={asset.getName()}>
           <BaseAsset
-            icon={icon}
-            label={symbol}
+            icon={asset.getIconUrl()}
+            label={asset.getSymbol()}
           />
         </Item>
       ))}

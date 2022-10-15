@@ -12,7 +12,6 @@ import { AccessTimeRounded, OpenInNewRounded } from "@mui/icons-material";
 import moment from "moment-timezone";
 import useStore from "@/store/useStore";
 import { AMMs } from "@/defi/AMMs";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { useExecutor, useParachainApi, useSelectedAccount, useSigner } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { EventRecord } from "@polkadot/types/interfaces/system/types";
@@ -23,6 +22,7 @@ import {
 } from "@/defi/utils";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
 import { setUiState } from "@/store/ui/ui.slice";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 
 const labelProps = (
   label: string | undefined,
@@ -81,8 +81,8 @@ const ConfirmPoolStep: React.FC<BoxProps> = ({ ...boxProps }) => {
 
   const [createdAt, setCreatedAt] = useState(-1);
 
-  const baseTokenUSDPrice = useUSDPriceByAssetId(baseAsset);
-  const quoteTokenUSDPrice = useUSDPriceByAssetId(quoteAsset);
+  const baseTokenUSDPrice = useAssetIdOraclePrice(baseAsset);
+  const quoteTokenUSDPrice = useAssetIdOraclePrice(quoteAsset);
 
   const [isFunding, setIsFunding] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);

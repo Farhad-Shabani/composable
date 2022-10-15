@@ -5,7 +5,7 @@ import { calculator, DEFAULT_NETWORK_ID, fetchSpotPrice } from "@/defi/utils";
 import { fetchAndExtractAuctionStats } from "@/defi/utils/pablo/auctions";
 import { usePrevious } from "@/hooks/usePrevious";
 import { useAppSettingsSlice } from "@/store/appSettings/appSettings.slice";
-import { useAssetBalance } from "@/store/assets/hooks";
+import { useAssetBalance } from "@/defi/hooks";
 import {
   setAuctionsSlice,
   setAuctionsSpotPrice,
@@ -71,12 +71,12 @@ export const useAuctionBuyForm = (): {
   const quoteAsset = useAsset(activePool.pair.quote.toString());
 
   const balanceBase = useAssetBalance(
-    DEFAULT_NETWORK_ID,
-    baseAsset ? baseAsset.getPicassoAssetId() as string : "none"
+    selectedAccount?.address,
+    baseAsset
   );
   const balanceQuote = useAssetBalance(
-    DEFAULT_NETWORK_ID,
-    quoteAsset ? quoteAsset.getPicassoAssetId() as string : "none"
+    selectedAccount?.address,
+    quoteAsset
   );
 
   const [isValidBaseInput, setIsValidBaseInput] = useState(false);

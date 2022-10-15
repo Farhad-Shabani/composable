@@ -1,4 +1,5 @@
 export * from "./useAsset";
+export * from "./useAssetBalance";
 export * from "./useAssetIdOraclePrice";
 export * from "./useAssetPrice";
 export * from "./useAssets";

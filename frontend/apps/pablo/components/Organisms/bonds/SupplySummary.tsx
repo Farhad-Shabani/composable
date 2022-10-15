@@ -11,10 +11,10 @@ import {
 } from "@mui/material";
 import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { useCallback } from "react";
 import { Asset, LiquidityProviderToken } from "shared";
 import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 
 const containerBoxProps = (theme: Theme) => ({
   display: "flex",
@@ -54,7 +54,7 @@ export const SupplySummary: React.FC<SupplySummaryProps> = ({
 }) => {
   const theme = useTheme();
   const { bondedAsset_s, rewardAsset } = bond;
-  const rewardPriceInUSD = useUSDPriceByAssetId(
+  const rewardPriceInUSD = useAssetIdOraclePrice(
     rewardAsset?.getPicassoAssetId() as string
   );
 

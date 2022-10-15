@@ -1,11 +1,9 @@
 import { TableCell, TableRow, Box, Typography } from "@mui/material";
-import { useAsset, useAssets } from "@/defi/hooks";
+import { useAsset, useAssetIdOraclePrice, useAssets } from "@/defi/hooks";
 import { PairAsset } from "@/components/Atoms";
 import { useLiquidityPoolStats } from "@/defi/hooks/useLiquidityPoolStats";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import {
   calculatePoolTotalValueLocked,
-  DEFAULT_NETWORK_ID,
   DEFAULT_UI_FORMAT_DECIMALS,
 } from "@/defi/utils";
 import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slice";
@@ -37,10 +35,10 @@ const LiquidityPoolRow = ({
   const liquidity = useLiquidity(liquidityPool);
   const baseAsset = useAsset(baseAssetId);
   const quoteAsset = useAsset(quoteAssetId);
-  const quoteAssetPriceUSD = useUSDPriceByAssetId(
+  const quoteAssetPriceUSD = useAssetIdOraclePrice(
     quoteAssetId
   );
-  const baseAssetPriceUSD = useUSDPriceByAssetId(
+  const baseAssetPriceUSD = useAssetIdOraclePrice(
     baseAssetId
   );
 
@@ -99,16 +97,16 @@ const LiquidityPoolRow = ({
         {rewardAssets
           ? rewardAssets.map((item) => {
             return (
-              <Box key={item.name} display="flex">
+              <Box key={item.getName()} display="flex">
                 <PairAsset
                   assets={[
                     {
-                      icon: item.icon,
-                      label: item.symbol,
+                      icon: item.getIconUrl(),
+                      label: item.getSymbol(),
                     },
                   ]}
                   label={calculateRewardPerDayByAssetId(
-                    item.network[DEFAULT_NETWORK_ID],
+                    item.getPicassoAssetId() as string,
                     rewardPool
                   ).toFixed(DEFAULT_UI_FORMAT_DECIMALS)}
                 />

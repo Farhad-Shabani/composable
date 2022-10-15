@@ -21,11 +21,11 @@ import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { useAuctionBuyForm } from "@/defi/hooks/auctions/useAuctionBuyForm";
 import { useDotSamaContext } from "substrate-react";
 import { usePabloSwap } from "@/defi/hooks/swaps/usePabloSwap";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
 import { setUiState } from "@/store/ui/ui.slice";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import _ from "lodash";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 
 export type BuyFormProps = {
   auction: LiquidityBootstrappingPool;
@@ -56,10 +56,10 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
     minimumReceived
   } = useAuctionBuyForm();
 
-  const priceUSDBase = useUSDPriceByAssetId(
+  const priceUSDBase = useAssetIdOraclePrice(
     baseAsset ? baseAsset.getPicassoAssetId() as string : "none"
   );
-  const priceUSDQuote = useUSDPriceByAssetId(
+  const priceUSDQuote = useAssetIdOraclePrice(
     quoteAsset ? quoteAsset.getPicassoAssetId() as string : "none"
   );
 

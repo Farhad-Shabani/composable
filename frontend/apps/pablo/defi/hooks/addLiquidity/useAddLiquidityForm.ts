@@ -4,14 +4,14 @@ import {
   useAddLiquiditySlice,
 } from "@/store/addLiquidity/addLiquidity.slice";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
-import BigNumber from "bignumber.js";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useParachainApi, useSelectedAccount } from "substrate-react";
 import { fromChainUnits, toChainUnits } from "@/defi/utils";
 import { useAsset } from "@/defi/hooks/assets/useAsset";
 import { useFilteredAssetListDropdownOptions } from "@/defi/hooks/assets/useFilteredAssetListDropdownOptions";
 import { useLiquidity } from "@/defi/hooks/useLiquidity";
-import { useAssetBalance } from "@/store/assets/hooks";
+import { useAssetBalance } from "@/defi/hooks";
+import BigNumber from "bignumber.js";
 
 export const useAddLiquidityForm = () => {
   const [valid, setValid] = useState<boolean>(false);
@@ -53,8 +53,8 @@ export const useAddLiquidityForm = () => {
   const assetList1 = useFilteredAssetListDropdownOptions(assetTwo);
   const assetList2 = useFilteredAssetListDropdownOptions(assetOne);
 
-  const balanceOne = useAssetBalance(DEFAULT_NETWORK_ID, assetOne);
-  const balanceTwo = useAssetBalance(DEFAULT_NETWORK_ID, assetTwo);
+  const balanceOne = useAssetBalance(selectedAccount?.address, _assetOne);
+  const balanceTwo = useAssetBalance(selectedAccount?.address, _assetTwo);
 
   const setToken = (key: "assetOne" | "assetTwo") => (v: AssetId) => {
     setSelection({ [key]: v });

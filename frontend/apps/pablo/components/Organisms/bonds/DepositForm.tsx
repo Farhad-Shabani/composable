@@ -14,7 +14,7 @@ import BigNumber from "bignumber.js";
 import { PreviewPurchaseModal } from "./PreviewPurchaseModal";
 import { WrongAmountEnteredModal } from "./WrongAmountEnteredModal";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
-import { useAssetBalance } from "@/store/assets/hooks";
+import { useAssetBalance } from "@/defi/hooks";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { ConfirmingModal } from "../swap/ConfirmingModal";
 import { usePurchaseBond } from "@/defi/hooks/bonds";
@@ -82,9 +82,9 @@ export const DepositForm: React.FC<DepositFormProps> = ({
     handleDeposit();
   };
 
-  const principalBalance = useAssetBalance(
-    DEFAULT_NETWORK_ID,
-    bond.bondedAsset_s ? bond.bondedAsset_s.getPicassoAssetId().toString() : "0"
+  const bondedAssetBalance = useAssetBalance(
+    selectedAccount?.address,
+    bond.bondedAsset_s
   );
 
   const buttonText = soldOut ? "Sold out" : "Deposit";
@@ -100,7 +100,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
 
   const maxYouCanBuy = useMemo(() => {
     if (bond.selectedBondOffer) {
-      let amountOfBondsBuyable = principalBalance
+      let amountOfBondsBuyable = bondedAssetBalance
         .div(bond.principalAssetPerBond)
         .decimalPlaces(0, BigNumber.ROUND_FLOOR);
       return amountOfBondsBuyable.lt(bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber)
@@ -108,7 +108,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         : bond.selectedBondOffer.getNumberOfBonds(true) as BigNumber;
     }
     return new BigNumber(0);
-  }, [principalBalance, bond]);
+  }, [bondedAssetBalance, bond]);
 
   const purchaseBond = usePurchaseBond(
     bond.selectedBondOffer ? (bond.selectedBondOffer.getBondOfferId(true) as BigNumber) : new BigNumber(-1),
@@ -180,7 +180,7 @@ export const DepositForm: React.FC<DepositFormProps> = ({
         <Label
           {...defaultLabelProps(
             "Your balance",
-            `${principalBalance.toFixed(2)} ${bond.bondedAsset_s?.getSymbol()}`
+            `${bondedAssetBalance.toFixed(2)} ${bond.bondedAsset_s?.getSymbol()}`
           )}
         />
         <Label

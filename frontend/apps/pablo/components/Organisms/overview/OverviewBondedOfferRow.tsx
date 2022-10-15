@@ -6,7 +6,7 @@ import {
 import { BondOffer } from "shared";
 import { useBondedAsset } from "@/defi/hooks/bonds/useBondedAsset";
 import { useBondedOfferVestingState, useBondOfferROI } from "@/store/bond/bond.slice";
-import { useUSDPriceByAssetId } from "@/store/assets/hooks";
+import { useAssetIdOraclePrice } from "@/defi/hooks";
 import BondPrincipalAssetIcon from "../bonds/BondPrincipalAssetIcon";
 import useBondVestingTime from "@/defi/hooks/bonds/useBondVestingTime";
 
@@ -20,7 +20,7 @@ export const OverviewBondedOfferRow = ({
   const bondedAsset_s = useBondedAsset(bondOffer);
   const discount = useBondOfferROI(offerId);
   const vestingTime = useBondVestingTime(bondOffer);
-  const rewardAssetPriceUSD = useUSDPriceByAssetId(bondOffer.getRewardAssetId() as string);
+  const rewardAssetPriceUSD = useAssetIdOraclePrice(bondOffer.getRewardAssetId() as string);
 
   const {
     claimable

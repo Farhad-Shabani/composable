@@ -24,3 +24,29 @@ export class LiquidityProviderToken extends Asset {
         return this.__underlyingAssets;
     }
 }
+
+export class OwnedLiquidityProviderToken extends LiquidityProviderToken {
+    protected __balance: BigNumber;
+
+    constructor(
+        api: ApiPromise,
+        underlyingAssets: Asset[],
+        tokenAssetId: BigNumber,
+        balance: BigNumber
+    ) {
+        super(
+            api,
+            underlyingAssets,
+            tokenAssetId,
+        );
+        this.__balance = balance;
+    }
+
+    public setBalance(balance: BigNumber) {
+        this.__balance = balance;
+    }
+
+    public getBalance(): BigNumber {
+        return this.__balance;
+    }
+}
