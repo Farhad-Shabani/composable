@@ -4,7 +4,7 @@ import { useParachainApi } from "substrate-react";
 import { LiquidityPoolFactory } from "shared";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
 import { useRouter } from "next/router";
-import { setPermissionedConstantProductPools } from "@/store/pools/pools.v1.slice";
+import { setPermissionedConstantProductPools } from "@/store/pools/pools.slice";
 /**
  * Updates zustand store with all pools from pablo pallet
  * @returns null

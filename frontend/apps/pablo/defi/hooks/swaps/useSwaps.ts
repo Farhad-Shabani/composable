@@ -13,7 +13,7 @@ import { useAsset } from "../assets/useAsset";
 import { useFilteredAssetListDropdownOptions } from "../assets/useFilteredAssetListDropdownOptions";
 import { usePriceImpact } from "./usePriceImpact";
 import { useLiquidity } from "../useLiquidity";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import useStore from "@/store/useStore";
 import BigNumber from "bignumber.js";
 

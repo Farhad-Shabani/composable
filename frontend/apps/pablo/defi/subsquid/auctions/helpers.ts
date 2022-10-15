@@ -1,13 +1,12 @@
 import { PabloLiquidityBootstrappingPool } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types";
 import { LiquidityBootstrappingPoolTrade } from "@/defi/types/auctions";
 import { fromChainUnits } from "@/defi/utils";
 import { transformPabloTransaction } from "@/defi/utils/pablo/auctions";
 import { PoolTradeHistory } from "@/store/auctions/auctions.types";
-import BigNumber from "bignumber.js";
 import { PabloTransactions } from "../pools/queries";
 import { fetchSubsquid } from "../stakingRewards/helpers";
 import { queryAuctionStats } from "./queries";
+import BigNumber from "bignumber.js";
 
 export async function fetchInitialBalance(
   pool: PabloLiquidityBootstrappingPool

@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import { useEffect } from "react";
 import { useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 
 const Updater = () => {

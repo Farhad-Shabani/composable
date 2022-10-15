@@ -1,5 +1,4 @@
 import { PabloLiquidityBootstrappingPool } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types";
 import BigNumber from "bignumber.js";
 
 export type LiquidityBootstrappingPoolStatistics = {

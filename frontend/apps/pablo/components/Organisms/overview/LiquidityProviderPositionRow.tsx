@@ -4,7 +4,7 @@ import {
   Typography,
 } from "@mui/material";
 import { PairAsset } from "@/components/Atoms";
-import { useAsset, useLpTokenPrice, useLpTokenUserBalance } from "@/defi/hooks";
+import { useLpTokenPrice, useLpTokenUserBalance } from "@/defi/hooks";
 import { PabloConstantProductPool } from "shared";
 import BigNumber from "bignumber.js";
 
@@ -13,9 +13,6 @@ const LiquidityProviderPositionRow = ({
 }: {
   pool: PabloConstantProductPool
 }) => {
-  const pair = pool.getPair();
-  const baseAsset = useAsset(pair.getBaseAsset().toString());
-  const quoteAsset = useAsset(pair.getQuoteAsset().toString());
   const lpTokenUserBalance = useLpTokenUserBalance(pool);
   const lpTokenPrice = useLpTokenPrice(pool.getLiquidityProviderToken());
   const apr = new BigNumber(0);
@@ -23,15 +20,10 @@ const LiquidityProviderPositionRow = ({
   return (
     <TableRow key={`${pool.getLiquidityProviderToken().getSymbol()}`}>
       <TableCell align="left">
-        {baseAsset && quoteAsset && (
-          <PairAsset
-            assets={[
-              { icon: baseAsset.getIconUrl(), label: baseAsset.getSymbol() },
-              { icon: quoteAsset.getIconUrl(), label: quoteAsset.getSymbol() },
-            ]}
-            separator="/"
-          />
-        )}
+        <PairAsset
+          assets={pool.getLiquidityProviderToken().getUnderlyingAssetJSON()}
+          separator="/"
+        />
       </TableCell>
       <TableCell align="left">
         <Typography variant="body1">

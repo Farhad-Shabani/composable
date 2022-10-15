@@ -7,13 +7,13 @@ import { getAMMOptions } from "@/defi/AMMs";
 import { UnverifiedPoolWarningModal } from "../UnverifiedPoolWarningModal";
 import { TransactionSettings } from "@/components/Organisms/TransactionSettings";
 import { AssetId } from "@/defi/polkadot/types";
-import { LiquidityPoolType } from "@/store/pools/pools.types";
 import { useFilteredAssetListDropdownOptions } from "@/defi/hooks/assets/useFilteredAssetListDropdownOptions";
 import BigNumber from "bignumber.js";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import FormWrapper from "../FormWrapper";
 import useStore from "@/store/useStore";
 import { useUiSlice,setUiState } from "@/store/ui/ui.slice";
+import { AmmId } from "@/defi/types";
 
 const labelProps = (label: string, disabled: boolean = false) => ({
   label: label,
@@ -73,7 +73,7 @@ const ChooseTokensStep: React.FC<BoxProps> = ({ ...boxProps }) => {
 
   const _setSelectable =
     (item: "baseAsset" | "quoteAsset" | "ammId" | "swapFee") =>
-    (v: AssetId | LiquidityPoolType | BigNumber) => {
+    (v: AssetId | AmmId | BigNumber) => {
       setSelectable({ [item]: v });
   };
 

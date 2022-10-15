@@ -69,8 +69,7 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
   const theme = useTheme();
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const poolDetails = useLiquidityPoolDetails(poolId);
-  const userProvidedLiquidity = useUserProvidedLiquidityByPool(poolId);
-  const { baseAsset, quoteAsset, pool } = poolDetails;
+  const { pool } = poolDetails;
   const lpToken = pool?.getLiquidityProviderToken();
   const lpAssetId = lpToken?.getPicassoAssetId() as string ?? "-";
   const stakingRewardsPool = useStakingRewardPool(lpAssetId);
@@ -98,21 +97,12 @@ export const PoolRewardsPanel: React.FC<PoolDetailsProps> = ({
         value={lpStaked.toFormat()}
         mt={4.375}
       >
-        {baseAsset && quoteAsset && (
-          <PairAsset 
-          assets={[
-            {
-              icon: baseAsset.getIconUrl(),
-              label: baseAsset.getSymbol(),
-            },
-            {
-              icon: quoteAsset.getIconUrl(),
-              label: quoteAsset.getSymbol(),
-            },
-          ]}
-          separator="/"
+        {
+          lpToken && <PairAsset
+            assets={lpToken.getUnderlyingAssetJSON()}
+            separator="/"
           />
-        )}
+        }
       </Item>
       {/* <Item
         value={userProvidedLiquidity.tokenAmounts.quoteAmount.toFormat()}

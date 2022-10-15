@@ -6,7 +6,7 @@ import {
   setAuctionsSpotPrice,
   useAuctionsSlice,
 } from "@/store/auctions/auctions.slice";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 
 const Updater = () => {
   const {

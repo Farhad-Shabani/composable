@@ -15,7 +15,7 @@ import { AllAuctionsTable } from "@/components/Organisms/AllAuctionsTable";
 import { useEffect, useState } from "react";
 import { useDotSamaContext } from "substrate-react";
 import { HighlightBox } from "@/components/Atoms/HighlightBox";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import { setAuctionsSpotPrice } from "@/store/auctions/auctions.slice";
 
 const standardPageSize = {

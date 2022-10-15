@@ -7,11 +7,10 @@ import {
 } from "@mui/material";
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { getHumanizedDateDiff, PabloLiquidityBootstrappingPool } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types";
 import { AVERAGE_BLOCK_TIME, DEFAULT_NETWORK_ID } from "@/defi/utils";
-import { useCallback, useMemo } from "react";
-import useBlockNumber from "@/defi/hooks/useBlockNumber";
+import { useCallback } from "react";
 import { useBlockInterval } from "@/defi/hooks";
+import useBlockNumber from "@/defi/hooks/useBlockNumber";
 
 export type AuctionStatusIndicatorProps = {
   auction: PabloLiquidityBootstrappingPool,

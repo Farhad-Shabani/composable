@@ -61,21 +61,10 @@ export const SupplySummary: React.FC<SupplySummaryProps> = ({
   const vestingTime = useBondVestingTime(bond.selectedBondOffer);
   const renderIcons = useCallback(() => {
     if (bondedAsset_s instanceof LiquidityProviderToken) {
-      const underlyingAssets = bondedAsset_s.getUnderlyingAssets();
-      const baseAsset = underlyingAssets[0] ?? null;
-      const quoteAsset = underlyingAssets[1] ?? null; 
+      const underlyingAssets = bondedAsset_s.getUnderlyingAssetJSON();
       return (
         <PairAsset
-          assets={[
-            {
-              icon: baseAsset.getIconUrl(),
-              label: baseAsset.getSymbol(),
-            },
-            {
-              icon: quoteAsset.getIconUrl(),
-              label: quoteAsset.getSymbol(),
-            },
-          ]}
+          assets={underlyingAssets}
           iconOnly
           iconSize={36}
         />

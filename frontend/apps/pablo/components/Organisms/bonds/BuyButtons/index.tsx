@@ -1,4 +1,4 @@
-import { LiquidityProviderToken } from "@/../../packages/shared";
+import { LiquidityProviderToken } from "shared";
 import { BaseAsset, PairAsset } from "@/components/Atoms";
 import { SelectedBondOffer } from "@/defi/hooks/bonds/useBondOffer";
 import { Button, Grid, GridProps } from "@mui/material";
@@ -48,46 +48,35 @@ export const BuyButtons: React.FC<BuyButtonsProps> = ({
     }
   };
 
-  const isLpBond = bond.bondedAsset_s instanceof LiquidityProviderToken ? bond.bondedAsset_s.getUnderlyingAssets() : null;
-  const baseAsset = isLpBond ? isLpBond[0] : null;
-  const quoteAsset = isLpBond ? isLpBond[1] : null;
+  const isLpBond = bond.bondedAsset_s instanceof LiquidityProviderToken ? bond.bondedAsset_s.getUnderlyingAssetJSON() : null;
   if (!isLpBond) return null;
 
   return (
     <Grid container columnSpacing={3} {...gridProps}>
       <Grid item {...threeColumnPageSize}>
         <Button {...buttonProps(onBuyHandler("token1"))}>
-          {baseAsset && (
+          {isLpBond[0] && (
             <BaseAsset
-              icon={baseAsset.getIconUrl()}
-              {...restAssetProps(baseAsset.getSymbol(), iconSize)}
+              icon={isLpBond[0].icon}
+              {...restAssetProps(isLpBond[0].label, iconSize)}
             />
           )}
         </Button>
       </Grid>
       <Grid item {...threeColumnPageSize}>
         <Button {...buttonProps(onBuyHandler("token2"))}>
-          {quoteAsset && (
+          {isLpBond[1] && (
             <BaseAsset
-              icon={quoteAsset.getIconUrl()}
-              {...restAssetProps(quoteAsset.getSymbol(), iconSize)}
+              icon={isLpBond[1].icon}
+              {...restAssetProps(isLpBond[0].label, iconSize)}
             />
           )}
         </Button>
       </Grid>
       <Grid item {...threeColumnPageSize}>
         <Button {...buttonProps(onBuyHandler("lp"))}>
-          {baseAsset && quoteAsset && <PairAsset
-            assets={[
-              {
-                icon: baseAsset.getIconUrl(),
-                label: baseAsset.getSymbol(),
-              },
-              {
-                icon: quoteAsset.getIconUrl(),
-                label: quoteAsset.getSymbol(),
-              },
-            ]}
+          {<PairAsset
+            assets={isLpBond}
             {...restAssetProps("Create LP", iconSize)}
           />}
         </Button>

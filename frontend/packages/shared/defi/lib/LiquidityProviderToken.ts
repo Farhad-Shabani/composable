@@ -23,6 +23,15 @@ export class LiquidityProviderToken extends Asset {
     getUnderlyingAssets(): Asset[] {
         return this.__underlyingAssets;
     }
+
+    getUnderlyingAssetJSON(): Array<{ icon: string; label: string}> {
+        return this.__underlyingAssets.map((asset) => {
+            return {
+                icon: asset.getIconUrl(),
+                label: asset.getSymbol()
+            }
+        })
+    }
 }
 
 export class OwnedLiquidityProviderToken extends LiquidityProviderToken {

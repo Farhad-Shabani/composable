@@ -1,7 +1,8 @@
+import { AssetDropdownOptions } from "@/defi/types";
 import useStore from "@/store/useStore";
 import { useMemo } from "react";
 
-export function useFilteredAssetListDropdownOptions(assetId: string) {
+export function useFilteredAssetListDropdownOptions(assetId: string): AssetDropdownOptions {
     const { assets } = useStore();
 
     const assetOptions = useMemo(() => {

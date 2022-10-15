@@ -61,16 +61,7 @@ const LiquidityPoolRow = ({
       <TableCell align="left">
         {baseAsset && quoteAsset && (
           <PairAsset
-            assets={[
-              {
-                icon: baseAsset.getIconUrl(),
-                label: baseAsset.getSymbol(),
-              },
-              {
-                icon: quoteAsset.getIconUrl(),
-                label: quoteAsset.getSymbol(),
-              },
-            ]}
+            assets={liquidityPool.getLiquidityProviderToken().getUnderlyingAssetJSON()}
             separator="/"
           />
         )}

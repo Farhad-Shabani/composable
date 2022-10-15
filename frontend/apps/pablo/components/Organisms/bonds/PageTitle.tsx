@@ -17,22 +17,10 @@ export const PageTitle: React.FC<PageTitleProps> = ({
 }) => {
   const renderIcons = useCallback(() => {
     if (bondedAsset_s instanceof LiquidityProviderToken) {
-      const underlyingAssets = bondedAsset_s.getUnderlyingAssets();
-      const baseAsset = underlyingAssets[0];
-      const quoteAsset = underlyingAssets[1];
-
+      const underlyingAssets = bondedAsset_s.getUnderlyingAssetJSON();
       return (
-        baseAsset && quoteAsset && <PairAsset
-          assets={[
-            {
-              icon: baseAsset.getIconUrl(),
-              label: baseAsset.getSymbol(),
-            },
-            {
-              icon: quoteAsset.getIconUrl(),
-              label: quoteAsset.getSymbol(),
-            },
-          ]}
+        <PairAsset
+          assets={underlyingAssets}
           label={`${bondedAsset_s.getSymbol()}`}
           LabelProps={{ variant: "h4" }}
           iconSize={iconSize}

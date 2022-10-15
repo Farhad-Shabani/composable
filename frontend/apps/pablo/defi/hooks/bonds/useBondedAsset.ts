@@ -1,7 +1,7 @@
 import { PabloConstantProductPool, Asset, BondOffer, LiquidityProviderToken } from "shared";
 import BigNumber from "bignumber.js";
 import useStore from "@/store/useStore";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 
 export function useBondedAsset(
     bondOffer?: BondOffer

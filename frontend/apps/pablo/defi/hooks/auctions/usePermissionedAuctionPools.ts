@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Asset, PabloLiquidityBootstrappingPool } from "shared";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import BigNumber from "bignumber.js";
 import useStore from "@/store/useStore";
 

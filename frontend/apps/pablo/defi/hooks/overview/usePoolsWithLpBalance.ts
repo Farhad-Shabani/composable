@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PabloConstantProductPool } from "shared";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 import { useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";

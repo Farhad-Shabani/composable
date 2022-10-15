@@ -7,19 +7,9 @@ const BondPrincipalAssetIcon = ({
   bondedAsset: LiquidityProviderToken | Asset | undefined;
 }) => {
   if (bondedAsset instanceof LiquidityProviderToken) {
-    const [base, quote] = bondedAsset.getUnderlyingAssets();
-    return base && quote && (
+    return (
       <PairAsset
-        assets={[
-          {
-            icon: base.getIconUrl(),
-            label: base.getSymbol(),
-          },
-          {
-            icon: quote.getIconUrl(),
-            label: quote.getSymbol(),
-          },
-        ]}
+        assets={bondedAsset.getUnderlyingAssetJSON()}
         separator="/"
       />
     );

@@ -20,7 +20,7 @@ import { useAuctionSpotPrice } from "@/defi/hooks/auctions";
 import { setAuctionsSlice } from "@/store/auctions/auctions.slice";
 import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
 import { PabloLiquidityBootstrappingPool } from "shared";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 import { useAsset } from "@/defi/hooks";
 import BigNumber from "bignumber.js";
 

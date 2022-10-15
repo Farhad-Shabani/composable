@@ -60,7 +60,6 @@ const Updater = () => {
 
   useEffect(() => {
     if (
-      parachainApi &&
       selectedAccount &&
       Object.values(extrinsicCalls).length > 0
     ) {
@@ -82,7 +81,7 @@ const Updater = () => {
         });
       }
     }
-  }, [extrinsicCalls, parachainApi, selectedAccount, updateAllBalances]);
+  }, [extrinsicCalls, selectedAccount, updateAllBalances]);
 
   return null;
 };

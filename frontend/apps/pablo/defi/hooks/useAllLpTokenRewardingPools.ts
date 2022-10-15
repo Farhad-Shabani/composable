@@ -1,5 +1,5 @@
 import { PabloConstantProductPool } from "shared";
-import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { usePoolsSlice } from "@/store/pools/pools.slice";
 
 export const useAllLpTokenRewardingPools = (): Array<PabloConstantProductPool> => {
   const {
