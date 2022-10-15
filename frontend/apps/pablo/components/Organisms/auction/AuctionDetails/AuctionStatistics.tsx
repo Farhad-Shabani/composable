@@ -5,19 +5,16 @@ import {
   Typography
 } from "@mui/material";
 import { Asset } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types";
 import { LiquidityBootstrappingPoolStatistics } from "@/store/auctions/auctions.types";
 import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 
 export type AuctionStatisticsProps = {
-  auction: LiquidityBootstrappingPool,
   baseAsset: Asset | undefined,
   quoteAsset: Asset | undefined,
   stats: LiquidityBootstrappingPoolStatistics,
 } & BoxProps;
 
 export const AuctionStatistics: React.FC<AuctionStatisticsProps> = ({
-  auction,
   baseAsset,
   quoteAsset,
   stats,

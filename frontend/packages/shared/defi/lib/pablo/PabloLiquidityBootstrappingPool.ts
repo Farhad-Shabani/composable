@@ -61,8 +61,8 @@ class LiquidityBootstrappingPoolSaleConfig {
 }
 
 export class PabloLiquidityBootstrappingPool extends BasePabloPool {
-    protected __owner: string;
-    protected __saleConfig: LiquidityBootstrappingPoolSaleConfig;
+    protected readonly __owner: string;
+    protected readonly __saleConfig: LiquidityBootstrappingPoolSaleConfig;
 
     static async fromPoolId(poolId: BN, api: ApiPromise): Promise<void> {
         try {
@@ -138,6 +138,17 @@ export class PabloLiquidityBootstrappingPool extends BasePabloPool {
         }
     }
 
+    simulatePriceAt(
+        blockNumber: BigNumber,
+        baseAssetBalance: BigNumber,
+        quoteAssetBalance: BigNumber
+    ) {
+        let { baseWeight, quoteWeight } = this.getWeightsAt(blockNumber);
+        let baseNum = baseAssetBalance.div(baseWeight);
+        let quoteNum = quoteAssetBalance.div(quoteWeight);
+        return quoteNum.div(baseNum);
+    }
+
     getWeightsAt(blockNumber: BigNumber): {
         baseWeight: BigNumber;
         quoteWeight: BigNumber;
@@ -165,5 +176,44 @@ export class PabloLiquidityBootstrappingPool extends BasePabloPool {
             baseWeight,
             quoteWeight,
         };
+    }
+
+    getOwner(): string {
+        return this.__owner;
+    }
+
+
+    async getSaleTiming(
+        currentBlock: BigNumber,
+        blockInterval: BigNumber
+    ): Promise<{
+        startTimestamp: number,
+        endTimestamp: number
+    }> {
+        const startBlock = this.__saleConfig.getSaleStartBlock();
+        const endBlock = this.__saleConfig.getSaleEndBlock();
+        const nowBn = await this.__api.query.timestamp.now();
+        const now = new BigNumber(nowBn.toString());
+
+        let startTimestamp, endTimestamp, startOffset, endOffset;
+        if (currentBlock.gt(startBlock)) {
+            startOffset = currentBlock.minus(startBlock).times(blockInterval);
+            startTimestamp = now.minus(startOffset).toNumber();
+        } else {
+            startOffset = startBlock.minus(currentBlock).times(blockInterval);
+            startTimestamp = now.plus(startOffset).toNumber();
+        }
+        if (currentBlock.gt(endBlock)) {
+            endOffset = currentBlock.minus(endBlock).times(blockInterval);
+            endTimestamp = now.minus(endOffset).toNumber();
+        } else {
+            endOffset = endBlock.minus(currentBlock).times(blockInterval);
+            endTimestamp = now.plus(endOffset).toNumber();
+        }
+
+        return {
+            startTimestamp,
+            endTimestamp
+        }
     }
 }

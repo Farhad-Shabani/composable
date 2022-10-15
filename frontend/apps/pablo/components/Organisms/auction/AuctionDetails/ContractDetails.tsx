@@ -1,13 +1,12 @@
 import { Box, BoxProps, Grid, Typography, useTheme } from "@mui/material";
 import { BaseAsset, Link } from "@/components";
 import { useCallback } from "react";
-import { Asset } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types/pablo/LiquidityBootstrappingPool";
+import { Asset, PabloLiquidityBootstrappingPool } from "shared";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 
 export type ContractDetailsProps = {
-  auction: LiquidityBootstrappingPool;
+  auction: PabloLiquidityBootstrappingPool;
   baseAsset: Asset | undefined;
 } & BoxProps;
 
@@ -22,9 +21,10 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
     return ``;
   };
 
+  const owner = auction.getOwner();
   const copyTokenAddress = useCallback(() => {
-    navigator.clipboard.writeText(auction.owner);
-  }, [auction]);
+    navigator.clipboard.writeText(owner);
+  }, [owner]);
 
   return (
     <Box {...rest}>
@@ -42,11 +42,11 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
           </Typography>
           <Box display="flex" alignItems="center" gap={2} mt={1}>
             <Typography variant="subtitle1">
-              {auction.owner.substring(0, 6) +
+              {owner.substring(0, 6) +
                 "..." +
-                auction.owner.substring(
-                  auction.owner.length - 4,
-                  auction.owner.length
+                owner.substring(
+                  owner.length - 4,
+                  owner.length
                 )}
             </Typography>
             <ContentCopyOutlinedIcon

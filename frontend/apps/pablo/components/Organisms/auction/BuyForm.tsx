@@ -14,29 +14,27 @@ import {
   TransactionSettings,
 } from "@/components";
 import { useMobile } from "@/hooks/responsive";
-import { getFullHumanizedDateDiff } from "shared";
-import { LiquidityBootstrappingPool } from "@/defi/types";
+import { getFullHumanizedDateDiff, PabloLiquidityBootstrappingPool } from "shared";
 import { ConfirmingModal } from "../swap/ConfirmingModal";
 import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { useAuctionBuyForm } from "@/defi/hooks/auctions/useAuctionBuyForm";
 import { useDotSamaContext } from "substrate-react";
 import { usePabloSwap } from "@/defi/hooks/swaps/usePabloSwap";
 import { setUiState } from "@/store/ui/ui.slice";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import _ from "lodash";
 import { useAssetIdOraclePrice } from "@/defi/hooks";
+import { useAuctionTiming } from "@/defi/hooks/auctions/useAuctionTiming";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export type BuyFormProps = {
-  auction: LiquidityBootstrappingPool;
+  auction: PabloLiquidityBootstrappingPool;
 } & BoxProps;
 
 export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
   const { extensionStatus } = useDotSamaContext();
   const theme = useTheme();
   const isMobile = useMobile();
-  const currentTimestamp = Date.now();
-
   const [manualUpdateMode, setManualUpdateMode] = useState<1 | 2>(1);
   const {
     balanceBase,
@@ -63,14 +61,11 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
     quoteAsset ? quoteAsset.getPicassoAssetId() as string : "none"
   );
 
-  const isActive: boolean =
-    auction.sale.start <= currentTimestamp &&
-    auction.sale.end >= currentTimestamp;
-  const isEnded: boolean = auction.sale.end < currentTimestamp;
+  const { isActive, isEnded, startTimestamp } = useAuctionTiming(auction);
 
   const initiateBuyTx = usePabloSwap({
-    baseAssetId: selectedAuction.pair.base.toString(),
-    quoteAssetId: selectedAuction.pair.quote.toString(),
+    baseAssetId: selectedAuction?.getPair().getBaseAsset().toString() ?? "-",
+    quoteAssetId: selectedAuction?.getPair().getQuoteAsset().toString() ?? "-",
     quoteAmount,
     minimumReceived,
     swapOrigin: "Auction"
@@ -120,7 +115,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
           value={quoteAmount}
           setValue={(value) => {
             manualUpdateMode === 1 ?
-            onChangeTokenAmount("quote", value) : undefined
+              onChangeTokenAmount("quote", value) : undefined
           }}
           buttonLabel={"Max"}
           ButtonProps={{
@@ -145,12 +140,12 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
               },
               ...(quoteAsset
                 ? [
-                    {
-                      value: quoteAsset.getPicassoAssetId(),
-                      icon: quoteAsset.getIconUrl(),
-                      label: quoteAsset.getSymbol(),
-                    },
-                  ]
+                  {
+                    value: quoteAsset.getPicassoAssetId(),
+                    icon: quoteAsset.getIconUrl(),
+                    label: quoteAsset.getSymbol(),
+                  },
+                ]
                 : []),
             ],
             borderLeft: false,
@@ -202,18 +197,18 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
           value={baseAmount}
           setValue={(value) => {
             manualUpdateMode === 2 ?
-            onChangeTokenAmount("base", value) : undefined
+              onChangeTokenAmount("base", value) : undefined
           }}
           maxValue={balanceBase}
           setValid={setIsValidBaseInput}
           EndAdornmentAssetProps={{
             assets: baseAsset
               ? [
-                  {
-                    icon: baseAsset.getIconUrl(),
-                    label: baseAsset.getSymbol(),
-                  },
-                ]
+                {
+                  icon: baseAsset.getIconUrl(),
+                  label: baseAsset.getSymbol(),
+                },
+              ]
               : [],
           }}
           LabelProps={{
@@ -291,7 +286,7 @@ export const BuyForm: React.FC<BuyFormProps> = ({ auction, ...rest }) => {
               </Typography>
               <Typography variant="body1" mt={1.5}>
                 The LBP starts in{" "}
-                {getFullHumanizedDateDiff(Date.now(), auction.sale.start)}.
+                {getFullHumanizedDateDiff(Date.now(), startTimestamp)}.
               </Typography>
               <Typography variant="body1">
                 Swapping will be enabling by the

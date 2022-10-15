@@ -14,26 +14,23 @@ import { BuyForm } from "@/components/Organisms/auction/BuyForm";
 import { AuctionPriceChart } from "@/components/Organisms/auction/AuctionPriceChart";
 import { useEffect } from "react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils";
-import { useParachainApi, useSelectedAccount } from "substrate-react";
+import { useSelectedAccount } from "substrate-react";
 import { useAssets } from "@/defi/hooks";
 import { useRouter } from "next/router";
+import { useAuctionsSlice } from "@/store/auctions/auctions.slice";
+import { useAuctionsChart } from "@/defi/hooks";
 import AuctionDetailTabs from "@/components/Organisms/auction/AuctionDetailTabs";
 import moment from "moment-timezone";
-import {
-  useAuctionsSlice,
-} from "@/store/auctions/auctions.slice";
-import { useAuctionsChart } from "@/defi/hooks";
 
 const Auction: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
-  const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
 
   const { activePool, activePoolStats } = useAuctionsSlice();
   const [baseAsset, quoteAsset] = useAssets(
-    activePool.poolId !== -1
-      ? [activePool.pair.base.toString(), activePool.pair.quote.toString()]
+    activePool
+      ? [activePool.getPair().getBaseAsset().toString(), activePool.getPair().getQuoteAsset().toString()]
       : []
   );
 
@@ -44,7 +41,6 @@ const Auction: NextPage = () => {
   }, [router, selectedAccount]);
 
   const chartSeries = useAuctionsChart(
-    parachainApi,
     activePool
   );
 
@@ -81,7 +77,7 @@ const Auction: NextPage = () => {
               <Typography variant="h5" pr={4}>
                 {baseAsset?.getSymbol()} Token Launch Auction
               </Typography>
-              <AuctionStatusIndicator
+              {activePool && <AuctionStatusIndicator
                 auction={activePool}
                 padding={theme.spacing(1, 2, 1, 1.5)}
                 borderRadius={1}
@@ -92,16 +88,16 @@ const Auction: NextPage = () => {
                   ),
                   height: 48,
                 }}
-              />
+              />}
             </Box>
 
-            <AuctionInformation
+            {activePool && <AuctionInformation
               baseAsset={baseAsset}
               quoteAsset={quoteAsset}
               stats={activePoolStats}
               auction={activePool}
               mt={6}
-            />
+            />}
 
             <Grid container mt={6}>
               <Grid item md={6} pr={1.75}>
@@ -116,7 +112,7 @@ const Auction: NextPage = () => {
                 />
               </Grid>
               <Grid item md={6} pl={1.75}>
-                <BuyForm auction={activePool} />
+                {activePool && <BuyForm auction={activePool} />}
               </Grid>
             </Grid>
           </Box>

@@ -10,8 +10,12 @@ const AuctionDetailTabs: React.FC<BoxProps> = ({ ...props }) => {
   const { activePool, activePoolStats, activePoolTradeHistory } =
     useAuctionsSlice();
 
-  const baseAsset = useAsset(activePool.pair.base.toString());
-  const quoteAsset = useAsset(activePool.pair.quote.toString());
+  const baseAsset = useAsset(
+    activePool ? activePool.getPair().getBaseAsset().toString() : "-"
+  );
+  const quoteAsset = useAsset(
+    activePool ? activePool.getPair().getQuoteAsset().toString() : "-"
+  );
 
   const tabItems: TabItem[] = [
     {
@@ -31,20 +35,20 @@ const AuctionDetailTabs: React.FC<BoxProps> = ({ ...props }) => {
     <Box mt={8} {...props}>
       <Tabs items={tabItems} value={tab} onChange={handleTabChange} />
       <TabPanel value={tab} index={0}>
-        <AuctionDetails
+        {activePool && <AuctionDetails
           stats={activePoolStats}
           auction={activePool}
           baseAsset={baseAsset}
           quoteAsset={quoteAsset}
-        />
+        />}
       </TabPanel>
       <TabPanel value={tab} index={1}>
-        <AuctionHistoriesTable
+        {activePool && <AuctionHistoriesTable
           history={activePoolTradeHistory}
           auction={activePool}
           baseAsset={baseAsset}
           quoteAsset={quoteAsset}
-        />
+        />}
       </TabPanel>
     </Box>
   );

@@ -13,17 +13,16 @@ import {
 import React, { useState } from "react";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { KeyboardArrowUp } from "@mui/icons-material";
-import moment from "moment-timezone";
 import { Link } from "@/components/Molecules";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
-import { LiquidityBootstrappingPool } from "@/defi/types";
-import { getShortAddress } from "shared";
-import BigNumber from "bignumber.js";
+import { getShortAddress, PabloLiquidityBootstrappingPool } from "shared";
 import { Asset } from "shared";
 import { PoolTradeHistory } from "@/store/auctions/auctions.types";
+import moment from "moment-timezone";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import BigNumber from "bignumber.js";
 
 export type AuctionHistoriesTableProps = {
-  auction: LiquidityBootstrappingPool,
+  auction: PabloLiquidityBootstrappingPool,
   baseAsset?: Asset,
   quoteAsset?: Asset,
   history: PoolTradeHistory[],

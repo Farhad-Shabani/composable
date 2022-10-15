@@ -3,8 +3,8 @@ import BigNumber from "bignumber.js";
 import { useEffect } from "react";
 import { useSelectedAccount } from "substrate-react";
 import { DEFAULT_NETWORK_ID } from "@/defi/utils/constants";
-import { fetchPoolLiquidity } from "@/defi/utils";
 import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { useAsyncEffect } from "@/hooks/useAsyncEffect";
 
 const Updater = () => {
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
@@ -17,9 +17,24 @@ const Updater = () => {
    * and update it in zustand store
    * (first call)
    */
-  useEffect(() => {
+  useAsyncEffect(async (): Promise<void> => {
     if (constantProductPools.length > 0) {
-      fetchPoolLiquidity(constantProductPools).then(putLiquidityInPoolRecord)
+      let liquidity: Record<string, { baseAmount: BigNumber, quoteAmount: BigNumber }> = {};
+      // fetchPoolLiquidity(constantProductPools).then(putLiquidityInPoolRecord)
+      for (const pool of constantProductPools) {
+        const base = pool.getPair().getBaseAsset();
+        const quote = pool.getPair().getQuoteAsset();
+        const id = pool.getPoolId() as string;
+
+        const baseAmount = await pool.getAssetLiquidity(base);
+        const quoteAmount = await pool.getAssetLiquidity(quote);
+
+        liquidity[id] = {
+          baseAmount,
+          quoteAmount
+        }
+      }
+      putLiquidityInPoolRecord(liquidity)
     }
   }, [constantProductPools, putLiquidityInPoolRecord]);
   /**

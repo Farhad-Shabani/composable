@@ -16,24 +16,65 @@ import React, { useState } from "react";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { KeyboardArrowUp } from "@mui/icons-material";
 import { AuctionStatusIndicator } from "./auction/AuctionStatusIndicator";
-import { LiquidityBootstrappingPool } from "@/defi/types";
-import { useAllAuctionVerifiedPools } from "@/defi/hooks/auctions";
+import { useAuctionSpotPrice } from "@/defi/hooks/auctions";
 import { setAuctionsSlice } from "@/store/auctions/auctions.slice";
 import { NoPositionsPlaceholder } from "./overview/NoPositionsPlaceholder";
+import { PabloLiquidityBootstrappingPool } from "shared";
+import { usePoolsSlice } from "@/store/pools/pools.v1.slice";
+import { useAsset } from "@/defi/hooks";
+import BigNumber from "bignumber.js";
+
+export const AuctionPoolRow = ({ pool, onClickAuction }: {
+  pool: PabloLiquidityBootstrappingPool,
+  onClickAuction: (auction: PabloLiquidityBootstrappingPool) => void
+}) => {
+  const baseAsset = useAsset(pool?.getPair().getBaseAsset().toString() ?? "-");
+  const spotPrice = useAuctionSpotPrice((pool.getPoolId() as BigNumber).toNumber())
+  const theme = useTheme();
+
+  return (
+    <TableRow
+      onClick={() => {
+        onClickAuction(pool);
+      }}
+      key={pool.getPoolId() as string}
+      sx={{ cursor: "pointer" }}
+    >
+      <TableCell align="left" sx={{ padding: theme.spacing(4) }}>
+        {baseAsset && (
+          <BaseAsset
+            icon={baseAsset.getIconUrl()}
+            label={baseAsset.getName()}
+            LabelProps={{ variant: "body1" }}
+          />
+        )}
+      </TableCell>
+      <TableCell align="center">
+        <AuctionStatusIndicator
+          auction={pool}
+          justifyContent="center"
+        />
+      </TableCell>
+      <TableCell align="right" sx={{ padding: theme.spacing(4) }}>
+        <Typography variant="body1">${spotPrice.toFixed(2)}</Typography>
+      </TableCell>
+    </TableRow>
+  )
+}
 
 export const AllAuctionsTable: React.FC<TableContainerProps> = ({
   ...rest
 }) => {
-  const { liquidityBootstrappingPools, tableLimit } =
-    useAllAuctionVerifiedPools();
+  const { liquidityBootstrappingPools } = usePoolsSlice();
   const theme = useTheme();
+  const [tableLimit, _setTableLimit] = useState(4);
   const [count, setCount] = useState(tableLimit);
 
   const router = useRouter();
 
-  const goAuctionDetails = (auction: LiquidityBootstrappingPool) => {
+  const goAuctionDetails = (auction: PabloLiquidityBootstrappingPool) => {
     setAuctionsSlice({ activePool: auction });
-    router.push("/auctions/" + auction.id);
+    router.push("/auctions/" + auction.getPoolId().toString());
   };
 
   const handleSeeMore = () => {
@@ -65,32 +106,7 @@ export const AllAuctionsTable: React.FC<TableContainerProps> = ({
           </TableHead>
           <TableBody>
             {liquidityBootstrappingPools.slice(0, count).map((lbPool) => (
-              <TableRow
-                onClick={() => {
-                  goAuctionDetails(lbPool);
-                }}
-                key={lbPool.poolId}
-                sx={{ cursor: "pointer" }}
-              >
-                <TableCell align="left" sx={{ padding: theme.spacing(4) }}>
-                  {lbPool.baseAsset && (
-                    <BaseAsset
-                      icon={lbPool.baseAsset.icon}
-                      label={lbPool.baseAsset.name}
-                      LabelProps={{ variant: "body1" }}
-                    />
-                  )}
-                </TableCell>
-                <TableCell align="center">
-                  <AuctionStatusIndicator
-                    auction={lbPool}
-                    justifyContent="center"
-                  />
-                </TableCell>
-                <TableCell align="right" sx={{ padding: theme.spacing(4) }}>
-                  <Typography variant="body1">${lbPool.spotPrice.toFixed(2)}</Typography>
-                </TableCell>
-              </TableRow>
+              <AuctionPoolRow onClickAuction={goAuctionDetails} key={lbPool.getPoolId() as string} pool={lbPool} />
             ))}
           </TableBody>
         </Table>

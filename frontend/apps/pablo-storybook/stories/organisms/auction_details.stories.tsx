@@ -8,7 +8,7 @@ const AuctionDetailsStories = () => {
   const { activePool, activePoolStats } = useAuctionsSlice();
   return (
     <Box>
-      <AuctionDetails stats={activePoolStats} auction={activePool} />
+      {activePool && <AuctionDetails stats={activePoolStats} auction={activePool} />}
     </Box>
   );
 };
