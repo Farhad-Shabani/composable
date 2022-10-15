@@ -46,6 +46,14 @@ export class FinancialNft {
     this.__fNftInstanceId = fNftInstanceId;
   }
 
+  getFinancialNftCollectionId(inBn: boolean = false): BigNumber | string {
+    return inBn ? this.__fNftCollectionId : this.__fNftCollectionId.toString()
+  }
+
+  getFinancialNftInstanceId(inBn: boolean = false): BigNumber | string {
+    return inBn ? this.__fNftInstanceId : this.__fNftInstanceId.toString()
+  }
+  
   getAccountId(): string {
     const palletId = this.__api.consts.fnft.palletId.toU8a();
     const accountPrefix = concatU8a(PALLET_TYPE_ID, palletId);

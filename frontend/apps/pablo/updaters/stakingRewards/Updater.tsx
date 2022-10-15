@@ -1,5 +1,5 @@
 import { useParachainApi, useSelectedAccount } from "substrate-react";
-import { DEFAULT_NETWORK_ID, fetchOwnedFinancialNfts, PBLO_ASSET_ID } from "@/defi/utils";
+import { DEFAULT_NETWORK_ID, PBLO_ASSET_ID } from "@/defi/utils";
 import { fetchStakingRewardPools } from "@/defi/utils/stakingRewards";
 import { fetchStakingPositionHistory } from "@/defi/subsquid/stakingRewards/queries";
 import { resetOwnedFinancialNfts, setOwnedFinancialNfts } from "@/store/financialNfts/financialNfts.slice";
@@ -14,6 +14,7 @@ import {
 } from "@/store/stakingRewards/stakingRewards.slice";
 import { useAllLpTokenRewardingPools } from "@/defi/hooks/useAllLpTokenRewardingPools";
 import { useAsyncEffect } from "@/hooks/useAsyncEffect";
+import { FinancialNft } from "shared";
 
 export function updateStakingRewardPool(
   api: ApiPromise,
@@ -45,7 +46,7 @@ export function updateOwnedFinancialNfts(
   parachainApi: ApiPromise,
   address: string
 ): void {
-  fetchOwnedFinancialNfts(parachainApi, address)
+  FinancialNft.ownedFinancialNfts(parachainApi, address)
     .then(setOwnedFinancialNfts)
     .catch(resetOwnedFinancialNfts);
 }
