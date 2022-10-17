@@ -22,7 +22,7 @@ export function updateStakingRewardPool(
 ): void {
   fetchStakingRewardPools(api, [assetId]).then(pools => {
     if (pools.length > 0) {
-      putStakingRewardPool(pools[0])
+      putStakingRewardPool(pools[0].pool, assetId)
     }
   })
 }

@@ -156,12 +156,13 @@ export class StakingRewardPool {
   protected __assetId: BigNumber;
   protected __claimedShares: BigNumber;
   protected __endBlock: BigNumber;
-  protected __totalShares: BigNumber;
+  protected __startBlock: BigNumber;
   protected __shareAssetId: BigNumber;
   protected __financialNftAssetId: BigNumber;
   protected __owner: string;
   protected __lock: StakingRewardPoolLockConfig;
   protected __rewards: Map<string, StakingPoolReward>;
+  protected __minimumStakingAmount: BigNumber;
 
   static async fetchStakingRewardPool(
     api: ApiPromise,
@@ -172,24 +173,24 @@ export class StakingRewardPool {
         assetId.toString()
       );
 
-      return this.fromJSON(api, rewardPool.toJSON());
+      return this.fromJSON(api, assetId, rewardPool.toJSON());
     } catch (err: any) {
       console.error("[fetchStakingRewardPool] ", err.message);
       return Promise.reject(err);
     }
   }
 
-  static fromJSON(api: ApiPromise, stakePool: any): StakingRewardPool {
+  static fromJSON(api: ApiPromise, assetId: BigNumber, stakePool: any): StakingRewardPool {
     try {
       const shareAssetId = new BigNumber(stakePool.shareAssetId);
       const financialNftAssetId = new BigNumber(stakePool.financialNftAssetId);
-      const assetId = new BigNumber(stakePool.assetId);
       const claimedShares = new BigNumber(stakePool.claimedShares);
       const endBlock = new BigNumber(stakePool.endBlock);
+      const startBlock = new BigNumber(stakePool.startBlock);
       const owner = stakePool.owner;
       const lockConfig = StakingRewardPoolLockConfig.fromJSON(stakePool.lock);
-      const totalShares = fromChainIdUnit(
-        BigInt(stakePool.totalShares as string)
+      const minimumStakingAmount = fromChainIdUnit(
+        BigInt(stakePool.minimumStakingAmount as string)
       );
 
       const rewards = new Map<string, StakingPoolReward>();
@@ -208,7 +209,8 @@ export class StakingRewardPool {
         assetId,
         claimedShares,
         endBlock,
-        totalShares,
+        startBlock,
+        minimumStakingAmount,
         shareAssetId,
         financialNftAssetId,
         lockConfig,
@@ -226,7 +228,8 @@ export class StakingRewardPool {
     assetId: BigNumber,
     claimedShares: BigNumber,
     endBlock: BigNumber,
-    totalShares: BigNumber,
+    startBlock: BigNumber,
+    minimumStakingAmount: BigNumber,
     shareAssetId: BigNumber,
     financialNftAssetId: BigNumber,
     stakePoolLockConfig: StakingRewardPoolLockConfig,
@@ -237,11 +240,12 @@ export class StakingRewardPool {
     this.__assetId = assetId;
     this.__claimedShares = claimedShares;
     this.__endBlock = endBlock;
-    this.__totalShares = totalShares;
     this.__shareAssetId = shareAssetId;
     this.__financialNftAssetId = financialNftAssetId;
     this.__lock = stakePoolLockConfig;
     this.__rewards = rewards;
     this.__owner = owner;
+    this.__minimumStakingAmount = minimumStakingAmount;
+    this.__startBlock = startBlock;
   }
 }

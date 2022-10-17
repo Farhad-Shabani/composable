@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { useMemo } from "react";
-import { useAssets } from "../assets";
+import { useAssetIdTotalIssuance, useAssets } from "../assets";
 import { useStakingPositions } from "./useStakingPositions";
 import { Stake, StakingRewardPool } from "@/defi/types";
 import { Asset, fromChainIdUnit } from "shared";
@@ -48,9 +48,10 @@ type ClaimableRewardsProps = {
 function claimOfStake(
   stake: Stake,
   stakingRewardPool: StakingRewardPool,
-  rewardAssetId: string
+  rewardAssetId: string,
+  xTokenTotalIssuance: BigNumber
 ): BigNumber {
-  if (stakingRewardPool.totalShares.eq(0)) {
+  if (xTokenTotalIssuance.eq(0)) {
     return new BigNumber(0);
   } else {
     let inflation =
@@ -60,7 +61,7 @@ function claimOfStake(
       stakingRewardPool.rewards[rewardAssetId].totalRewards
     );
     const share = stake.share;
-    const totalShares = stakingRewardPool.totalShares;
+    const totalShares = xTokenTotalIssuance;
     const myShare = totalRewards.times(share).div(totalShares);
 
     return myShare.minus(inflation);
@@ -70,10 +71,11 @@ function claimOfStake(
 function calculateClaim(
   stake: Stake,
   stakingRewardPool: StakingRewardPool,
+  xTokenTotalIssuance: BigNumber,
   accountForPenalty: boolean = false
 ): [string, BigNumber, string][] {
   return Object.keys(stakingRewardPool.rewards).map((assetId) => {
-    let claimable = claimOfStake(stake, stakingRewardPool, assetId);
+    let claimable = claimOfStake(stake, stakingRewardPool, assetId, xTokenTotalIssuance);
 
     if (claimable.lte(0)) {
       claimable = new BigNumber(0);
@@ -113,6 +115,10 @@ export function useClaimableRewards({
     stakedAssetId,
   });
 
+  const totalIssued = useAssetIdTotalIssuance(
+    stakingRewardPool?.shareAssetId
+  );
+
   const rewardAssets = useAssets(
     stakingRewardPool ? Object.keys(stakingRewardPool.rewards) : []
   );
@@ -120,8 +126,8 @@ export function useClaimableRewards({
   const claimableAmounts = useMemo(() => {
     if (!stakingRewardPool || stakes.length === 0) return [];
 
-    return calculateClaim(stakes[0], stakingRewardPool, false);
-  }, [stakes, stakingRewardPool]);
+    return calculateClaim(stakes[0], stakingRewardPool, totalIssued, false);
+  }, [stakes, stakingRewardPool, totalIssued]);
 
   return useMemo(() => {
     let financialNftInstanceId = "-";

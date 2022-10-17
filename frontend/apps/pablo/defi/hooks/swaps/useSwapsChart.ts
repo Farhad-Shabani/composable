@@ -1,13 +1,13 @@
 import { DEFI_CONFIG } from "@/defi/config";
 import { useCallback, useEffect, useState } from "react";
-import BigNumber from "bignumber.js";
-import useStore from "@/store/useStore";
 import { ChartRange } from "@/defi/utils/charts";
 import {
   fetch24HourOldPrice,
   fetchSwapsChart,
   getChartLabels,
 } from "@/defi/subsquid/swaps/helpers";
+import BigNumber from "bignumber.js";
+import useStore from "@/store/useStore";
 
 export const useSwapsChart = () => {
   const { swaps } = useStore();

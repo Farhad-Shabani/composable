@@ -6,7 +6,7 @@ import {
   calculatePoolTotalValueLocked,
   DEFAULT_UI_FORMAT_DECIMALS,
 } from "@/defi/utils";
-import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slice";
+import { useStakingRewardPool, useStakingRewardsSlice } from "@/store/stakingRewards/stakingRewards.slice";
 import { calculateRewardPerDayByAssetId } from "@/defi/utils/stakingRewards/math";
 import { useStakingRewardsPoolApy } from "@/defi/hooks/stakingRewards/useStakingRewardsPoolApy";
 import { useMemo } from "react";

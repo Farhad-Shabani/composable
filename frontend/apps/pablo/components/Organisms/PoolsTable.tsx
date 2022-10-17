@@ -20,8 +20,6 @@ import { PabloConstantProductPool } from "shared";
 import LiquidityPoolRow from "./pool/LiquidityPoolRow";
 import React, { useState } from "react";
 
-
-type EmptyPlaceholderProps = BoxProps & { message: string }
 enum EMPTY_INFO_MESSAGES {
   USER_NO_POOL = "You currently do not have any active liquidity pool.",
   NO_POOL_EXISTS = "Liquidity pools are not available at the moment."

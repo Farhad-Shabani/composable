@@ -1,6 +1,7 @@
 export * from "./useAsset";
 export * from "./useAssetBalance";
 export * from "./useAssetIdOraclePrice";
+export * from "./useAssetIdTotalIssuance";
 export * from "./useAssetPrice";
 export * from "./useAssets";
 export * from "./useAssetsWithBalance";

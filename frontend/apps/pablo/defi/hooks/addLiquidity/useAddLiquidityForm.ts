@@ -50,8 +50,8 @@ export const useAddLiquidityForm = () => {
 
   const { baseAmount, quoteAmount } = useLiquidity(pool);
 
-  const assetList1 = useFilteredAssetListDropdownOptions(assetTwo);
-  const assetList2 = useFilteredAssetListDropdownOptions(assetOne);
+  const assetList1 = useFilteredAssetListDropdownOptions(assetOne);
+  const assetList2 = useFilteredAssetListDropdownOptions(assetTwo);
 
   const balanceOne = useAssetBalance(selectedAccount?.address, _assetOne);
   const balanceTwo = useAssetBalance(selectedAccount?.address, _assetTwo);
