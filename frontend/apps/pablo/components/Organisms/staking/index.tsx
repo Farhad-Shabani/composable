@@ -49,7 +49,7 @@ export const Staking: React.FC<BoxProps> = ({ ...boxProps }) => {
 
   return (
     <Box {...boxProps}>
-      <StakingStatistics stakingRewardPool={stakingRewardPool} />
+      <StakingStatistics stakingRewardPool={stakingRewardPool} rewardPoolId={PBLO_ASSET_ID} />
         <XPablosBox
           financialNftCollectionId={
             stakingRewardPool ? stakingRewardPool.financialNftAssetId : "-"

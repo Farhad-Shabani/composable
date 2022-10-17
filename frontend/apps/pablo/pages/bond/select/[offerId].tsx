@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
-import { Container, Box, Grid, Typography } from "@mui/material";
 import Default from "@/components/Templates/Default";
+import useBondOffer from "@/defi/hooks/bonds/useBondOffer";
+import { Container, Box, Grid, Typography } from "@mui/material";
 import { PageTitle } from "@/components/Organisms/bonds/PageTitle";
 import { BuyButtons } from "@/components/Organisms/bonds/BuyButtons";
 import { SupplySummary } from "../../../components/Organisms/bonds/SupplySummary";
@@ -10,7 +11,6 @@ import { useDotSamaContext } from "substrate-react";
 import { Link } from "@/components";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import useBondOffer from "@/defi/hooks/bonds/useBondOffer";
 
 const standardPageSize = {
   xs: 12,
@@ -77,13 +77,13 @@ const SelectBond: NextPage = () => {
 
         <Box position="relative" mt={8} mb={25}>
           <Grid container columnSpacing={4}>
-            <Grid item {...(bondOfferSelected.vestingScheduleIds.size > 0 ? twoColumnPageSize : standardPageSize)}>
+            <Grid item {...(bondOfferSelected.vestingSchedules.length > 0 ? twoColumnPageSize : standardPageSize)}>
                 <DepositForm
                   bond={bondOfferSelected}
                   offerId={offerId as string}
                 />
             </Grid>
-            {bondOfferSelected.vestingScheduleIds.size > 0 && (
+            {bondOfferSelected.vestingSchedules.length > 0 && (
               <Grid item {...twoColumnPageSize}>
                 <ClaimForm bond={bondOfferSelected} />
               </Grid>

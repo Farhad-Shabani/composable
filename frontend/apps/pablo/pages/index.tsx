@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import { Container, Box, Grid } from "@mui/material";
 import Default from "@/components/Templates/Default";
 import { PageTitle } from "@/components";
-import { useDispatch } from "react-redux";
 import { Statistics } from "@/components/Organisms/overview/Statistics";
 import { useDotSamaContext } from "substrate-react";
 import { ConnectWalletFeaturedBox } from "@/components/Organisms/ConnectWalletFeaturedBox";

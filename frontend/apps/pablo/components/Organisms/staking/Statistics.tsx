@@ -75,8 +75,8 @@ const Item: React.FC<ItemProps> = ({ label, TooltipProps, value }) => {
 };
 
 export const StakingStatistics: React.FC<
-  GridProps & { stakingRewardPool?: StakingRewardPool }
-> = ({ stakingRewardPool, ...gridProps }) => {
+  GridProps & { stakingRewardPool?: StakingRewardPool, rewardPoolId?: string }
+> = ({ stakingRewardPool, rewardPoolId, ...gridProps }) => {
   const theme = useTheme();
 
   const { parachainApi } = useParachainApi(DEFAULT_NETWORK_ID);
@@ -85,9 +85,7 @@ export const StakingStatistics: React.FC<
     shareAssetId: stakingRewardPool?.shareAssetId,
   });
 
-  const apy = useStakingRewardsPoolApy(
-    stakingRewardPool?.assetId.toString() ?? "-"
-  );
+  const apy = useStakingRewardsPoolApy(rewardPoolId);
   const totalApy = useMemo(() => {
     return Object.keys(apy).reduce((v, i) => {
       return v.plus(apy[i]);

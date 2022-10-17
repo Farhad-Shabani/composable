@@ -39,7 +39,7 @@ export const PoolStakeForm: React.FC<PoolDetailsProps> = ({
 
   const handleStake = useStake({
     amount,
-    poolId: stakingRewardPool ? stakingRewardPool.assetId : undefined,
+    poolId: (lpToken?.getPicassoAssetId(true) as BigNumber) ?? undefined,
     durationPreset: durationPresetSelected
       ? new BigNumber(durationPresetSelected.periodInSeconds)
       : undefined,
