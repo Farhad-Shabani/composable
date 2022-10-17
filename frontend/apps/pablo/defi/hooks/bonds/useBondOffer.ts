@@ -81,7 +81,7 @@ export default function useBondOffer(offerId: string) {
 
   const roi = useMemo(() => {
     if (principalAssetPerBond.gt(0) && rewardAssetPerBond.gt(0) && selectedBondOffer) {
-      const bondedAsset = selectedBondOffer?.getbondedAssetId() as string;
+      const bondedAsset = selectedBondOffer?.getBondedAssetId() as string;
       const rewardAsset = selectedBondOffer?.getRewardAssetId() as string;
       if (
         apollo[bondedAsset] &&

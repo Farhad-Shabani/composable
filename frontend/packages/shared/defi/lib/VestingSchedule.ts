@@ -4,11 +4,11 @@ import BigNumber from "bignumber.js";
 
 export type VestingScheduleType = "block" | "moment";
 
-export class VesingScheduleWindow {
+export class VestingScheduleWindow {
     protected readonly __start: BigNumber;
     protected readonly __period: BigNumber;
 
-    static fromJSON(scheduleWindow: any): VesingScheduleWindow {
+    static fromJSON(scheduleWindow: any): VestingScheduleWindow {
         try {
             const start = scheduleWindow.blockNumberBased
                 ? new BigNumber(scheduleWindow.blockNumberBased.start)
@@ -18,7 +18,7 @@ export class VesingScheduleWindow {
                 ? new BigNumber(scheduleWindow.blockNumberBased.period)
                 : new BigNumber(scheduleWindow.momentBased.period);
 
-            return new VesingScheduleWindow(start, period);
+            return new VestingScheduleWindow(start, period);
         } catch (err: any) {
             throw new Error(err.message);
         }
@@ -55,7 +55,7 @@ export class VestingSchedule {
     protected readonly __alreadyClaimed: BigNumber;
     protected readonly __vestingScheduleId: BigNumber;
     protected readonly __type: VestingScheduleType;
-    protected readonly __window: VesingScheduleWindow;
+    protected readonly __window: VestingScheduleWindow;
 
     static async fromAddressAndAssetId(
         api: ApiPromise,
@@ -80,7 +80,7 @@ export class VestingSchedule {
     static fromJSON(api: ApiPromise, vestingSchedule: any): VestingSchedule {
         try {
             const type = vestingSchedule.window.blockNumberBased ? "block" : "moment";
-            const window = VesingScheduleWindow.fromJSON(vestingSchedule.window);
+            const window = VestingScheduleWindow.fromJSON(vestingSchedule.window);
             const perPeriod = fromChainIdUnit(vestingSchedule.perPeriod);
             const alreadyClaimed = fromChainIdUnit(vestingSchedule.alreadyClaimed);
             const vestingScheduleId = new BigNumber(
@@ -109,7 +109,7 @@ export class VestingSchedule {
         alreadyClaimed: BigNumber,
         vestingScheduleId: BigNumber,
         type: VestingScheduleType,
-        window: VesingScheduleWindow
+        window: VestingScheduleWindow
     ) {
         this.__api = api;
         this.__perPeriod = perPeriod;

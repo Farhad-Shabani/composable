@@ -38,7 +38,7 @@ const Updater = () => {
   useEffect(() => {
     const roiRecord = bondOffers.reduce((acc, bondOffer) => {
       const rewardAsset = bondOffer.getRewardAssetId() as string;
-      const bondedAsset = bondOffer.getbondedAssetId() as string;
+      const bondedAsset = bondOffer.getBondedAssetId() as string;
       const bondOfferId = bondOffer.getBondOfferId() as string;
       const principalAssetPrinceInUSD: BigNumber =
         new BigNumber(apollo[bondedAsset]) || new BigNumber(0);

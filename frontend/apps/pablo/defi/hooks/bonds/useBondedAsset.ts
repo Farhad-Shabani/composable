@@ -15,14 +15,14 @@ export function useBondedAsset(
         lpRewardingPools.find(
             (pool: PabloConstantProductPool) =>
             (pool.getLiquidityProviderToken().getPicassoAssetId(true) as BigNumber)
-            .eq(bondOffer.getbondedAssetId(true) as BigNumber)
+            .eq(bondOffer.getBondedAssetId(true) as BigNumber)
         );
 
     if (isLpBasedBond) {
         return isLpBasedBond.getLiquidityProviderToken();
     } else {
         return assets.find(asset => {
-            (asset.getPicassoAssetId(true) as BigNumber).eq(bondOffer.getbondedAssetId(true) as BigNumber)
+            (asset.getPicassoAssetId(true) as BigNumber).eq(bondOffer.getBondedAssetId(true) as BigNumber)
         })
     }
 }

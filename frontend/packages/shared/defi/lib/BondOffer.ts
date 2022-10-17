@@ -142,7 +142,7 @@ export class BondOffer {
     return inBn ? this.__offerId : this.__offerId.toString();
   }
 
-  getbondedAssetId(inBn: boolean = false): BigNumber | string {
+  getBondedAssetId(inBn: boolean = false): BigNumber | string {
     return inBn ? this.__asset : this.__asset.toString();
   }
 
