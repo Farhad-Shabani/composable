@@ -47,8 +47,8 @@ export const AuctionInformation: React.FC<AuctionInformationProps> = ({
     }
   };
 
-  const spotPrice = useAuctionSpotPrice((auction.getPoolId(true) as BigNumber).toNumber());
-  const quoteAssetPrice = useAssetIdOraclePrice(auction.getPair().getQuoteAsset().toString());
+  const spotPrice = useAuctionSpotPrice(auction ? (auction.getPoolId(true) as BigNumber).toNumber() : -1);
+  const quoteAssetPrice = useAssetIdOraclePrice(auction ? auction.getPair().getQuoteAsset().toString() : "-");
 
   let {
     tokenRaised,

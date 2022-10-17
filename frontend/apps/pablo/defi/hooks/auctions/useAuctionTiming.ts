@@ -7,7 +7,7 @@ import useBlockNumber from "../useBlockNumber";
 import BigNumber from "bignumber.js";
 
 export function useAuctionTiming(
-    auction: PabloLiquidityBootstrappingPool
+    auction: PabloLiquidityBootstrappingPool | null
 ): {
     duration: number;
     isActive: boolean;
@@ -16,9 +16,8 @@ export function useAuctionTiming(
     startTimestamp: number;
     endTimestamp: number;
 } {
-    const startBlock = auction.getSaleConfig().start;
-    const endBlock = auction.getSaleConfig().end;
-
+    const startBlock = auction?.getSaleConfig().start ?? new BigNumber(0);
+    const endBlock = auction?.getSaleConfig().end ?? new BigNumber(0);
     
     const blockInterval = useBlockInterval();
     const blockNumber = useBlockNumber(DEFAULT_NETWORK_ID);
@@ -31,6 +30,8 @@ export function useAuctionTiming(
     const [startTimestamp, setStartTimestamp] = useState(0);
     const [endTimestamp, setEndTimestamp] = useState(0);
     useAsyncEffect(async (): Promise<void> => {
+        if (!auction) return;
+
         let _blockInterval = new BigNumber(AVERAGE_BLOCK_TIME);
         if (blockInterval) {
             _blockInterval = new BigNumber(blockInterval.toString());

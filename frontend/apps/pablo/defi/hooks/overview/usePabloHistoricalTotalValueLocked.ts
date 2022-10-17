@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { pabloHistoricalValues } from "@/defi/subsquid/overview";
 import { fromChainIdUnit } from "shared";
 import { DEFI_CONFIG } from "@/defi/config";
-import { ChartRange, DAYS, generateRandomSubsquidTvlData, processSubsquidChartData } from "@/defi/utils";
+import { ChartRange, processSubsquidChartData } from "@/defi/utils";
 import { getChartLabels } from "@/defi/subsquid/swaps/helpers";
 
 export function usePabloHistoricalTotalValueLocked(): {

@@ -1,7 +1,7 @@
 import { Asset } from "shared";
 import { StoreSlice } from "../types";
 import { AssetsSlice, MockedAsset } from "./assets.types";
-import { putAssetBalance, setApolloPrice } from "./assets.utils";
+import { putAssetBalance } from "./assets.utils";
 
 export const SUPPORTED_ASSETS: MockedAsset[] = [
   {
