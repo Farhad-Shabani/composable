@@ -1,6 +1,8 @@
 
 # Overview
 
+**Obsolete. See [xcmp-channels-opening](../docs/xcmp-channels-opening.md)**
+
 This proposal suggest to open bidirectional HRMP channel between Picasso and Statemine. This will enable crosschain communication between Picasso and Statemine to enable various use cases including crosschain token transfer.
 
 - [Overview](#overview)

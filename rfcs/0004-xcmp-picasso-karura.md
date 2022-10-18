@@ -1,5 +1,7 @@
 # Overview
 
+**Obsolete. See [xcmp-channels-opening](../docs/xcmp-channels-opening.md)**
+
 This is guide on how to open XCMP channel to Karura and register PICA token here.
 
 This proposal does not covers `paper work` around tech stuff as it is described in Acala docs. 
