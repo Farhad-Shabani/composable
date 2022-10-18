@@ -23,8 +23,8 @@ import BigNumber from "bignumber.js";
 
 export type AuctionHistoriesTableProps = {
   auction: PabloLiquidityBootstrappingPool,
-  baseAsset?: Asset,
-  quoteAsset?: Asset,
+  baseAsset: Asset,
+  quoteAsset: Asset,
   history: PoolTradeHistory[],
   historiesTableLimit?: number,
 } & TableContainerProps;

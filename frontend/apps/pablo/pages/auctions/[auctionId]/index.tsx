@@ -21,6 +21,7 @@ import { useAuctionsSlice } from "@/store/auctions/auctions.slice";
 import { useAuctionsChart } from "@/defi/hooks";
 import AuctionDetailTabs from "@/components/Organisms/auction/AuctionDetailTabs";
 import moment from "moment-timezone";
+import { PabloLiquidityBootstrappingPool } from "shared";
 
 const Auction: NextPage = () => {
   const theme = useTheme();
@@ -33,6 +34,8 @@ const Auction: NextPage = () => {
       ? [activePool.getPair().getBaseAsset().toString(), activePool.getPair().getQuoteAsset().toString()]
       : []
   );
+
+  let hasLoaded = !!activePool && !!baseAsset && !!quoteAsset
 
   useEffect(() => {
     if (!selectedAccount) {
@@ -75,10 +78,11 @@ const Auction: NextPage = () => {
           >
             <Box display="flex" alignItems="center">
               <Typography variant="h5" pr={4}>
-                {baseAsset?.getSymbol()} Token Launch Auction
+                {baseAsset && baseAsset.getSymbol()} Token Launch Auction
               </Typography>
               {activePool && <AuctionStatusIndicator
                 auction={activePool}
+                labelWithDuration={false}
                 padding={theme.spacing(1, 2, 1, 1.5)}
                 borderRadius={1}
                 sx={{
@@ -91,17 +95,17 @@ const Auction: NextPage = () => {
               />}
             </Box>
 
-            {activePool && <AuctionInformation
+            {hasLoaded && <AuctionInformation
               baseAsset={baseAsset}
               quoteAsset={quoteAsset}
               stats={activePoolStats}
-              auction={activePool}
+              auction={activePool as PabloLiquidityBootstrappingPool}
               mt={6}
             />}
 
             <Grid container mt={6}>
               <Grid item md={6} pr={1.75}>
-                <AuctionPriceChart
+                {baseAsset && <AuctionPriceChart
                   baseAsset={baseAsset}
                   chartSeries={chartSeries}
                   height="100%"
@@ -109,7 +113,7 @@ const Auction: NextPage = () => {
                     return moment(timestamp).utc().format("MMM D, h:mm:ss A");
                   }}
                   color={theme.palette.primary.main}
-                />
+                />}
               </Grid>
               <Grid item md={6} pl={1.75}>
                 {activePool && <BuyForm auction={activePool} />}

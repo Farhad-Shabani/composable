@@ -12,8 +12,8 @@ import { DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 export type AuctionSettingsProps = {
   auction: PabloLiquidityBootstrappingPool,
   stats: LiquidityBootstrappingPoolStatistics,
-  baseAsset: Asset | undefined,
-  quoteAsset: Asset | undefined,
+  baseAsset: Asset,
+  quoteAsset: Asset,
 } & BoxProps;
 
 export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
@@ -36,7 +36,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
             Start weights
           </Typography>
           <Typography variant="subtitle1" mt={1}>
-            {`${auction.getSaleConfig().initialWeight}% ${baseAsset?.getSymbol()} + ${100 - auction.getSaleConfig().initialWeight}% ${quoteAsset?.getSymbol()}`}
+            {`${auction.getSaleConfig().initialWeight}% ${baseAsset.getSymbol()} + ${100 - auction.getSaleConfig().initialWeight}% ${quoteAsset.getSymbol()}`}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={3}>
@@ -44,7 +44,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
             End weights
           </Typography>
           <Typography variant="subtitle1" mt={1}>
-          {`${auction.getSaleConfig().finalWeight}% ${baseAsset?.getSymbol()} + ${100 - auction.getSaleConfig().finalWeight}% ${quoteAsset?.getSymbol()}`}
+          {`${auction.getSaleConfig().finalWeight}% ${baseAsset.getSymbol()} + ${100 - auction.getSaleConfig().finalWeight}% ${quoteAsset.getSymbol()}`}
           </Typography>
         </Grid>
       </Grid>
@@ -92,7 +92,7 @@ export const AuctionSettings: React.FC<AuctionSettingsProps> = ({
         </Grid>
         <Grid item xs={12} sm={12} md={9}>
           <Typography variant="body1" color="text.secondary">
-            Trading fee (collected by {baseAsset?.getSymbol()} project)
+            Trading fee (collected by {baseAsset.getSymbol()} project)
           </Typography>
           <Typography variant="subtitle1" mt={1}>
             {auction.getFeeConfig().getFeeRate()} %

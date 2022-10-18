@@ -12,8 +12,8 @@ import { Asset, PabloLiquidityBootstrappingPool } from "shared";
 
 export type AuctionDetailsProps = {
   auction: PabloLiquidityBootstrappingPool,
-  baseAsset?: Asset,
-  quoteAsset?: Asset,
+  baseAsset: Asset,
+  quoteAsset: Asset,
   stats: LiquidityBootstrappingPoolStatistics,
 } & BoxProps;
 

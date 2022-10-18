@@ -13,8 +13,8 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 
 export type AuctionInformationProps = {
   auction: PabloLiquidityBootstrappingPool;
-  baseAsset?: Asset;
-  quoteAsset?: Asset;
+  baseAsset: Asset;
+  quoteAsset: Asset;
   stats: LiquidityBootstrappingPoolStatistics;
 } & BoxProps;
 

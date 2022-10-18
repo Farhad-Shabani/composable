@@ -7,7 +7,7 @@ import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 
 export type ContractDetailsProps = {
   auction: PabloLiquidityBootstrappingPool;
-  baseAsset: Asset | undefined;
+  baseAsset: Asset;
 } & BoxProps;
 
 export const ContractDetails: React.FC<ContractDetailsProps> = ({
@@ -30,13 +30,13 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
     <Box {...rest}>
       <Grid container>
         <Grid item xs={12} sm={12} md={6}>
-          {baseAsset && (
+
             <BaseAsset
               icon={baseAsset.getIconUrl()}
               label={`${baseAsset.getName()} Token`}
               LabelProps={{ variant: "h6" }}
             />
-          )}
+
           <Typography variant="body1" color="text.secondary" mt={4}>
             Token owner address
           </Typography>
@@ -69,7 +69,7 @@ export const ContractDetails: React.FC<ContractDetailsProps> = ({
             </Typography>
             <Box display="flex" alignItems="center" gap={1.5} mt={2}>
               <Typography variant="subtitle1">
-                {`${baseAsset?.getSymbol() ?? ""} on polkascan`}
+                {`${baseAsset.getSymbol()} on polkascan`}
               </Typography>
               <Link href={getTokenLink()} target="_blank">
                 <OpenInNewRoundedIcon />

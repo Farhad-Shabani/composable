@@ -8,7 +8,7 @@ import { useStakingRewardPool } from "@/store/stakingRewards/stakingRewards.slic
 import useStore from "@/store/useStore";
 
 export const useLiquidityPoolDetails = (poolId: number) => {
-  const { poolStats, poolStatsValue, userLpBalances, putPoolStats, assets } = useStore();
+  const { poolStats, poolStatsValue, putPoolStats, assets } = useStore();
 
   const allLpRewardingPools = useAllLpTokenRewardingPools();
   const [pool, setPool] =

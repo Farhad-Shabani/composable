@@ -51,6 +51,7 @@ export const AuctionPoolRow = ({ pool, onClickAuction }: {
       </TableCell>
       <TableCell align="center">
         <AuctionStatusIndicator
+          labelWithDuration={true}
           auction={pool}
           justifyContent="center"
         />

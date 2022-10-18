@@ -9,7 +9,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { getHumanizedDateDiff, PabloLiquidityBootstrappingPool } from "shared";
 import { AVERAGE_BLOCK_TIME, DEFAULT_NETWORK_ID } from "@/defi/utils";
 import { useCallback } from "react";
-import { useBlockInterval } from "@/defi/hooks";
+import { useAuctionTiming, useBlockInterval } from "@/defi/hooks";
 import useBlockNumber from "@/defi/hooks/useBlockNumber";
 
 export type AuctionStatusIndicatorProps = {
@@ -26,28 +26,17 @@ export const AuctionStatusIndicator: React.FC<AuctionStatusIndicatorProps> = ({
   LabelProps,
   ...rest
 }) => {
-  const blockNumber = useBlockNumber(DEFAULT_NETWORK_ID);
-  const blockInterval = useBlockInterval();
   const theme = useTheme();
-  const willBeActive: boolean = blockNumber.lt(auction.getSaleConfig().start);
-  const isActive: boolean = blockNumber.gte(auction.getSaleConfig().start)
-    && blockNumber.lte(auction.getSaleConfig().end);
-  const isEnded: boolean = blockNumber.gt(auction.getSaleConfig().end);
+  const { isActive, isEnded, willStart, startTimestamp, endTimestamp } = useAuctionTiming(auction);
 
   const getLabel = useCallback(() => {
-    if (willBeActive) {
+    if (willStart) {
       if (!labelWithDuration) {
         return "Starting Soon";
       } else {
         let dateDiff = getHumanizedDateDiff(
           Date.now(),
-          blockInterval ? (
-            auction.getSaleConfig().start.minus(
-              blockNumber
-            ).times(blockInterval.toString()).toNumber()
-          ) : auction.getSaleConfig().start.minus(
-            blockNumber
-          ).times(AVERAGE_BLOCK_TIME).toNumber()
+          startTimestamp
         )
 
         return `Starts in ${dateDiff}`
@@ -58,13 +47,7 @@ export const AuctionStatusIndicator: React.FC<AuctionStatusIndicatorProps> = ({
       } else {
         let dateDiff = getHumanizedDateDiff(
           Date.now(),
-          blockInterval ? (
-            auction.getSaleConfig().end.minus(
-              blockNumber
-            ).times(blockInterval.toString()).toNumber()
-          ) : auction.getSaleConfig().end.minus(
-            blockNumber
-          ).times(AVERAGE_BLOCK_TIME).toNumber()
+          endTimestamp
         )
 
         return `Ends in ${dateDiff}`
@@ -75,19 +58,13 @@ export const AuctionStatusIndicator: React.FC<AuctionStatusIndicatorProps> = ({
       } else {
         let dateDiff = getHumanizedDateDiff(
           Date.now(),
-          blockInterval ? (
-            blockNumber.minus(
-              auction.getSaleConfig().end
-            ).times(blockInterval.toString()).toNumber()
-          ) : blockNumber.minus(
-            auction.getSaleConfig().end
-          ).times(AVERAGE_BLOCK_TIME).toNumber()
+          endTimestamp
         )
 
         return `Ended ${dateDiff}`
       }
     }
-  }, [willBeActive, isActive, isEnded, labelWithDuration, blockInterval, auction, blockNumber])
+  }, [isActive, isEnded, willStart, startTimestamp, endTimestamp])
 
   return (
     <Box display="flex" alignItems="center" gap={1.5} {...rest}>

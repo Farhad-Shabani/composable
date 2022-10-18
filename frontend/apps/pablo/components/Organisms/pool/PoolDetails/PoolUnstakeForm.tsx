@@ -19,6 +19,7 @@ import { PairAsset } from "@/components/Atoms";
 import { DEFAULT_NETWORK_ID, DEFAULT_UI_FORMAT_DECIMALS } from "@/defi/utils";
 import { usePendingExtrinsic, useSelectedAccount } from "substrate-react";
 import { ConfirmingModal } from "../../swap/ConfirmingModal";
+import { useLpTokenPrice } from "@/defi/hooks";
 import BigNumber from "bignumber.js";
 
 const UnstakeFormPosition: React.FC<{
@@ -66,7 +67,7 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
   ...boxProps
 }) => {
   const theme = useTheme();
-  const { baseAsset, quoteAsset, pool } = useLiquidityPoolDetails(poolId);
+  const { pool } = useLiquidityPoolDetails(poolId);
   const selectedAccount = useSelectedAccount(DEFAULT_NETWORK_ID);
   const lpToken = pool?.getLiquidityProviderToken() ?? null;
   const lpAssetId = lpToken?.getPicassoAssetId() as string ?? "-"
@@ -83,20 +84,13 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
     return undefined;
   }, [positions]);
 
-  const pairAssets = useMemo(() => {
-    if (!baseAsset || !quoteAsset) return [];
+  const lpTokenPrice = useLpTokenPrice(lpToken ?? undefined);
 
-    return [
-      {
-        icon: baseAsset.getIconUrl(),
-        label: baseAsset.getSymbol(),
-      },
-      {
-        icon: quoteAsset.getIconUrl(),
-        label: quoteAsset.getSymbol(),
-      },
-    ];
-  }, [baseAsset, quoteAsset]);
+  const pairAssets = useMemo(() => {
+    if (!lpToken) return [];
+
+    return lpToken.getUnderlyingAssetJSON();
+  }, [lpToken]);
 
   const hasStakedPositions = useMemo(() => {
     return positions.length > 0;
@@ -146,7 +140,7 @@ export const PoolUnstakeForm: React.FC<PoolDetailsProps> = ({
                     <UnstakeFormPosition
                       principalAssets={pairAssets}
                       financialNftId={nftId}
-                      principalAssetValue={new BigNumber(0.5)} // mocked usd price
+                      principalAssetValue={lpTokenPrice}
                       principalAssetStakedAmount={lockedPrincipalAsset}
                       isExpired={isExpired}
                       expiryDate={expiryDate}
