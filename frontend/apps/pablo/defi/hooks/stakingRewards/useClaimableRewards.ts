@@ -3,43 +3,7 @@ import { useMemo } from "react";
 import { useAssetIdTotalIssuance, useAssets } from "../assets";
 import { useStakingPositions } from "./useStakingPositions";
 import { Stake, StakingRewardPool } from "@/defi/types";
-import { Asset, fromChainIdUnit } from "shared";
-import { ApiPromise } from "@polkadot/api";
-
-class ClaimableAsset extends Asset {
-  protected __claimable: BigNumber;
-
-  static fromAsset(asset: Asset, claimable: BigNumber): ClaimableAsset {
-    return new ClaimableAsset(
-      asset.getApi(),
-      asset.getPicassoAssetId(true) as BigNumber,
-      asset.getName(),
-      asset.getSymbol(),
-      asset.getIconUrl(),
-      claimable
-    )
-  }
-
-  constructor(
-    api: ApiPromise,
-    picassoAssetId: BigNumber,
-    name: string,
-    symbol: string,
-    iconUrl: string,
-    claimableAmount: BigNumber
-  ) {
-    super(api, picassoAssetId, name, symbol, iconUrl);
-    this.__claimable = claimableAmount;
-  }
-
-  setClaimable(claimableAmount: BigNumber) {
-    this.__claimable = claimableAmount;
-  }
-
-  getClaimable(): BigNumber {
-    return this.__claimable;
-  }
-}
+import { ClaimableAsset, fromChainIdUnit } from "shared";
 
 type ClaimableRewardsProps = {
   stakedAssetId?: string;

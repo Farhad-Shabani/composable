@@ -248,4 +248,8 @@ export class StakingRewardPool {
     this.__minimumStakingAmount = minimumStakingAmount;
     this.__startBlock = startBlock;
   }
+
+  getRewards() {
+    return this.__rewards;
+  }
 }
