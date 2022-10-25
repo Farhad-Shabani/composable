@@ -47,12 +47,12 @@ describe("CrowdloanRewards Tests", function () {
   it.only("1.1  I can, as sudo, populate the Crowdloan pallet with the list of contributors.", async function () {
     // 5 minutes timeout
     this.timeout(5 * 60 * 1000);
-    const testContributorRelayChainObject = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTest(
+    const sumRewardsToBeDistributed = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTest(
       api,
       sudoKey,
       contributors
     );
-    expect(testContributorRelayChainObject).to.not.be.an("Error");
+    console.debug(sumRewardsToBeDistributed);
   });
 
   /*

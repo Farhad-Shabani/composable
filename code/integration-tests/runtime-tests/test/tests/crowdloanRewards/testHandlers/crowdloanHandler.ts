@@ -16,8 +16,7 @@ const toHexString = (bytes: any) =>
 const proofMessage = (account: IKeyringPair, isEth = false) =>
   (isEth ? "picasso-" : "<Bytes>picasso-") + toHexString(account.publicKey) + (isEth ? "" : "</Bytes>");
 
-export const ethAccount = (seed: number) =>
-  new Web3().eth.accounts.privateKeyToAccount("0x" + seed.toString(16).padStart(64, "0"));
+export const ethAccount = (seed: string) => new Web3().eth.accounts.create(seed);
 
 export const getSumOfContributorRewardsAmount = () => {
   return new BN(totalPicaRewarded).mul(new BN(10).pow(new BN(12)));
@@ -80,6 +79,8 @@ export class TxCrowdloanRewardsTests {
     testWalletShareAmountPICA = 1,
     vestingPeriod: number | bigint | BN = 100800
   ) {
+    let fullRewardAmount = new BN(0);
+
     // ToDo: Vesting time has changed from blocks to milliseconds!
     const vestingTime = api.createType("u32", vestingPeriod);
 
@@ -89,12 +90,14 @@ export class TxCrowdloanRewardsTests {
     for (const [i, testWallet] of testWallets.entries()) {
       let testContributorRemoteObject: PalletCrowdloanRewardsModelsRemoteAccount;
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
-        Ethereum: ethAccount(i).address
+        Ethereum: ethAccount(testWallet.address).address
       });
+      fullRewardAmount.add(testContributorReward);
       contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
-        RelayChain: testWallet.derive("/contributor")
+        RelayChain: testWallet.derive("/contributor").publicKey
       });
+      fullRewardAmount.add(testContributorReward);
       contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
     }
 
@@ -110,11 +113,12 @@ export class TxCrowdloanRewardsTests {
         remoteAccountObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
           RelayChain: api.createType("AccountId32", key)
         });
-      const currentContributorAmount = new BN((parseFloat(value) * Math.pow(10, 12)).toFixed(0));
+      const currentContributorAmount = new BN(parseInt(value).toFixed(0)).mul(new BN(10).pow(new BN(12)));
+      fullRewardAmount.add(currentContributorAmount);
       contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vestingTime]);
 
       // Every 2500th iteration we send our list of contributors, else we'd break the block data size limit.
-      if (i % 2500 == 0 && i != 0) {
+      if ((i % 2500 == 0 && i != 0) || Object.entries(shares).length - i < 2500) {
         // Actual population step.
         const {
           data: [result]
@@ -124,6 +128,7 @@ export class TxCrowdloanRewardsTests {
       }
       i++;
     }
+    return fullRewardAmount;
   }
 
   /**
