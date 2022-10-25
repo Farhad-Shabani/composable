@@ -3,7 +3,7 @@ import { sendAndWaitForSuccess, sendUnsignedAndWaitForSuccess } from "@composabl
 import { AnyNumber, IKeyringPair, ITuple } from "@polkadot/types/types";
 import { PalletCrowdloanRewardsModelsRemoteAccount } from "@composable/types/interfaces";
 import { Compact, u128, u32, u64, Vec } from "@polkadot/types-codec";
-import { shares } from "@composabletests/tests/crowdloanRewards/contributions.json";
+import { shares, totalPicaRewarded } from "@composabletests/tests/crowdloanRewards/contributions.json";
 import { expect } from "chai";
 import Web3 from "web3";
 import { ApiPromise } from "@polkadot/api";
@@ -19,12 +19,15 @@ const proofMessage = (account: IKeyringPair, isEth = false) =>
 export const ethAccount = (seed: number) =>
   new Web3().eth.accounts.privateKeyToAccount("0x" + seed.toString(16).padStart(64, "0"));
 
+export const getSumOfContributorRewardsAmount = () => {
+  return new BN(totalPicaRewarded).mul(new BN(10).pow(new BN(12)));
+};
+
 export class TxCrowdloanRewardsTests {
   /**
    * Providing the crowdloan pallet with funds
    *
-   * Unfortunately we can't directly mint into the pallet therefore,
-   * we mint into the Alice wallet and transfer funds from there.
+   * Unfortunately we can't directly mint into the pallet therefore after minting we just transfer the funds.
    *
    * @param {ApiPromise} api Connected API Client.
    * @param {KeyringPair} sudoKey Wallet with sudo rights.
@@ -35,6 +38,7 @@ export class TxCrowdloanRewardsTests {
     sudoKey: KeyringPair,
     amount: u128 | Compact<u128> | AnyNumber
   ) {
+    // ToDo: Mint funds here as well!
     const palletPublicKey = api.consts.crowdloanRewards.accountId;
     return await sendAndWaitForSuccess(
       api,
@@ -60,32 +64,43 @@ export class TxCrowdloanRewardsTests {
   }
 
   /**
-   * tx.crowdloanRewards.populate
+   * Helper to populate the crowdloan pallet with all contributors,
+   * plus some testing wallets which are passed by an parameter.
    *
    * @param {ApiPromise} api Connected API Client.
    * @param {KeyringPair} sudoKey Wallet with sudo rights.
-   * @param testContributorWallet KSM Wallet of contributor to populate with.
+   * @param testWallets
+   * @param testWalletShareAmountPICA
+   * @param vestingPeriod
    */
   public static async txCrowdloanRewardsPopulateTest(
     api: ApiPromise,
     sudoKey: KeyringPair,
-    testContributorWallet: KeyringPair
+    testWallets: KeyringPair[],
+    testWalletShareAmountPICA = 1,
+    vestingPeriod: number | bigint | BN = 100800
   ) {
-    const vesting48weeks = api.createType("u32", 100800);
+    // ToDo: Vesting time has changed from blocks to milliseconds!
+    const vestingTime = api.createType("u32", vestingPeriod);
+
     let contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]> = [];
     // Before we go through all the contributors, we inject our test wallet at the very beginning.
-    const testContributorReward = api.createType("u128", 1_000_000_000_000);
-    const testContributorRelayChainObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
-      RelayChain: testContributorWallet.publicKey
-    });
-    const testContributorEthChainObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
-      Ethereum: ethAccount(1).address
-    });
-    contributors.push([testContributorRelayChainObject, testContributorReward, vesting48weeks]);
-    contributors.push([testContributorEthChainObject, testContributorReward, vesting48weeks]);
+    const testContributorReward = api.createType("u128", Math.pow(testWalletShareAmountPICA, 12));
+    for (const [i, testWallet] of testWallets.entries()) {
+      let testContributorRemoteObject: PalletCrowdloanRewardsModelsRemoteAccount;
+      testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
+        Ethereum: ethAccount(i).address
+      });
+      contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
+      testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
+        RelayChain: testWallet.derive("/contributor")
+      });
+      contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
+    }
+
+    // Now we can continue collecting & populating our actual contributors.
     // Iterating through our list of contributors
     let i = 0;
-    let amount: BN = new BN(testContributorReward.toNumber() * 2);
     for (const [key, value] of Object.entries(shares)) {
       let remoteAccountObject: PalletCrowdloanRewardsModelsRemoteAccount;
       // Creating either an ethereum or ksm contributor object.
@@ -96,37 +111,25 @@ export class TxCrowdloanRewardsTests {
           RelayChain: api.createType("AccountId32", key)
         });
       const currentContributorAmount = new BN((parseFloat(value) * Math.pow(10, 12)).toFixed(0));
-      amount = currentContributorAmount.add(amount);
-      contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vesting48weeks]);
+      contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vestingTime]);
 
       // Every 2500th iteration we send our list of contributors, else we'd break the block data size limit.
       if (i % 2500 == 0 && i != 0) {
-        // Providing funds since calling `populate` verifies that the pallet funds are equal to contributor amount.
-        const {
-          data: [provideFundsResult]
-        } = await TxCrowdloanRewardsTests.beforeCrowdloanTestsProvideFunds(
-          api,
-          sudoKey,
-          api.createType("u128", amount)
-        );
-        expect(provideFundsResult).to.not.be.undefined;
         // Actual population step.
         const {
           data: [result]
         } = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTestHandler(api, sudoKey, contributors);
         expect(result.isOk).to.be.true;
-        amount = new BN(0);
         contributors = [];
       }
       i++;
     }
-    return testContributorRelayChainObject;
   }
 
   /**
    * tx.crowdloanRewards.populate
    *
-   * @param {ApiClient} api Connected ApiClient
+   * @param {ApiPromise} api Connected ApiClient
    * @param {KeyringPair} sudoKey Wallet with sudo rights.
    * @param {KeyringPair} contributors List of contributors to be transacted.
    */
