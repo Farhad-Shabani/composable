@@ -124,10 +124,13 @@ declare module '@polkadot/api-base/types/events' {
       [key: string]: AugmentedEvent<ApiType>;
     };
     cosmwasm: {
+      AdminCleared: AugmentedEvent<ApiType, [contract: AccountId32, oldAdmin: Option<AccountId32>], { contract: AccountId32, oldAdmin: Option<AccountId32> }>;
+      AdminUpdated: AugmentedEvent<ApiType, [contract: AccountId32, oldAdmin: Option<AccountId32>, newAdmin: AccountId32], { contract: AccountId32, oldAdmin: Option<AccountId32>, newAdmin: AccountId32 }>;
       Emitted: AugmentedEvent<ApiType, [contract: AccountId32, ty: Bytes, attributes: Vec<ITuple<[Bytes, Bytes]>>], { contract: AccountId32, ty: Bytes, attributes: Vec<ITuple<[Bytes, Bytes]>> }>;
       Executed: AugmentedEvent<ApiType, [contract: AccountId32, entrypoint: PalletCosmwasmEntryPoint, data: Option<Bytes>], { contract: AccountId32, entrypoint: PalletCosmwasmEntryPoint, data: Option<Bytes> }>;
       ExecutionFailed: AugmentedEvent<ApiType, [contract: AccountId32, entrypoint: PalletCosmwasmEntryPoint, error: Bytes], { contract: AccountId32, entrypoint: PalletCosmwasmEntryPoint, error: Bytes }>;
       Instantiated: AugmentedEvent<ApiType, [contract: AccountId32, info: PalletCosmwasmContractInfo], { contract: AccountId32, info: PalletCosmwasmContractInfo }>;
+      Migrated: AugmentedEvent<ApiType, [contract: AccountId32, to: u64], { contract: AccountId32, to: u64 }>;
       Uploaded: AugmentedEvent<ApiType, [codeHash: H256, codeId: u64], { codeHash: H256, codeId: u64 }>;
       /**
        * Generic event

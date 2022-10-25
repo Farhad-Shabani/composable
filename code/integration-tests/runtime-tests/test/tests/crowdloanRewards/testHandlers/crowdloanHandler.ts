@@ -104,6 +104,7 @@ export class TxCrowdloanRewardsTests {
     // Now we can continue collecting & populating our actual contributors.
     // Iterating through our list of contributors
     let i = 0;
+    let allContributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]> = [];
     for (const [key, value] of Object.entries(shares)) {
       let remoteAccountObject: PalletCrowdloanRewardsModelsRemoteAccount;
       // Creating either an ethereum or ksm contributor object.
@@ -127,11 +128,27 @@ export class TxCrowdloanRewardsTests {
           data: [result]
         } = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTestHandler(api, sudoKey, contributors);
         expect(result.isOk).to.be.true;
+        contributors.forEach(contributor => allContributors.push(contributor));
         contributors = [];
       }
       i++;
     }
-    return fullRewardAmount;
+    return { fullRewardAmount, allContributors };
+  }
+
+  public static async verifyCrowdloanRewardsPopulation(
+    api: ApiPromise,
+    contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]>
+  ) {
+    for (const contributor of contributors) {
+      const contribPara = api.createType("Option<PalletCrowdloanRewardsModelsRemoteAccount>", contributor);
+      const rewardsQuery = await api.query.crowdloanRewards.rewards();
+      console.debug(rewardsQuery.toHuman());
+    }
+
+    // for (const reward of rewardsQuery) {
+    //   console.debug(reward.toString());
+    // }
   }
 
   /**

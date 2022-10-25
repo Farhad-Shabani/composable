@@ -1,11 +1,7 @@
 import { expect } from "chai";
 import { KeyringPair } from "@polkadot/keyring/types";
 import testConfiguration from "./test_configuration.json";
-import {
-  getSumOfContributorRewardsAmount,
-  TxCrowdloanRewardsTests
-} from "@composabletests/tests/crowdloanRewards/testHandlers/crowdloanHandler";
-import { mintAssetsToWallet } from "@composable/utils/mintingHelper";
+import { TxCrowdloanRewardsTests } from "@composabletests/tests/crowdloanRewards/testHandlers/crowdloanHandler";
 import { ApiPromise } from "@polkadot/api";
 import { getNewConnection } from "@composable/utils/connectionHelper";
 import { getDevWallets } from "@composable/utils/walletHelper";
@@ -34,10 +30,10 @@ describe("CrowdloanRewards Tests", function () {
     }
 
     // Funding the PICA Holder which will fund the pallet.
-    await mintAssetsToWallet(api, sudoKey, sudoKey, [1], getSumOfContributorRewardsAmount());
-    // Funding the wallets with small initial balance.
-    await mintAssetsToWallet(api, contributors[1], sudoKey, [1], 1_000_000_000_000n); // Test #1.7
-    await mintAssetsToWallet(api, contributors[3], sudoKey, [1], 1_000_000_000_000n); // Test #1.9
+    // await mintAssetsToWallet(api, sudoKey, sudoKey, [1], getSumOfContributorRewardsAmount());
+    // // Funding the wallets with small initial balance.
+    // await mintAssetsToWallet(api, contributors[1], sudoKey, [1], 1_000_000_000_000n); // Test #1.7
+    // await mintAssetsToWallet(api, contributors[3], sudoKey, [1], 1_000_000_000_000n); // Test #1.9
   });
 
   after("Closing the connection", async function () {
@@ -47,12 +43,14 @@ describe("CrowdloanRewards Tests", function () {
   it.only("1.1  I can, as sudo, populate the Crowdloan pallet with the list of contributors.", async function () {
     // 5 minutes timeout
     this.timeout(10 * 60 * 1000);
-    const sumRewardsToBeDistributed = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTest(
+    this.retries(0);
+
+    const { fullRewardAmount, allContributors } = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTest(
       api,
       sudoKey,
       contributors
     );
-    console.debug(sumRewardsToBeDistributed);
+    await TxCrowdloanRewardsTests.verifyCrowdloanRewardsPopulation(api, allContributors);
   });
 
   /*

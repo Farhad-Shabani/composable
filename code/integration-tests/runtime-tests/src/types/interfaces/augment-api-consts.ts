@@ -440,22 +440,6 @@ declare module '@polkadot/api-base/types/consts' {
       [key: string]: Codec;
     };
     pablo: {
-      /**
-       * Maximum initial weight.
-       **/
-      lbpMaxInitialWeight: Permill & AugmentedConst<ApiType>;
-      /**
-       * Maximum duration for a sale.
-       **/
-      lbpMaxSaleDuration: u32 & AugmentedConst<ApiType>;
-      /**
-       * Minimum final weight.
-       **/
-      lbpMinFinalWeight: Permill & AugmentedConst<ApiType>;
-      /**
-       * Minimum duration for a sale.
-       **/
-      lbpMinSaleDuration: u32 & AugmentedConst<ApiType>;
       msPerBlock: u32 & AugmentedConst<ApiType>;
       palletId: FrameSupportPalletId & AugmentedConst<ApiType>;
       /**

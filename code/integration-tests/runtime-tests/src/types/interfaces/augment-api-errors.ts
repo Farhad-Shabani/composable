@@ -199,6 +199,7 @@ declare module '@polkadot/api-base/types/errors' {
       IteratorNotFound: AugmentedError<ApiType>;
       LabelTooBig: AugmentedError<ApiType>;
       NonceOverflow: AugmentedError<ApiType>;
+      NotAuthorized: AugmentedError<ApiType>;
       NotEnoughFundsForUpload: AugmentedError<ApiType>;
       RefcountOverflow: AugmentedError<ApiType>;
       RefundGas: AugmentedError<ApiType>;

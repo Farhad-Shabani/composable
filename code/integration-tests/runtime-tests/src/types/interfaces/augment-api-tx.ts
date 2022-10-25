@@ -6,8 +6,9 @@
 import '@polkadot/api-base/types/submittable';
 
 import type { ComposableTraitsDefiCurrencyPairCurrencyId, ComposableTraitsDefiSellCurrencyId, ComposableTraitsXcmXcmSellRequest } from '@composable/types/interfaces/common';
-import type { CommonMosaicRemoteAssetId, ComposableSupportEthereumAddress, ComposableTraitsAccountProxyProxyType, ComposableTraitsAssetsBasicAssetMetadata, ComposableTraitsBondedFinanceBondOffer, ComposableTraitsCallFilterCallFilterEntry, ComposableTraitsDefiTake, ComposableTraitsLendingCreateInput, ComposableTraitsLendingRepayStrategy, ComposableTraitsLendingUpdateInput, ComposableTraitsStakingRewardPoolConfiguration, ComposableTraitsStakingRewardUpdate, ComposableTraitsTimeTimeReleaseFunction, ComposableTraitsVaultVaultConfig, ComposableTraitsVestingVestingSchedule, ComposableTraitsVestingVestingScheduleIdSet, ComposableTraitsVestingVestingScheduleInfo, ComposableTraitsXcmAssetsXcmAssetLocation, CumulusPrimitivesParachainInherentParachainInherentData, DaliRuntimeOpaqueSessionKeys, DaliRuntimeOriginCaller, FrameSupportScheduleMaybeHashed, IbcTraitOpenChannelParams, IbcTransferPalletParams, IbcTransferTransferParams, PalletCrowdloanRewardsModelsProof, PalletCrowdloanRewardsModelsRemoteAccount, PalletDemocracyConviction, PalletDemocracyVoteAccountVote, PalletIbcAny, PalletIbcConnectionParams, PalletIbcPingSendPingParams, PalletIdentityBitFlags, PalletIdentityIdentityInfo, PalletIdentityJudgement, PalletLiquidationsLiquidationStrategyConfiguration, PalletMosaicAmmSwapInfo, PalletMosaicDecayBudgetPenaltyDecayer, PalletMosaicNetworkInfo, XcmVersionedMultiAsset } from '@composable/types/interfaces/crowdloanRewards';
+import type { CommonMosaicRemoteAssetId, ComposableSupportEthereumAddress, ComposableTraitsAccountProxyProxyType, ComposableTraitsAssetsBasicAssetMetadata, ComposableTraitsBondedFinanceBondOffer, ComposableTraitsCallFilterCallFilterEntry, ComposableTraitsDefiTake, ComposableTraitsLendingCreateInput, ComposableTraitsLendingRepayStrategy, ComposableTraitsLendingUpdateInput, ComposableTraitsTimeTimeReleaseFunction, ComposableTraitsVaultVaultConfig, ComposableTraitsVestingVestingSchedule, ComposableTraitsVestingVestingScheduleIdSet, ComposableTraitsVestingVestingScheduleInfo, ComposableTraitsXcmAssetsXcmAssetLocation, CumulusPrimitivesParachainInherentParachainInherentData, DaliRuntimeOpaqueSessionKeys, DaliRuntimeOriginCaller, FrameSupportScheduleMaybeHashed, IbcTraitOpenChannelParams, IbcTransferPalletParams, IbcTransferTransferParams, PalletCosmwasmCodeIdentifier, PalletCrowdloanRewardsModelsProof, PalletCrowdloanRewardsModelsRemoteAccount, PalletDemocracyConviction, PalletDemocracyVoteAccountVote, PalletIbcAny, PalletIbcConnectionParams, PalletIbcPingSendPingParams, PalletIdentityBitFlags, PalletIdentityIdentityInfo, PalletIdentityJudgement, PalletLiquidationsLiquidationStrategyConfiguration, PalletMosaicAmmSwapInfo, PalletMosaicDecayBudgetPenaltyDecayer, PalletMosaicNetworkInfo, XcmVersionedMultiAsset } from '@composable/types/interfaces/crowdloanRewards';
 import type { PalletPabloPoolInitConfiguration } from '@composable/types/interfaces/pablo';
+import type { ComposableTraitsStakingRewardPoolConfiguration, ComposableTraitsStakingRewardUpdate } from '@composable/types/interfaces/stakingRewards';
 import type { ApiTypes, AugmentedSubmittable, SubmittableExtrinsic, SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { Data } from '@polkadot/types';
 import type { BTreeMap, Bytes, Compact, Option, U8aFixed, Vec, WrapperKeepOpaque, bool, u128, u16, u32, u64, u8 } from '@polkadot/types-codec';
@@ -378,6 +379,18 @@ declare module '@polkadot/api-base/types/submittable' {
     };
     cosmwasm: {
       /**
+       * Clear the admin of a contract.
+       * 
+       * * Emits a `AdminCleared` event on success.
+       * 
+       * Arguments
+       * 
+       * * `origin` the origin dispatching the extrinsic.
+       * * `contract` the address of the contract that we want to migrate.
+       * * `gas` the maximum gas to use, the remaining is refunded at the end of the transaction.
+       **/
+      clearAdmin: AugmentedSubmittable<(contract: AccountId32 | string | Uint8Array, gas: u64 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, u64]>;
+      /**
        * Execute a previously instantiated contract.
        * 
        * * Emits an `Executed` event.
@@ -409,7 +422,36 @@ declare module '@polkadot/api-base/types/submittable' {
        * export.
        * * `gas` the maximum gas to use, the remaining is refunded at the end of the transaction.
        **/
-      instantiate: AugmentedSubmittable<(codeId: u64 | AnyNumber | Uint8Array, salt: Bytes | string | Uint8Array, admin: Option<AccountId32> | null | Uint8Array | AccountId32 | string, label: Bytes | string | Uint8Array, funds: BTreeMap<u128, ITuple<[u128, bool]>>, gas: u64 | AnyNumber | Uint8Array, message: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [u64, Bytes, Option<AccountId32>, Bytes, BTreeMap<u128, ITuple<[u128, bool]>>, u64, Bytes]>;
+      instantiate: AugmentedSubmittable<(codeIdentifier: PalletCosmwasmCodeIdentifier | { CodeId: any } | { CodeHash: any } | string | Uint8Array, salt: Bytes | string | Uint8Array, admin: Option<AccountId32> | null | Uint8Array | AccountId32 | string, label: Bytes | string | Uint8Array, funds: BTreeMap<u128, ITuple<[u128, bool]>>, gas: u64 | AnyNumber | Uint8Array, message: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [PalletCosmwasmCodeIdentifier, Bytes, Option<AccountId32>, Bytes, BTreeMap<u128, ITuple<[u128, bool]>>, u64, Bytes]>;
+      /**
+       * Migrate a previously instantiated contract.
+       * 
+       * * Emits a `Migrated` event on success.
+       * * Emits an `Executed` event.
+       * * Possibly emit `Emitted` events.
+       * 
+       * Arguments
+       * 
+       * * `origin` the origin dispatching the extrinsic.
+       * * `contract` the address of the contract that we want to migrate
+       * * `new_code_identifier` the code identifier that we want to switch to.
+       * * `gas` the maximum gas to use, the remaining is refunded at the end of the transaction.
+       * * `message` MigrateMsg, that will be passed to the contract.
+       **/
+      migrate: AugmentedSubmittable<(contract: AccountId32 | string | Uint8Array, newCodeIdentifier: PalletCosmwasmCodeIdentifier | { CodeId: any } | { CodeHash: any } | string | Uint8Array, gas: u64 | AnyNumber | Uint8Array, message: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, PalletCosmwasmCodeIdentifier, u64, Bytes]>;
+      /**
+       * Update the admin of a contract.
+       * 
+       * * Emits a `AdminUpdated` event on success.
+       * 
+       * Arguments
+       * 
+       * * `origin` the origin dispatching the extrinsic.
+       * * `contract` the address of the contract that we want to migrate.
+       * * `new_admin` new admin of the contract that we want to update to.
+       * * `gas` the maximum gas to use, the remaining is refunded at the end of the transaction.
+       **/
+      updateAdmin: AugmentedSubmittable<(contract: AccountId32 | string | Uint8Array, newAdmin: AccountId32 | string | Uint8Array, gas: u64 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [AccountId32, AccountId32, u64]>;
       /**
        * Upload a CosmWasm contract.
        * The function will ensure that the wasm module is well formed and that it fits the
@@ -657,20 +699,26 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       claim: AugmentedSubmittable<() => SubmittableExtrinsic<ApiType>, []>;
       /**
-       * Initialize the pallet at the current transaction block.
+       * Initialize the pallet at the current timestamp.
        **/
       initialize: AugmentedSubmittable<() => SubmittableExtrinsic<ApiType>, []>;
       /**
-       * Initialize the pallet at the given transaction block.
+       * Initialize the pallet at the given timestamp.
        **/
       initializeAt: AugmentedSubmittable<(at: u64 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [u64]>;
       /**
        * Populate pallet by adding more rewards.
-       * Can be called multiple times. If an remote account already has a reward, it will be
-       * replaced by the new reward value.
+       * 
+       * Each index in the rewards vector should contain: `remote_account`, `reward_account`,
+       * `vesting_period`.
+       * 
+       * Can be called multiple times. If an remote account
+       * already has a reward, it will be replaced by the new reward value.
+       * 
        * Can only be called before `initialize`.
        **/
       populate: AugmentedSubmittable<(rewards: Vec<ITuple<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]>> | ([PalletCrowdloanRewardsModelsRemoteAccount | { RelayChain: any } | { Ethereum: any } | string | Uint8Array, u128 | AnyNumber | Uint8Array, u64 | AnyNumber | Uint8Array])[]) => SubmittableExtrinsic<ApiType>, [Vec<ITuple<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]>>]>;
+      unlockRewardsFor: AugmentedSubmittable<(rewardAccounts: Vec<AccountId32> | (AccountId32 | string | Uint8Array)[]) => SubmittableExtrinsic<ApiType>, [Vec<AccountId32>]>;
       /**
        * Generic tx
        **/
@@ -1568,7 +1616,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * # Parameters
        * 
        * - `origin` : Sender of this extrinsic. (Also the user who repays beneficiary's borrow.)
-       * - `market_id` : [`MarketIndex`] of the market being repaid.
+       * - `market_id` : [`MarketId`] of the market being repaid.
        * - `beneficiary` : [`AccountId`] of the account who is in debt to (has borrowed assets
        * from) the market. This can be same or different from the `origin`, allowing one
        * account to pay off another's debts.
@@ -1946,7 +1994,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Emits `PoolCreated` event when successful.
        **/
-      create: AugmentedSubmittable<(pool: PalletPabloPoolInitConfiguration | { StableSwap: any } | { ConstantProduct: any } | { LiquidityBootstrapping: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [PalletPabloPoolInitConfiguration]>;
+      create: AugmentedSubmittable<(pool: PalletPabloPoolInitConfiguration | { DualAssetConstantProduct: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [PalletPabloPoolInitConfiguration]>;
       enableTwap: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128]>;
       /**
        * Remove liquidity from the given pool.
