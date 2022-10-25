@@ -92,12 +92,12 @@ export class TxCrowdloanRewardsTests {
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
         Ethereum: ethAccount(testWallet.address).address
       });
-      fullRewardAmount.add(testContributorReward);
+      fullRewardAmount = fullRewardAmount.add(testContributorReward);
       contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
         RelayChain: testWallet.derive("/contributor").publicKey
       });
-      fullRewardAmount.add(testContributorReward);
+      fullRewardAmount = fullRewardAmount.add(testContributorReward);
       contributors.push([testContributorRemoteObject, testContributorReward, vestingTime]);
     }
 
@@ -114,11 +114,14 @@ export class TxCrowdloanRewardsTests {
           RelayChain: api.createType("AccountId32", key)
         });
       const currentContributorAmount = new BN(parseInt(value).toFixed(0)).mul(new BN(10).pow(new BN(12)));
-      fullRewardAmount.add(currentContributorAmount);
+      fullRewardAmount = fullRewardAmount.add(currentContributorAmount);
       contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vestingTime]);
 
       // Every 2500th iteration we send our list of contributors, else we'd break the block data size limit.
-      if ((i % 2500 == 0 && i != 0) || Object.entries(shares).length - i < 2500) {
+      if (
+        (i % 2500 == 0 && i != 0) ||
+        (Object.entries(shares).length - i < 2500 && Object.entries(shares).length == i - 1)
+      ) {
         // Actual population step.
         const {
           data: [result]
