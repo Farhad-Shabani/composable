@@ -13,6 +13,7 @@ import { sendAndWaitForSuccess, sendUnsignedAndWaitForSuccess } from "@composabl
 import BN from "bn.js";
 
 const AMOUNT_CONTRIBUTOR_WALLETS = 8;
+const TEST_WALLET_PICA_REWARD_AMOUNT = new BN(100);
 
 describe("CrowdloanRewards Tests", function () {
   if (!testConfiguration.enabledTests.tx.enabled) return;
@@ -48,7 +49,7 @@ describe("CrowdloanRewards Tests", function () {
     await api.disconnect();
   });
 
-  it.only("1.1  I can, as sudo, populate the Crowdloan pallet with the list of contributorRewardWallets.", async function () {
+  it("1.1  I can, as sudo, populate the Crowdloan pallet with the list of contributorRewardWallets.", async function () {
     // 5 minutes timeout
     this.timeout(10 * 60 * 1000);
     this.retries(0);
@@ -56,7 +57,8 @@ describe("CrowdloanRewards Tests", function () {
     const { fullRewardAmount, allContributors } = await TxCrowdloanRewardsTests.txCrowdloanRewardsPopulateTest(
       api,
       sudoKey,
-      contributorRewardWallets
+      contributorRewardWallets,
+      TEST_WALLET_PICA_REWARD_AMOUNT
     );
     contributorsRewardAmount = fullRewardAmount;
     await TxCrowdloanRewardsTests.verifyCrowdloanRewardsPopulation(api, allContributors);
@@ -66,7 +68,7 @@ describe("CrowdloanRewards Tests", function () {
   The following steps occur after the pallet has been populated with contributorRewardWallets.
    */
 
-  it.only("1.2  I can not associate my KSM contributor wallet before the crowdloan pallet has been initialized.", async function () {
+  it("1.2  I can not associate my KSM contributor wallet before the crowdloan pallet has been initialized.", async function () {
     this.timeout(2 * 60 * 1000);
     this.retries(0);
     // Wallet: Contributor 1
@@ -82,23 +84,7 @@ describe("CrowdloanRewards Tests", function () {
     });
   });
 
-  it.only("1.3  I can, as sudo, initialize the Crowdloan Pallet", async function () {
-    // 2 minutes timeout
-    this.timeout(60 * 2 * 1000);
-
-    // ToDo: Provide funds!
-    const requiredPalletFunds = contributorsRewardAmount;
-    await TxCrowdloanRewardsTests.mintAndTransferFundsToCrowdloanPallet(api, sudoKey, requiredPalletFunds);
-
-    const {
-      data: [result]
-    } = await TxCrowdloanRewardsTests.txCrowdloanRewardsInitializeTest(api, sudoKey);
-    expect(result.isOk).to.be.true;
-
-    // ToDo: Consider querying start.
-  });
-
-  it.only("1.17  I can not, as sudo, initialize the crowdloan pallet without providing at least as many funds as will be rewarded.", async function () {
+  it("1.17  I can not, as sudo, initialize the crowdloan pallet without providing at least as many funds as will be rewarded.", async function () {
     this.timeout(2 * 60 * 1000);
     this.retries(0);
     // First testing initialization without any funds.
@@ -108,7 +94,8 @@ describe("CrowdloanRewards Tests", function () {
       api,
       sudoKey,
       api.events.sudo.Sudid.is,
-      api.tx.sudo.sudo(api.tx.crowdloanRewards.initialize())
+      api.tx.sudo.sudo(api.tx.crowdloanRewards.initialize()),
+      true
     );
     expect(sudoResult.isErr).to.be.true;
     expect(sudoResult.asErr.asModule.index).to.be.bignumber.equal(new BN("58"));
@@ -129,10 +116,30 @@ describe("CrowdloanRewards Tests", function () {
     expect(sudoResult2.asErr.asModule.error.toHex()).to.be.equal("0x03000000"); // Error index 3 == RewardsNotFunded
   });
 
+  it("1.3  I can, as sudo, initialize the Crowdloan Pallet", async function () {
+    // 2 minutes timeout
+    this.timeout(60 * 2 * 1000);
+
+    // ToDo: Provide funds!
+    const requiredPalletFunds = contributorsRewardAmount;
+    await TxCrowdloanRewardsTests.mintAndTransferFundsToCrowdloanPallet(
+      api,
+      sudoKey,
+      requiredPalletFunds.sub(new BN(10).pow(new BN(12)))
+    ); // Subtracting 1 PICA from earlier test #1.17
+
+    const {
+      data: [result]
+    } = await TxCrowdloanRewardsTests.txCrowdloanRewardsInitializeTest(api, sudoKey);
+    expect(result.isOk).to.be.true;
+
+    // ToDo: Consider querying start.
+  });
+
   /*
   The following steps occur after the pallet was populated & initialised.
    */
-  it.only("1.4  A user, without initial funds, can associate their contributor KSM wallet with a correct proof & claim 25% of the reward as locked balance.", async function () {
+  it("1.4  A user, without initial funds, can associate their contributor KSM wallet with a correct proof & claim 25% of the reward as locked balance.", async function () {
     this.timeout(2 * 60 * 1000);
     this.retries(0);
     // Wallet: Contributor 1
@@ -148,23 +155,43 @@ describe("CrowdloanRewards Tests", function () {
     );
 
     // Verification
-    await TxCrowdloanRewardsTests.verifyKsmAssociation(api, resultRemoteAccount, resultRewardAccount, rewardAccount);
+    await TxCrowdloanRewardsTests.verifyKsmAssociation(
+      api,
+      resultRemoteAccount,
+      resultRewardAccount,
+      rewardAccount,
+      TEST_WALLET_PICA_REWARD_AMOUNT
+    );
   });
 
-  it("1.5  A user (#1.6) can not transfer their claimed funds.");
+  it("1.5  A user (#1.4) can not transfer their claimed funds.", async function () {
+    this.timeout(2 * 60 * 1000);
+    this.retries(0);
 
-  it("1.6  A user (#1.6) can claim a second time and pays transaction fees using the claimed, locked balance from earlier.", async function () {
-    // 2 minutes timeout
-    this.timeout(60 * 2 * 1000);
-    // const {
-    //   data: [resultRemoteAccountId, resultAccountId, resultClaimedAmount]
-    // } = await TxCrowdloanRewardsTests.txCrowdloanRewardsClaimTest(api, contributorRewardAccount);
-    // expect(resultRemoteAccountId).to.not.be.an("Error");
-    // expect(resultClaimedAmount).to.be.a.bignumber;
-    // expect(resultClaimedAmount.toNumber()).to.be.greaterThan(0);
-    // expect(resultAccountId.toString()).to.be.equal(
-    //   api.createType("AccountId32", contributorRewardAccount.publicKey).toString()
-    // );
+    const wallet = contributorRewardWallets[0];
+    const testAmount = new BN(10).pow(new BN(12)); // 1 PICA
+    const testTransactions = [
+      api.tx.assets.transfer(1, sudoKey.publicKey, testAmount, true),
+      api.tx.assets.transferNative(sudoKey.publicKey, testAmount, true)
+    ];
+    // We can not batch these transactions, due to batch aborting on failure.
+    await sendAndWaitForSuccess(api, wallet, api.events.balances.Transfer.is, testTransactions[0]).catch(function (
+      err
+    ) {
+      expect(err.toString()).to.contain("balances.LiquidityRestrictions");
+    });
+    await sendAndWaitForSuccess(api, wallet, api.events.balances.Transfer.is, testTransactions[1]).catch(function (
+      err
+    ) {
+      expect(err.toString()).to.contain("balances.LiquidityRestrictions");
+    });
+  });
+
+  it("1.6  A user (#1.4) can claim a second time and pays transaction fees using the claimed, locked balance from earlier.", async function () {
+    this.timeout(2 * 60 * 1000);
+    this.retries(0);
+
+    const wallet = contributorRewardWallets[1];
   });
 
   it(

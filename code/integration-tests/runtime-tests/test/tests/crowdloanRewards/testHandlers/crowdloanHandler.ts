@@ -109,7 +109,7 @@ export class TxCrowdloanRewardsTests {
     api: ApiPromise,
     sudoKey: KeyringPair,
     testWallets: KeyringPair[],
-    testWalletShareAmountPICA = 100,
+    testWalletShareAmountPICA: BN,
     vestingPeriod: number | bigint | BN = 100800
   ) {
     let fullRewardAmount = new BN(0);
@@ -119,7 +119,7 @@ export class TxCrowdloanRewardsTests {
 
     let contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]> = [];
     // Before we go through all the contributors, we inject our test wallet at the very beginning.
-    const testContributorReward = api.createType("u128", Math.pow(testWalletShareAmountPICA, 12));
+    const testContributorReward = api.createType("u128", testWalletShareAmountPICA.pow(new BN(12)));
     for (const [i, testWallet] of testWallets.entries()) {
       let testContributorRemoteObject: PalletCrowdloanRewardsModelsRemoteAccount;
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
@@ -274,12 +274,15 @@ export class TxCrowdloanRewardsTests {
     api: ApiPromise,
     resultRemoteAccount: PalletCrowdloanRewardsModelsRemoteAccount,
     resultRewardAccount: AccountId32,
-    rewardAccount: KeyringPair
+    rewardAccount: KeyringPair,
+    testWalletRewardSum: BN
   ) {
     const remoteAccountObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
       RelayChain: getKsmContributorWallet(rewardAccount).publicKey
     });
-    expect(resultRewardAccount.toString()).to.be.equal(rewardAccount.publicKey.toString());
+    expect(resultRewardAccount.toString()).to.be.equal(
+      api.createType("AccountId32", rewardAccount.publicKey).toString()
+    );
 
     // Verifying query.
     const associationQuery = await api.query.crowdloanRewards.associations(rewardAccount.publicKey);
