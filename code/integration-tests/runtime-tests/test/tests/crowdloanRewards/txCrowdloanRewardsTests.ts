@@ -14,6 +14,7 @@ import BN from "bn.js";
 
 const AMOUNT_CONTRIBUTOR_WALLETS = 8;
 const TEST_WALLET_PICA_REWARD_AMOUNT = new BN(100);
+const INITIAL_ASSOCIATE_CLAIM_PERCENT = 25;
 
 describe("CrowdloanRewards Tests", function () {
   if (!testConfiguration.enabledTests.tx.enabled) return;
@@ -94,8 +95,7 @@ describe("CrowdloanRewards Tests", function () {
       api,
       sudoKey,
       api.events.sudo.Sudid.is,
-      api.tx.sudo.sudo(api.tx.crowdloanRewards.initialize()),
-      true
+      api.tx.sudo.sudo(api.tx.crowdloanRewards.initialize())
     );
     expect(sudoResult.isErr).to.be.true;
     expect(sudoResult.asErr.asModule.index).to.be.bignumber.equal(new BN("58"));
@@ -142,9 +142,13 @@ describe("CrowdloanRewards Tests", function () {
   it("1.4  A user, without initial funds, can associate their contributor KSM wallet with a correct proof & claim 25% of the reward as locked balance.", async function () {
     this.timeout(2 * 60 * 1000);
     this.retries(0);
+
     // Wallet: Contributor 1
     // Contributor Wallet: KSM Contributor 1
     const rewardAccount = contributorRewardWallets[0];
+
+    const walletBalanceBefore = await api.rpc.assets.balanceOf("1", rewardAccount.publicKey);
+
     const proofMessage = getKsmProofMessage(api, getKsmContributorWallet(rewardAccount), rewardAccount);
     const {
       data: [resultRemoteAccount, resultRewardAccount]
@@ -160,7 +164,9 @@ describe("CrowdloanRewards Tests", function () {
       resultRemoteAccount,
       resultRewardAccount,
       rewardAccount,
-      TEST_WALLET_PICA_REWARD_AMOUNT
+      TEST_WALLET_PICA_REWARD_AMOUNT,
+      walletBalanceBefore,
+      INITIAL_ASSOCIATE_CLAIM_PERCENT
     );
   });
 

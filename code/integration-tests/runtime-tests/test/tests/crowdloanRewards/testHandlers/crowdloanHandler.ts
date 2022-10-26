@@ -1,7 +1,7 @@
 import { KeyringPair } from "@polkadot/keyring/types";
 import { sendAndWaitForSuccess } from "@composable/utils/polkadotjs";
 import { AnyNumber, IKeyringPair, ITuple } from "@polkadot/types/types";
-import { PalletCrowdloanRewardsModelsRemoteAccount } from "@composable/types/interfaces";
+import { CustomRpcBalance, PalletCrowdloanRewardsModelsRemoteAccount } from "@composable/types/interfaces";
 import { Compact, u128, u32, u64, Vec } from "@polkadot/types-codec";
 import { shares, totalPicaRewarded } from "@composabletests/tests/crowdloanRewards/contributions.json";
 import { expect } from "chai";
@@ -275,7 +275,9 @@ export class TxCrowdloanRewardsTests {
     resultRemoteAccount: PalletCrowdloanRewardsModelsRemoteAccount,
     resultRewardAccount: AccountId32,
     rewardAccount: KeyringPair,
-    testWalletRewardSum: BN
+    testWalletRewardSum: BN,
+    walletBalanceBefore: CustomRpcBalance,
+    initialAssociateClaimPercent: number
   ) {
     const remoteAccountObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
       RelayChain: getKsmContributorWallet(rewardAccount).publicKey
@@ -289,5 +291,17 @@ export class TxCrowdloanRewardsTests {
     expect(resultRemoteAccount.toString()) // Result from extrinsic.
       .to.be.equal(associationQuery.unwrap().toString()) // Result from query.
       .to.be.equal(remoteAccountObject.toString()); // Expected
+
+    const expectedClaimedAmount = testWalletRewardSum.div(new BN(100).divn(initialAssociateClaimPercent));
+
+    const walletBalanceAfter = await api.rpc.assets.balanceOf("1", rewardAccount.publicKey);
+    // ToDo: `assets.balanceOf` returns free+locked balance!
+    //expect(new BN(walletBalanceAfter.toString())).to.be.equal(new BN(walletBalanceBefore.toString()));
+
+    const lockedAmount = await api.query.balances.locks(rewardAccount.publicKey);
+    expect(lockedAmount.length).to.be.equal(1);
+    expect(lockedAmount[0].id.toString()).to.be.equal("clr_lock");
+    expect(lockedAmount[0].amount).to.be.bignumber.equal(expectedClaimedAmount);
+    expect(lockedAmount[0].reasons.toString()).to.be.equal("Misc");
   }
 }
