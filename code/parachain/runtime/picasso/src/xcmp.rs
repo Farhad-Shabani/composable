@@ -209,10 +209,8 @@ impl xcm_executor::Config for XcmConfig {
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
-
 	type Trader = Trader;
 	type ResponseHandler = RelayerXcm;
-
 	type SubscriptionService = RelayerXcm;
 	type AssetClaims = RelayerXcm;
 	type AssetTrap = CaptureAssetTrap;
@@ -254,6 +252,10 @@ impl orml_unknown_tokens::Config for Runtime {
 	type Event = Event;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> happy socping
 pub fn xcm_asset_fee_estimator(instructions: u8, asset_id: CurrencyId) -> Balance {
 	assert!((instructions as u32) <= MaxInstructions::get());
 	let total_weight = UnitWeightCost::get() * instructions as u64;

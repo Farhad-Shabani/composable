@@ -6433,6 +6433,7 @@ dependencies = [
  "polkadot-core-primitives",
  "polkadot-parachain",
  "polkadot-primitives",
+ "polkadot-runtime",
  "polkadot-runtime-parachains",
  "primitives 0.1.0",
  "rococo-runtime",

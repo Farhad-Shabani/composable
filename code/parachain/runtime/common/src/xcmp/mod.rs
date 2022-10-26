@@ -27,6 +27,9 @@ use xcm_executor::{
 	*,
 };
 
+const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
+	
+
 parameter_types! {
 	// similar to what Acala/Hydra has
 	pub const BaseXcmWeight: Weight = 100_000_000;

@@ -263,10 +263,9 @@ pub fn xcm_fee_estimator(instructions: u8) -> Weight {
 
 impl pallet_xcm::Config for Runtime {
 	type Event = Event;
-	type SendXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
+	type SendXcmOrigin = EnsureXcmOrigin<EnsureRootOrHalfNativeTechnical, LocalOriginToLocation>;
 	type XcmRouter = XcmRouter;
 	type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
-	/// https://medium.com/kusama-network/kusamas-governance-thwarts-would-be-attacker-9023180f6fb
 	type XcmExecuteFilter = Nothing;
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type XcmTeleportFilter = Everything;
@@ -276,7 +275,7 @@ impl pallet_xcm::Config for Runtime {
 	type Origin = Origin;
 	type Call = Call;
 
-	const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
+	const VERSION_DISCOVERY_QUEUE_SIZE: VERSION_DISCOVERY_QUEUE_SIZE = 100;
 	type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
 }
 
