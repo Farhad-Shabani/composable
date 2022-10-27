@@ -128,7 +128,7 @@ export class TxCrowdloanRewardsTests {
 
     let contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]> = [];
     // Before we go through all the contributors, we inject our test wallet at the very beginning.
-    const testContributorReward = api.createType("u128", testWalletShareAmountPICA);
+    const testContributorReward = api.createType("u128", testWalletShareAmountPICA.pow(new BN(12)));
     for (const [i, testWallet] of testWallets.entries()) {
       let testContributorRemoteObject: PalletCrowdloanRewardsModelsRemoteAccount;
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
@@ -156,7 +156,7 @@ export class TxCrowdloanRewardsTests {
         remoteAccountObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
           RelayChain: api.createType("AccountId32", key)
         });
-      const currentContributorAmount = new BN(value);
+      const currentContributorAmount = new BN(parseInt(value).toFixed(0)).mul(new BN(10).pow(new BN(12)));
       fullRewardAmount = fullRewardAmount.add(currentContributorAmount);
       contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vestingTime]);
 
