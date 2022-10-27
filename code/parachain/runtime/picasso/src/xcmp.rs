@@ -252,10 +252,6 @@ impl orml_unknown_tokens::Config for Runtime {
 	type Event = Event;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> happy socping
 pub fn xcm_asset_fee_estimator(instructions: u8, asset_id: CurrencyId) -> Balance {
 	assert!((instructions as u32) <= MaxInstructions::get());
 	let total_weight = UnitWeightCost::get() * instructions as u64;
@@ -271,7 +267,7 @@ pub fn xcm_fee_estimator(instructions: u8) -> Weight {
 
 impl pallet_xcm::Config for Runtime {
 	type Event = Event;
-	type SendXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
+	type SendXcmOrigin = EnsureXcmOrigin<Origin, ()>;
 	type XcmRouter = XcmRouter;
 	type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
 	type XcmExecuteFilter = Nothing;
@@ -283,7 +279,7 @@ impl pallet_xcm::Config for Runtime {
 	type Origin = Origin;
 	type Call = Call;
 
-	const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
+	const VERSION_DISCOVERY_QUEUE_SIZE: u32 = VERSION_DISCOVERY_QUEUE_SIZE;
 	type AdvertisedXcmVersion = pallet_xcm::CurrentXcmVersion;
 }
 
