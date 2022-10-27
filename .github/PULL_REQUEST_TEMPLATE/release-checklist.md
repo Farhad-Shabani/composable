@@ -16,7 +16,7 @@ In the PR description,
 
 ## Act
 
-- [ ] Generate weights, i.e run `benchmark`
+- [ ] Regenerate weights for all pallets.
 - [ ] Runtime [versioning](https://docs.substrate.io/build/upgrade-the-runtime/) updates
   - [ ] Update `spec_version` (automate-able)
   - [ ] Update `transaction_version` if existing extrinsics or their ordering has changed. Can be verified via [metadata comparison](https://github.com/paritytech/polkadot/blob/master/doc/release-checklist.md#extrinsic-ordering).
