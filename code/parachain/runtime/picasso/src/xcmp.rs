@@ -136,13 +136,7 @@ pub type LocalAssetTransactor = MultiCurrencyAdapter<
 	DepositToAlternative<TreasuryAccount, Tokens, CurrencyId, AccountId, Balance>,
 >;
 
-pub struct RelayReserveFromParachain;
-impl FilterAssetLocation for RelayReserveFromParachain {
-	fn filter_asset_location(asset: &MultiAsset, origin: &MultiLocation) -> bool {
-		AbsoluteReserveProvider::reserve(asset) == Some(MultiLocation::parent()) &&
-			matches!(origin, MultiLocation { parents: 1, interior: X1(Parachain(_)) })
-	}
-}
+
 
 type IsReserveAssetLocationFilter =
 	(DebugMultiNativeAsset, MultiNativeAsset<AbsoluteReserveProvider>, RelayReserveFromParachain);
