@@ -50,10 +50,6 @@ parameter_types! {
 	pub const UnitWeightCost: Weight = 200_000_000;
 	pub const MaxInstructions: u32 = 100;
 }
-
-/// this is debug struct implementing as many XCMP interfaces as possible
-/// it just dumps content, no modification.
-/// returns default expected
 pub struct XcmpDebug;
 
 impl ShouldExecute for XcmpDebug {

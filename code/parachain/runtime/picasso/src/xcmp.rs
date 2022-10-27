@@ -66,11 +66,11 @@ parameter_types! {
 	pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 }
 
+
 pub type Barrier = (
 	XcmpDebug,
-	//DebugAllowUnpaidExecutionFrom<WellKnownsChains>,
 	AllowKnownQueryResponses<RelayerXcm>,
-	AllowSubscriptionsFrom<Everything>,
+	AllowSubscriptionsFrom<ParentOrSiblings>,
 	AllowTopLevelPaidExecutionFrom<Everything>,
 	TakeWeightCredit,
 );
@@ -81,7 +81,7 @@ pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNet
 /// queues.
 pub type XcmRouter = (
 	// Two routers - use UMP to communicate with the relay chain:
-	cumulus_primitives_utility::ParentAsUmp<ParachainSystem, ()>,
+	cumulus_primitives_utility::ParentAsUmp<ParachainSystem, RelayerXcm>,
 	// ..and XCMP to communicate with the sibling chains.
 	XcmpQueue,
 );
