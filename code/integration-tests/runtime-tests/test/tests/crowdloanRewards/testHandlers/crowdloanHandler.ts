@@ -10,17 +10,26 @@ import { ApiPromise } from "@polkadot/api";
 import BN from "bn.js";
 import { AccountId32 } from "@polkadot/types/interfaces";
 
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const toHexString = (bytes: any) =>
   Array.prototype.map.call(bytes, x => ("0" + (x & 0xff).toString(16)).slice(-2)).join("");
 
 // The prefix is defined as pallet config
-const proofMessage = (account: IKeyringPair, isEth = false) =>
-  (isEth ? "picasso-" : "<Bytes>picasso-") + toHexString(account.publicKey) + (isEth ? "" : "</Bytes>");
+const proofMessageKsm = (account: IKeyringPair) => "<Bytes>picasso-" + toHexString(account.publicKey) + "</Bytes>";
+
+const proofMessageEth = (account: string) => "picasso-" + toHexString(account);
 
 export const ethAccount = (seed: string) => new Web3().eth.accounts.create(seed);
 
 export const getSumOfContributorRewardsAmount = () => {
   return new BN(totalPicaRewarded).mul(new BN(10).pow(new BN(12)));
+};
+
+export const getAmountAvailableToClaim = (api: ApiPromise, accountId: Uint8Array) => {
+  return api.rpc.crowdloanRewards.amountAvailableToClaimFor(accountId);
 };
 
 export const getKsmProofMessage = (
@@ -29,7 +38,7 @@ export const getKsmProofMessage = (
   contributorRewardAccount: IKeyringPair
 ) => {
   return api.createType("PalletCrowdloanRewardsModelsProof", {
-    RelayChain: [contributor.publicKey, { Sr25519: contributor.sign(proofMessage(contributorRewardAccount)) }]
+    RelayChain: [contributor.publicKey, { Sr25519: contributor.sign(proofMessageKsm(contributorRewardAccount)) }]
   });
 };
 
@@ -39,7 +48,7 @@ export const getEthProofMessage = (
   contributorRewardAccount: IKeyringPair
 ) => {
   return api.createType("PalletCrowdloanRewardsModelsProof", {
-    Ethereum: contributor.sign(proofMessage(contributorRewardAccount, true)).signature
+    Ethereum: contributor.sign(proofMessageEth(ethAccount(contributorRewardAccount.address).address)).signature
   });
 };
 
@@ -115,11 +124,11 @@ export class TxCrowdloanRewardsTests {
     let fullRewardAmount = new BN(0);
 
     // ToDo: Vesting time has changed from blocks to milliseconds!
-    const vestingTime = api.createType("u32", vestingPeriod);
+    const vestingTime = api.createType("u64", vestingPeriod);
 
-    let contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]> = [];
+    let contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]> = [];
     // Before we go through all the contributors, we inject our test wallet at the very beginning.
-    const testContributorReward = api.createType("u128", testWalletShareAmountPICA.pow(new BN(12)));
+    const testContributorReward = api.createType("u128", testWalletShareAmountPICA);
     for (const [i, testWallet] of testWallets.entries()) {
       let testContributorRemoteObject: PalletCrowdloanRewardsModelsRemoteAccount;
       testContributorRemoteObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
@@ -137,7 +146,7 @@ export class TxCrowdloanRewardsTests {
     // Now we can continue collecting & populating our actual contributors.
     // Iterating through our list of contributors
     let i = 0;
-    const allContributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]> = [];
+    const allContributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]> = [];
     for (const [key, value] of Object.entries(shares)) {
       let remoteAccountObject: PalletCrowdloanRewardsModelsRemoteAccount;
       // Creating either an ethereum or ksm contributor object.
@@ -147,7 +156,7 @@ export class TxCrowdloanRewardsTests {
         remoteAccountObject = api.createType("PalletCrowdloanRewardsModelsRemoteAccount", {
           RelayChain: api.createType("AccountId32", key)
         });
-      const currentContributorAmount = new BN(parseInt(value).toFixed(0)).mul(new BN(10).pow(new BN(12)));
+      const currentContributorAmount = new BN(value);
       fullRewardAmount = fullRewardAmount.add(currentContributorAmount);
       contributors.push([remoteAccountObject, api.createType("u128", currentContributorAmount), vestingTime]);
 
@@ -171,7 +180,7 @@ export class TxCrowdloanRewardsTests {
 
   public static async verifyCrowdloanRewardsPopulation(
     api: ApiPromise,
-    contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u32]>
+    contributors: Array<[PalletCrowdloanRewardsModelsRemoteAccount, u128, u64]>
   ) {
     for (const contributor of contributors) {
       const rewardsQuery = await api.query.crowdloanRewards.rewards(contributor[0]);
@@ -244,7 +253,7 @@ export class TxCrowdloanRewardsTests {
   //   contributor: { sign: (arg0: string) => any },
   //   contributorRewardAccount: IKeyringPair
   // ) {
-  //   const proof = contributor.sign(proofMessage(contributorRewardAccount, true));
+  //   const proof = contributor.sign(proofMessageKsm(contributorRewardAccount, true));
   //   return await sendUnsignedAndWaitForSuccess(
   //     api,
   //     api.events.crowdloanRewards.Associated.is,
@@ -292,7 +301,9 @@ export class TxCrowdloanRewardsTests {
       .to.be.equal(associationQuery.unwrap().toString()) // Result from query.
       .to.be.equal(remoteAccountObject.toString()); // Expected
 
-    const expectedClaimedAmount = testWalletRewardSum.div(new BN(100).divn(initialAssociateClaimPercent));
+    const expectedClaimedAmount = testWalletRewardSum
+      .div(new BN(100).divn(initialAssociateClaimPercent))
+      .mul(new BN(10).pow(new BN(12)));
 
     const walletBalanceAfter = await api.rpc.assets.balanceOf("1", rewardAccount.publicKey);
     // ToDo: `assets.balanceOf` returns free+locked balance!
@@ -300,8 +311,16 @@ export class TxCrowdloanRewardsTests {
 
     const lockedAmount = await api.query.balances.locks(rewardAccount.publicKey);
     expect(lockedAmount.length).to.be.equal(1);
-    expect(lockedAmount[0].id.toString()).to.be.equal("clr_lock");
     expect(lockedAmount[0].amount).to.be.bignumber.equal(expectedClaimedAmount);
-    expect(lockedAmount[0].reasons.toString()).to.be.equal("Misc");
+  }
+
+  public static async sendClaimsWithDelay(api: ApiPromise, wallet: KeyringPair, delay = 0) {
+    await sleep(delay);
+    return await sendAndWaitForSuccess(
+      api,
+      wallet,
+      api.events.crowdloanRewards.Claimed.is,
+      api.tx.crowdloanRewards.claim()
+    );
   }
 }

@@ -23,7 +23,7 @@ export default {
     PalletCrowdloanRewardsModelsReward: {
       total: "u128",
       claimed: "u128",
-      vestingPeriod: "u32"
+      vestingPeriod: "u64"
     },
     PalletCrowdloanRewardsModelsRemoteAccount: {
       _enum: {
@@ -204,6 +204,8 @@ export default {
     PalletCosmwasmContractInfo: "Null",
     PalletCosmwasmCodeInfo: "Null",
     PalletCosmwasmEntryPoint: "Null",
-    PalletCosmwasmCodeIdentifier: "Null"
+    PalletCosmwasmCodeIdentifier: "Null",
+    PalletStakingRewardsRewardAccumulationHookError:"Null",
+    ComposableTraitsDexAssetAmount:"Null"
   }
 };

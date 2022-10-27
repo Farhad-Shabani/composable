@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import type { ComposableTraitsDefiCurrencyPairCurrencyId, CurrencyId } from '@composable/types/interfaces/common';
-import type { Enum, Null, Struct, bool, u128, u32 } from '@polkadot/types-codec';
+import type { Enum, Null, Struct, bool, u128, u32, u64 } from '@polkadot/types-codec';
 import type { ITuple } from '@polkadot/types-codec/types';
 import type { EthereumAccountId } from '@polkadot/types/interfaces/eth';
 import type { EcdsaSignature, MultiSignature } from '@polkadot/types/interfaces/extrinsics';
@@ -70,6 +70,9 @@ export interface ComposableTraitsDefiSell extends Null {}
 
 /** @name ComposableTraitsDefiTake */
 export interface ComposableTraitsDefiTake extends Null {}
+
+/** @name ComposableTraitsDexAssetAmount */
+export interface ComposableTraitsDexAssetAmount extends Null {}
 
 /** @name ComposableTraitsDexConstantProductPoolInfo */
 export interface ComposableTraitsDexConstantProductPoolInfo extends Struct {
@@ -273,7 +276,7 @@ export interface PalletCrowdloanRewardsModelsRemoteAccount extends Enum {
 export interface PalletCrowdloanRewardsModelsReward extends Struct {
   readonly total: u128;
   readonly claimed: u128;
-  readonly vestingPeriod: u32;
+  readonly vestingPeriod: u64;
 }
 
 /** @name PalletCrowdloanRewardsReward */

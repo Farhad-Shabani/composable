@@ -6,9 +6,8 @@
 import '@polkadot/api-base/types/submittable';
 
 import type { ComposableTraitsDefiCurrencyPairCurrencyId, ComposableTraitsDefiSellCurrencyId, ComposableTraitsXcmXcmSellRequest } from '@composable/types/interfaces/common';
-import type { CommonMosaicRemoteAssetId, ComposableSupportEthereumAddress, ComposableTraitsAccountProxyProxyType, ComposableTraitsAssetsBasicAssetMetadata, ComposableTraitsBondedFinanceBondOffer, ComposableTraitsCallFilterCallFilterEntry, ComposableTraitsDefiTake, ComposableTraitsLendingCreateInput, ComposableTraitsLendingRepayStrategy, ComposableTraitsLendingUpdateInput, ComposableTraitsTimeTimeReleaseFunction, ComposableTraitsVaultVaultConfig, ComposableTraitsVestingVestingSchedule, ComposableTraitsVestingVestingScheduleIdSet, ComposableTraitsVestingVestingScheduleInfo, ComposableTraitsXcmAssetsXcmAssetLocation, CumulusPrimitivesParachainInherentParachainInherentData, DaliRuntimeOpaqueSessionKeys, DaliRuntimeOriginCaller, FrameSupportScheduleMaybeHashed, IbcTraitOpenChannelParams, IbcTransferPalletParams, IbcTransferTransferParams, PalletCosmwasmCodeIdentifier, PalletCrowdloanRewardsModelsProof, PalletCrowdloanRewardsModelsRemoteAccount, PalletDemocracyConviction, PalletDemocracyVoteAccountVote, PalletIbcAny, PalletIbcConnectionParams, PalletIbcPingSendPingParams, PalletIdentityBitFlags, PalletIdentityIdentityInfo, PalletIdentityJudgement, PalletLiquidationsLiquidationStrategyConfiguration, PalletMosaicAmmSwapInfo, PalletMosaicDecayBudgetPenaltyDecayer, PalletMosaicNetworkInfo, XcmVersionedMultiAsset } from '@composable/types/interfaces/crowdloanRewards';
+import type { CommonMosaicRemoteAssetId, ComposableSupportEthereumAddress, ComposableTraitsAccountProxyProxyType, ComposableTraitsAssetsBasicAssetMetadata, ComposableTraitsBondedFinanceBondOffer, ComposableTraitsCallFilterCallFilterEntry, ComposableTraitsDefiTake, ComposableTraitsDexAssetAmount, ComposableTraitsLendingCreateInput, ComposableTraitsLendingRepayStrategy, ComposableTraitsLendingUpdateInput, ComposableTraitsStakingRewardPoolConfiguration, ComposableTraitsStakingRewardUpdate, ComposableTraitsTimeTimeReleaseFunction, ComposableTraitsVaultVaultConfig, ComposableTraitsVestingVestingSchedule, ComposableTraitsVestingVestingScheduleIdSet, ComposableTraitsVestingVestingScheduleInfo, ComposableTraitsXcmAssetsXcmAssetLocation, CumulusPrimitivesParachainInherentParachainInherentData, DaliRuntimeOpaqueSessionKeys, DaliRuntimeOriginCaller, FrameSupportScheduleMaybeHashed, IbcTraitOpenChannelParams, IbcTransferPalletParams, IbcTransferTransferParams, PalletCosmwasmCodeIdentifier, PalletCrowdloanRewardsModelsProof, PalletCrowdloanRewardsModelsRemoteAccount, PalletDemocracyConviction, PalletDemocracyVoteAccountVote, PalletIbcAny, PalletIbcConnectionParams, PalletIbcPingSendPingParams, PalletIdentityBitFlags, PalletIdentityIdentityInfo, PalletIdentityJudgement, PalletLiquidationsLiquidationStrategyConfiguration, PalletMosaicAmmSwapInfo, PalletMosaicDecayBudgetPenaltyDecayer, PalletMosaicNetworkInfo, XcmVersionedMultiAsset } from '@composable/types/interfaces/crowdloanRewards';
 import type { PalletPabloPoolInitConfiguration } from '@composable/types/interfaces/pablo';
-import type { ComposableTraitsStakingRewardPoolConfiguration, ComposableTraitsStakingRewardUpdate } from '@composable/types/interfaces/stakingRewards';
 import type { ApiTypes, AugmentedSubmittable, SubmittableExtrinsic, SubmittableExtrinsicFunction } from '@polkadot/api-base/types';
 import type { Data } from '@polkadot/types';
 import type { BTreeMap, Bytes, Compact, Option, U8aFixed, Vec, WrapperKeepOpaque, bool, u128, u16, u32, u64, u8 } from '@polkadot/types-codec';
@@ -138,8 +137,8 @@ declare module '@polkadot/api-base/types/submittable' {
        **/
       registerAsset: AugmentedSubmittable<(location: ComposableTraitsXcmAssetsXcmAssetLocation | { parents?: any; interior?: any } | string | Uint8Array, ed: u128 | AnyNumber | Uint8Array, ratio: Option<u128> | null | Uint8Array | u128 | AnyNumber, decimals: Option<u32> | null | Uint8Array | u32 | AnyNumber) => SubmittableExtrinsic<ApiType>, [ComposableTraitsXcmAssetsXcmAssetLocation, u128, Option<u128>, Option<u32>]>;
       /**
-       * Minimal amount of asset_id required to send message to other network.
-       * Target network may or may not accept payment.
+       * Minimal amount of `foreign_asset_id` required to send message to other network.
+       * Target network may or may not accept payment `amount`.
        * Assumed this is maintained up to date by technical team.
        * Mostly UI hint and fail fast solution.
        * In theory can be updated by parachain sovereign account too.
@@ -1083,27 +1082,22 @@ declare module '@polkadot/api-base/types/submittable' {
        * Add liquidity to the underlying pablo pool.
        * Works only for single pool route.
        **/
-      addLiquidity: AugmentedSubmittable<(assetPair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, baseAmount: u128 | AnyNumber | Uint8Array, quoteAmount: u128 | AnyNumber | Uint8Array, minMintAmount: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128, u128, bool]>;
+      addLiquidity: AugmentedSubmittable<(assets: BTreeMap<u128, u128>, minMintAmount: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [BTreeMap<u128, u128>, u128, bool]>;
       /**
        * Buy `amount` of quote asset for `asset_pair` via route found in router.
        * On successful underlying DEX pallets will emit appropriate event.
        **/
-      buy: AugmentedSubmittable<(assetPair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, amount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128]>;
-      /**
-       * Exchange `amount` of quote asset for `asset_pair` via route found in router.
-       * On successful underlying DEX pallets will emit appropriate event
-       **/
-      exchange: AugmentedSubmittable<(assetPair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, amount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128]>;
+      buy: AugmentedSubmittable<(inAssetId: u128 | AnyNumber | Uint8Array, outAsset: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, ComposableTraitsDexAssetAmount]>;
       /**
        * Remove liquidity from the underlying pablo pool.
        * Works only for single pool route.
        **/
-      removeLiquidity: AugmentedSubmittable<(assetPair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, lpAmount: u128 | AnyNumber | Uint8Array, minBaseAmount: u128 | AnyNumber | Uint8Array, minQuoteAmount: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128, u128]>;
+      removeLiquidity: AugmentedSubmittable<(lpAmount: u128 | AnyNumber | Uint8Array, minReceive: BTreeMap<u128, u128>) => SubmittableExtrinsic<ApiType>, [u128, BTreeMap<u128, u128>]>;
       /**
-       * Sell `amount` of quote asset for `asset_pair` via route found in router.
-       * On successful underlying DEX pallets will emit appropriate event.
+       * Exchange `amount` of quote asset for `asset_pair` via route found in router.
+       * On successful underlying DEX pallets will emit appropriate event
        **/
-      sell: AugmentedSubmittable<(assetPair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, amount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128]>;
+      swap: AugmentedSubmittable<(inAsset: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array, minReceive: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array) => SubmittableExtrinsic<ApiType>, [ComposableTraitsDexAssetAmount, ComposableTraitsDexAssetAmount]>;
       /**
        * Create, update or remove route.
        * On successful emits one of `RouteAdded`, `RouteUpdated` or `RouteDeleted`.
@@ -1981,13 +1975,13 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Emits `LiquidityAdded` event when successful.
        **/
-      addLiquidity: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, baseAmount: u128 | AnyNumber | Uint8Array, quoteAmount: u128 | AnyNumber | Uint8Array, minMintAmount: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, u128, u128, u128, bool]>;
+      addLiquidity: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, assets: BTreeMap<u128, u128>, minMintAmount: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, BTreeMap<u128, u128>, u128, bool]>;
       /**
        * Execute a buy order on pool.
        * 
        * Emits `Swapped` event when successful.
        **/
-      buy: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, assetId: u128 | AnyNumber | Uint8Array, amount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, u128, u128, u128, bool]>;
+      buy: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, inAssetId: u128 | AnyNumber | Uint8Array, outAsset: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, u128, ComposableTraitsDexAssetAmount, bool]>;
       /**
        * Create a new pool. Note that this extrinsic does NOT validate if a pool with the same
        * assets already exists in the runtime.
@@ -2001,13 +1995,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Emits `LiquidityRemoved` event when successful.
        **/
-      removeLiquidity: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, lpAmount: u128 | AnyNumber | Uint8Array, minBaseAmount: u128 | AnyNumber | Uint8Array, minQuoteAmount: u128 | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, u128, u128, u128]>;
-      /**
-       * Execute a sell order on pool.
-       * 
-       * Emits `Swapped` event when successful.
-       **/
-      sell: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, assetId: u128 | AnyNumber | Uint8Array, amount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, u128, u128, u128, bool]>;
+      removeLiquidity: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, lpAmount: u128 | AnyNumber | Uint8Array, minReceive: BTreeMap<u128, u128>) => SubmittableExtrinsic<ApiType>, [u128, u128, BTreeMap<u128, u128>]>;
       /**
        * Execute a specific swap operation.
        * 
@@ -2015,7 +2003,7 @@ declare module '@polkadot/api-base/types/submittable' {
        * 
        * Emits `Swapped` event when successful.
        **/
-      swap: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, pair: ComposableTraitsDefiCurrencyPairCurrencyId | { base?: any; quote?: any } | string | Uint8Array, quoteAmount: u128 | AnyNumber | Uint8Array, minReceive: u128 | AnyNumber | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, ComposableTraitsDefiCurrencyPairCurrencyId, u128, u128, bool]>;
+      swap: AugmentedSubmittable<(poolId: u128 | AnyNumber | Uint8Array, inAsset: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array, minReceive: ComposableTraitsDexAssetAmount | { assetId?: any; amount?: any } | string | Uint8Array, keepAlive: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>, [u128, ComposableTraitsDexAssetAmount, ComposableTraitsDexAssetAmount, bool]>;
       /**
        * Generic tx
        **/
