@@ -356,7 +356,7 @@ pub struct OutgoingFee<Registry :RemoteAssetRegistryInspect> {
 
 
 impl<Registry :RemoteAssetRegistryInspect< AssetId = CurrencyId, AssetNativeLocation = XcmAssetLocation, Balance = Balance>> OutgoingFee<Registry> {
-	pub fn outgoing_fee(location: MultiLocation) -> Option<Balance> {
+	pub fn outgoing_fee(location: &MultiLocation) -> Option<Balance> {
 		match (location.parents, location.first_interior()) {
 			(1, None) => Some(400_000_000_000),
 			(1, Some(Parachain(id)))  =>  {

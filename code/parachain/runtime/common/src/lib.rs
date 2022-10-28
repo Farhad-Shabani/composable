@@ -16,6 +16,7 @@ pub mod governance;
 pub mod impls;
 pub mod topology;
 pub mod xcmp;
+pub mod fees;
 
 use core::marker::PhantomData;
 
