@@ -1,4 +1,4 @@
-use frame_support::weights::{constants::ExtrinsicBaseWeight, WeightToFeePolynomial, WeightToFeeCoefficients, WeightToFeeCoefficient, WeightToFee};
+use frame_support::weights::{constants::ExtrinsicBaseWeight, WeightToFeePolynomial, WeightToFeeCoefficients, WeightToFeeCoefficient};
 use primitives::currency::CurrencyId;
 use sp_runtime::Perbill;
 use crate::Balance;
@@ -24,7 +24,7 @@ mod commons_sence {
 
 	#[test]
 	fn reasonable_fee() {
-		let x = WeightToFee::weight_to_fee(42);
+		let converted = WeightToFee::weight_to_fee(42);
 	}
 
 }
