@@ -50,7 +50,7 @@ parameter_types! {
 pub type Barrier = (
 	AllowUnpaidExecutionFrom<ThisChain<ParachainInfo>>,
 	AllowKnownQueryResponses<RelayerXcm>,
-	AllowSubscriptionsFrom<Everything>,
+	AllowSubscriptionsFrom<ParentOrSiblings>,
 	AllowTopLevelPaidExecutionFrom<Everything>,
 	TakeWeightCredit,
 );
