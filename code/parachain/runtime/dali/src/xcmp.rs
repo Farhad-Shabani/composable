@@ -1,6 +1,6 @@
 use super::*;
 use common::{
-	fees::WeightToFee,
+	fees::WeightToFeeConverter,
 	governance::native::{EnsureRootOrHalfNativeTechnical, NativeCouncilCollective},
 	topology,
 	xcmp::*,
@@ -33,7 +33,7 @@ use xcm_builder::{
 	AllowTopLevelPaidExecutionFrom, AllowUnpaidExecutionFrom, EnsureXcmOrigin, FixedWeightBounds,
 	LocationInverter, ParentIsPreset, RelayChainAsNative, SiblingParachainAsNative,
 	SiblingParachainConvertsVia, SignedAccountId32AsNative, SignedToAccountId32,
-	SovereignSignedViaLocation, TakeRevenue, TakeWeightCredit,
+	SovereignSignedViaLocation, TakeRevenue, TakeWeightCredit, BackingToPlurality,
 };
 use xcm_executor::{
 	traits::{DropAssets, FilterAssetLocation},
@@ -133,7 +133,7 @@ pub type Trader = TransactionFeePoolTrader<
 	AssetsIdConverter,
 	PriceConverter<AssetsRegistry>,
 	ToTreasury<AssetsIdConverter, crate::Assets, TreasuryAccount>,
-	WeightToFee,
+	WeightToFeeConverter,
 >;
 
 pub struct CaptureDropAssets<
@@ -259,14 +259,14 @@ parameter_types! {
 }
 
 pub type CouncilToPlurality = BackingToPlurality<
-	RuntimeOrigin,
-	pallet_collective::Origin<Runtime, NativeCouncilCollective>,
+	Origin,
+	collective::Origin<Runtime, NativeCouncilCollective>,
 	CouncilBodyId,
 >;
 
 impl pallet_xcm::Config for Runtime {
 	type Event = Event;
-	type SendXcmOrigin = EnsureXcmOrigin<CouncilToPlurality, LocalOriginToLocation>;
+	type SendXcmOrigin = EnsureXcmOrigin<Origin, CouncilToPlurality>;
 	type XcmRouter = XcmRouter;
 	type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
 	type XcmExecuteFilter = Nothing;

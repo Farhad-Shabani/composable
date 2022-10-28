@@ -1,7 +1,10 @@
-use frame_support::weights::{constants::ExtrinsicBaseWeight, WeightToFeePolynomial, WeightToFeeCoefficients, WeightToFeeCoefficient};
+use crate::Balance;
+use frame_support::weights::{
+	constants::ExtrinsicBaseWeight, WeightToFeeCoefficient, WeightToFeeCoefficients,
+	WeightToFeePolynomial,
+};
 use primitives::currency::CurrencyId;
 use sp_runtime::Perbill;
-use crate::Balance;
 
 pub struct WeightToFeeConverter;
 impl WeightToFeePolynomial for WeightToFeeConverter {
@@ -18,13 +21,17 @@ impl WeightToFeePolynomial for WeightToFeeConverter {
 	}
 }
 
-
 #[cfg(test)]
 mod commons_sence {
+	use super::WeightToFeeConverter;
+	use frame_support::weights::{
+		constants::{WEIGHT_PER_SECOND},
+		WeightToFee,
+	};
 
 	#[test]
 	fn reasonable_fee() {
-		let converted = WeightToFee::weight_to_fee(42);
+		let converted = WeightToFeeConverter::weight_to_fee(&WEIGHT_PER_SECOND);
+		assert_eq!(converted, 1_158_775_406_000);
 	}
-
 }
