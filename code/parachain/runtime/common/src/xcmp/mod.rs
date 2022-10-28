@@ -9,7 +9,7 @@ use composable_traits::{
 };
 use frame_support::{
 	dispatch::Weight,
-	ensure, log, parameter_types,
+ 	log, parameter_types,
 	traits::{Contains, Get},
 	weights::{WeightToFee, WeightToFeePolynomial},
 	WeakBoundedVec,
@@ -23,18 +23,18 @@ use sp_std::marker::PhantomData;
 use xcm::{latest::MultiAsset, prelude::*};
 use xcm_builder::*;
 use xcm_executor::{
-	traits::{FilterAssetLocation, ShouldExecute, WeightTrader},
+	traits::{FilterAssetLocation, WeightTrader},
 	*,
 };
 use cumulus_primitives_core::ParaId; 
 
-const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
+pub const VERSION_DISCOVERY_QUEUE_SIZE: u32 = 100;
 	
 parameter_types! {
 	pub const BaseXcmWeight: Weight = 100_000_000;
 	pub const XcmMaxAssetsForTransfer: usize = 2;
 	pub RelayNativeLocation: MultiLocation = MultiLocation::parent();
-	pub RelayOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
+	pub RelayOrigin: cumulus_pallet_xcm::Origin = cumulus_pallet_xcm::Origin::Relay;
 	pub const UnitWeightCost: Weight = 200_000_000;
 	pub const MaxInstructions: u32 = 100;
 }
@@ -350,18 +350,18 @@ impl FilterAssetLocation for RelayReserveFromParachain {
 
 
 /// Estimates outgoing fees on target chain 
-struct OutgoingFee<RemoteAssetRegistryInspect> {
-	_marker: PhantomData<RemoteAssetRegistryInspect>,
+pub struct OutgoingFee<Registry :RemoteAssetRegistryInspect> {
+	_marker: PhantomData<Registry>,
 }
 
 
-impl<RemoteAssetRegistryInspect> OutgoingFee<RemoteAssetRegistryInspect> {
+impl<Registry :RemoteAssetRegistryInspect< AssetId = CurrencyId, AssetNativeLocation = XcmAssetLocation, Balance = Balance>> OutgoingFee<Registry> {
 	pub fn outgoing_fee(location: MultiLocation) -> Option<Balance> {
 		match (location.parents, location.first_interior()) {
 			(1, None) => Some(400_000_000_000),
 			(1, Some(Parachain(id)))  =>  {
 				let location = XcmAssetLocation::new(location.clone());
-				RemoteAssetRegistryInspect::min_xcm_fee(ParaId::from(*id), location).or(Some(u128::MAX))
+				Registry::min_xcm_fee(ParaId::from(*id), location).or(Some(u128::MAX))
 			},
 			_ => None,
 		}
