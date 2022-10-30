@@ -1,6 +1,7 @@
 pub use composable_traits::{
     assets::Asset,
     currency::{
+        Rational64 as Rational,
         AssetExistentialDepositInspect, BalanceLike, Exponent,AssetRatioInspect,
     },
     defi::Ratio,
@@ -10,4 +11,4 @@ pub use composable_traits::{
     },
 };
 
-pub use sp_runtime::Rational128 as Rational;
+pub use codec::{Decode, Encode, FullCodec};

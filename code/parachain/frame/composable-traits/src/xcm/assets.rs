@@ -5,11 +5,10 @@ use polkadot_parachain::primitives::Id;
 use scale_info::TypeInfo;
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
-use sp_runtime::Rational128;
 use sp_std::vec::Vec;
 use xcm::latest::MultiLocation;
 
-use crate::{assets::Asset, currency::Exponent};
+use crate::{assets::Asset, currency::{Exponent, Rational64}};
 
 /// works only with concrete assets
 #[derive(Debug, Encode, Decode, Clone, PartialEq, Eq, TypeInfo)]
@@ -109,12 +108,12 @@ pub trait RemoteAssetRegistryMutate {
 	fn set_reserve_location(
 		asset_id: Self::AssetId,
 		location: Self::AssetNativeLocation,
-		ratio: Option<Rational128>,
+		ratio: Option<Rational64>,
 		decimals: Option<Exponent>,
 	) -> DispatchResult;
 
 	/// allows change  ratio of how much remote assets is needed for unit of native
-	fn update_ratio(location: Self::AssetNativeLocation, ratio: Option<Rational128>) -> DispatchResult;
+	fn update_ratio(location: Self::AssetNativeLocation, ratio: Option<Rational64>) -> DispatchResult;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, MaxEncodedLen, TypeInfo)]

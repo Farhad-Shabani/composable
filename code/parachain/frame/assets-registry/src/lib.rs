@@ -31,20 +31,14 @@ pub mod weights;
 pub mod pallet {
 	use crate::prelude::*;
 	pub use crate::weights::WeightInfo;
-	use codec::FullCodec;
-	use composable_traits::{
-		currency::{
-			CurrencyFactory, RangeId,
-		},		
-	};
+	use composable_traits::currency::{CurrencyFactory, RangeId};
 	use cumulus_primitives_core::ParaId;
 	use frame_support::{
 		dispatch::DispatchResultWithPostInfo, pallet_prelude::*, traits::EnsureOrigin,
 	};
 	use frame_system::pallet_prelude::*;
 	use scale_info::TypeInfo;
-	use sp_runtime::Rational128;
-use sp_std::{fmt::Debug, str, vec::Vec};
+	use sp_std::{fmt::Debug, str, vec::Vec};
 
 	/// The module configuration trait.
 	#[pallet::config]
@@ -117,7 +111,8 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 	/// How much of asset amount is needed to pay for one unit of native token.
 	#[pallet::storage]
 	#[pallet::getter(fn asset_ratio)]
-	pub type AssetRatio<T: Config> = StorageMap<_, Twox128, T::LocalAssetId, (u128, u128), OptionQuery>;
+	pub type AssetRatio<T: Config> =
+		StorageMap<_, Twox128, T::LocalAssetId, Rational, OptionQuery>;
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config>(sp_std::marker::PhantomData<T>);
@@ -183,7 +178,8 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 		/// ```
 		///
 		/// Example:
-		/// - (42, 123) will mean that amount of native token is equal `(amount_of_foreign * 42) / 123
+		/// - (42, 123) will mean that amount of native token is equal `(amount_of_foreign * 42) /
+		///   123
 		///
 		/// `decimals` - remote number of decimals on other(remote) chain
 		///
@@ -193,7 +189,7 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 			origin: OriginFor<T>,
 			location: T::ForeignAssetId,
 			ed: T::Balance,
-			ratio: Option<Rational128>,
+			ratio: Option<Rational>,
 			decimals: Option<Exponent>,
 		) -> DispatchResultWithPostInfo {
 			T::UpdateAssetRegistryOrigin::ensure_origin(origin)?;
@@ -215,7 +211,7 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 			origin: OriginFor<T>,
 			asset_id: T::LocalAssetId,
 			location: T::ForeignAssetId,
-			ratio: Option<Rational128>,
+			ratio: Option<Rational>,
 			decimals: Option<Exponent>,
 		) -> DispatchResultWithPostInfo {
 			T::UpdateAssetRegistryOrigin::ensure_origin(origin)?;
@@ -266,7 +262,7 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 		fn set_reserve_location(
 			asset_id: Self::AssetId,
 			location: Self::AssetNativeLocation,
-			ratio: Option<Rational128>,
+			ratio: Option<Rational>,
 			decimals: Option<Exponent>,
 		) -> DispatchResult {
 			ForeignToLocal::<T>::insert(&location, asset_id);
@@ -277,7 +273,7 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 
 		fn update_ratio(
 			location: Self::AssetNativeLocation,
-			ratio: Option<Rational128>,
+			ratio: Option<Rational>,
 		) -> DispatchResult {
 			let asset_id =
 				ForeignToLocal::<T>::try_get(location).map_err(|_| Error::<T>::AssetNotFound)?;
@@ -315,7 +311,7 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 						.expect("Must exist, as it does in ForeignToLocal");
 					let decimals = match foreign_metadata.decimals {
 						Some(exponent) => exponent,
-						_ => 12_u32,
+						_ => 12_u8,
 					};
 
 					Asset {
@@ -331,8 +327,8 @@ use sp_std::{fmt::Debug, str, vec::Vec};
 
 	impl<T: Config> AssetRatioInspect for Pallet<T> {
 		type AssetId = T::LocalAssetId;
-		fn get_ratio(asset_id: Self::AssetId) -> Option<Rational128> {
-			AssetRatio::<T>::get(asset_id)
+		fn get_ratio(asset_id: Self::AssetId) -> Option<Rational> {
+			AssetRatio::<T>::get(asset_id).map(Into::into)
 		}
 	}
 

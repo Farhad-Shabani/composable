@@ -10,8 +10,7 @@ use sp_std::fmt::Debug;
 
 use composable_support::math::safe::{SafeAdd, SafeDiv, SafeMul, SafeSub};
 
-/// really u8, but easy to do math operations
-pub type Exponent = u32;
+pub type Exponent = u8;
 
 /// Creates a new asset, compatible with [`MultiCurrency`](https://docs.rs/orml-traits/0.4.0/orml_traits/currency/trait.MultiCurrency.html).
 /// The implementor should ensure that a new `CurrencyId` is created and collisions are avoided.
@@ -84,7 +83,7 @@ pub trait LocalAssets<MayBeAssetId> {
 	/// Amount reasonably higher than minimal tradeable amount or minimal trading step on DEX.
 	fn unit<T: From<u64>>(currency_id: MayBeAssetId) -> Result<T, DispatchError> {
 		let exponent = Self::decimals(currency_id)?;
-		Ok(10_u64.checked_pow(exponent).ok_or(ArithmeticError::Overflow)?.into())
+		Ok(10_u64.checked_pow(exponent as u32).ok_or(ArithmeticError::Overflow)?.into())
 	}
 }
 
@@ -153,25 +152,49 @@ impl<
 pub trait AssetIdLike = FullCodec + MaxEncodedLen + Copy + Eq + PartialEq + Debug + TypeInfo;
 
 #[derive(
-	RuntimeDebug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, MaxEncodedLen, TypeInfo,
+	RuntimeDebug,
+	Copy,
+	Clone,
+	PartialEq,
+	Eq,
+	PartialOrd,
+	Ord,
+	Encode,
+	Decode,
+	MaxEncodedLen,
+	TypeInfo,
 )]
-#[repr(transparent)]
-pub struct Rational64((u64, u64));
+pub struct Rational64 {
+	pub numer: u64,
+	pub denom: u64,
+}
+
+impl Rational64 {
+	pub fn new(numer: u64, denom : u64) -> Self {
+		Rational64 { numer, denom}
+	}
+}
 
 impl From<Rational64> for FixedU128 {
-    fn from(this: Rational64) -> Self {
-        Self::from_rational(this.0.0.into(), this.0.1.into())
-    }
+	fn from(this: Rational64) -> Self {
+		Self::from_rational(this.numer.into(), this.denom.into())
+	}
+}
+
+impl From<(u64, u64)> for Rational64 {
+	fn from(this: (u64, u64)) -> Self {
+		Rational64::new(this.0, this.1)
+	}
 }
 
 impl From<Rational64> for FixedU64 {
-    fn from(this: Rational64) -> Self {
-        Self::from_rational(this.0.0.into(), this.0.1.into())
-    }
+	fn from(this: Rational64) -> Self {
+		Self::from_rational(this.numer.into(), this.denom.into())
+	}
 }
 
 impl From<Rational64> for Rational128 {
-    fn from(this: Rational64) -> Self {
-        Self::from(this.0.0.into(), this.0.1.into())
-    }
+	fn from(this: Rational64) -> Self {
+		Self::from(this.numer.into(), this.denom.into())
+	}
 }
