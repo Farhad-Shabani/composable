@@ -170,24 +170,28 @@ pub struct Rational64 {
 }
 
 impl Rational64 {
-	pub fn new(numer: u64, denom : u64) -> Self {
-		Rational64 { numer, denom}
+	pub fn new(numer: u64, denom: u64) -> Self {
+		Rational64 { numer, denom }
 	}
 }
 
-impl From<Rational64> for FixedU128 {
+impl const From<Rational64> for FixedU128 {
 	fn from(this: Rational64) -> Self {
 		Self::from_rational(this.numer.into(), this.denom.into())
 	}
 }
 
-impl From<(u64, u64)> for Rational64 {
+impl const From<(u64, u64)> for Rational64 {
 	fn from(this: (u64, u64)) -> Self {
-		Rational64::new(this.0, this.1)
+		{
+			let numer = this.0;
+			let denom = this.1;
+			Rational64 { numer, denom }
+		}
 	}
 }
 
-impl From<Rational64> for FixedU64 {
+impl const From<Rational64> for FixedU64 {
 	fn from(this: Rational64) -> Self {
 		Self::from_rational(this.numer.into(), this.denom.into())
 	}

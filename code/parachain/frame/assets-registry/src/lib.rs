@@ -227,6 +227,7 @@ pub mod pallet {
 		/// Target network may or may not accept payment `amount`.
 		/// Assumed this is maintained up to date by technical team.
 		/// Mostly UI hint and fail fast solution.
+		/// Messages sending smaller fee will not be sent.
 		/// In theory can be updated by parachain sovereign account too.
 		/// If None, than it is well known cannot pay with that asset on target_parachain_id.
 		/// If Some(0), than price can be anything greater or equal to zero.
