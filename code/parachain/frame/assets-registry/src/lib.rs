@@ -43,7 +43,8 @@ pub mod pallet {
 	};
 	use frame_system::pallet_prelude::*;
 	use scale_info::TypeInfo;
-	use sp_std::{fmt::Debug, str, vec::Vec};
+	use sp_runtime::Rational128;
+use sp_std::{fmt::Debug, str, vec::Vec};
 
 	/// The module configuration trait.
 	#[pallet::config]
@@ -116,7 +117,7 @@ pub mod pallet {
 	/// How much of asset amount is needed to pay for one unit of native token.
 	#[pallet::storage]
 	#[pallet::getter(fn asset_ratio)]
-	pub type AssetRatio<T: Config> = StorageMap<_, Twox128, T::LocalAssetId, Ratio, OptionQuery>;
+	pub type AssetRatio<T: Config> = StorageMap<_, Twox128, T::LocalAssetId, (u128, u128), OptionQuery>;
 
 	#[pallet::genesis_config]
 	pub struct GenesisConfig<T: Config>(sp_std::marker::PhantomData<T>);
@@ -174,7 +175,6 @@ pub mod pallet {
 		/// `ratio` -  allows `bring you own gas` fees.
 		/// Set to `None` to prevent payment in this asset, only transferring.
 		/// Setting to some will NOT start minting tokens with specified ratio.
-		/// Foreign assets will be put into parachain treasury as is.
 		///
 		/// ```python
 		/// # if cross chain message wants to pay tx fee with non native token
@@ -182,11 +182,8 @@ pub mod pallet {
 		/// amount_of_native_token = amount_of_foreign_token * ratio
 		/// ```
 		///
-		/// Examples:
-		///  
-		/// - One to one conversion is 10^18 integer.
-		///
-		/// - 10*10^18 will tell that for 1 foreign asset can `buy` 10 local native.
+		/// Example:
+		/// - (42, 123) will mean that amount of native token is equal `(amount_of_foreign * 42) / 123
 		///
 		/// `decimals` - remote number of decimals on other(remote) chain
 		///
@@ -196,7 +193,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			location: T::ForeignAssetId,
 			ed: T::Balance,
-			ratio: Option<Ratio>,
+			ratio: Option<Rational128>,
 			decimals: Option<Exponent>,
 		) -> DispatchResultWithPostInfo {
 			T::UpdateAssetRegistryOrigin::ensure_origin(origin)?;
@@ -218,7 +215,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			asset_id: T::LocalAssetId,
 			location: T::ForeignAssetId,
-			ratio: Option<Ratio>,
+			ratio: Option<Rational128>,
 			decimals: Option<Exponent>,
 		) -> DispatchResultWithPostInfo {
 			T::UpdateAssetRegistryOrigin::ensure_origin(origin)?;
@@ -269,7 +266,7 @@ pub mod pallet {
 		fn set_reserve_location(
 			asset_id: Self::AssetId,
 			location: Self::AssetNativeLocation,
-			ratio: Option<Ratio>,
+			ratio: Option<Rational128>,
 			decimals: Option<Exponent>,
 		) -> DispatchResult {
 			ForeignToLocal::<T>::insert(&location, asset_id);
@@ -280,7 +277,7 @@ pub mod pallet {
 
 		fn update_ratio(
 			location: Self::AssetNativeLocation,
-			ratio: Option<Ratio>,
+			ratio: Option<Rational128>,
 		) -> DispatchResult {
 			let asset_id =
 				ForeignToLocal::<T>::try_get(location).map_err(|_| Error::<T>::AssetNotFound)?;
@@ -334,7 +331,7 @@ pub mod pallet {
 
 	impl<T: Config> AssetRatioInspect for Pallet<T> {
 		type AssetId = T::LocalAssetId;
-		fn get_ratio(asset_id: Self::AssetId) -> Option<composable_traits::defi::Ratio> {
+		fn get_ratio(asset_id: Self::AssetId) -> Option<Rational128> {
 			AssetRatio::<T>::get(asset_id)
 		}
 	}

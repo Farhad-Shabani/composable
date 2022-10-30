@@ -9,3 +9,5 @@ pub use composable_traits::{
         RemoteAssetRegistryMutate,
     },
 };
+
+pub use sp_runtime::Rational128 as Rational;

@@ -34,7 +34,7 @@ benchmarks! {
 		let ratio = Ratio::from_inner(123);
 		let decimals = 3;
 
-		AssetsRegistry::<T>::register_asset(RawOrigin::Root.into(), location.clone(), ed, Some(ratio), Some(decimals)).unwrap();
+		AssetsRegistry::<T>::register_asset(RawOrigin::Root.into(), location.clone(), ed, ratio.into(), Some(decimals)).unwrap();
 
 		let local_asset_id = AssetsRegistry::<T>::from_foreign_asset(location.clone()).unwrap();
 
