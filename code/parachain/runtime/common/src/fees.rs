@@ -77,6 +77,7 @@ impl WellKnownPriceConverter {
 			CurrencyId::ibcDOT => Some(rational!(2143 / 1_000_000)),
 			CurrencyId::USDT | CurrencyId::USDC => Some(rational!(15 / 1_000_000_000)),
 			CurrencyId::aUSD | CurrencyId::kUSD => Some(rational!(15 / 1_000)),
+			CurrencyId::PICA => Some(rational!(1 / 1)),
 			_ => None,
 		}
 	}
@@ -104,32 +105,17 @@ impl<AssetsRegistry: AssetRatioInspect<AssetId = CurrencyId>>
 		native_amount: NativeBalance,
 		asset_id: CurrencyId,
 	) -> Result<Balance, Self::Error> {
-		match asset_id {
-			CurrencyId::PICA => Ok(native_amount),
-			_ =>
-				panic!()
-				// if let Some(ratio) = AssetsRegistry::get_ratio(asset_id) {
-				// 	let amount = Ratio::from_inner(native_amount);
-				// 	if let Some(payment) = ratio.checked_mul(&amount) {
-				// 		Ok(payment.into_inner())
-				// 	} else {
-				// 		Err(DispatchError::Other(
-				// 			cross_chain_errors::AMOUNT_OF_ASSET_IS_MORE_THAN_MAX_POSSIBLE,
-				// 		))
-				// 	}
-				// } else if let Some(amount) =
-				// 	WellKnownPriceConverter::to_balance(native_amount, asset_id)
-				// {
-				// 	Ok(amount)
-				// } else {
-				// 	Err(DispatchError::Other(cross_chain_errors::ASSET_IS_NOT_PRICEABLE))
-				// },
-		}
+		AssetsRegistry::get_ratio(asset_id)
+			.and_then(|x| {
+				safe_multiply_by_rational(native_amount, x.numer.into(), x.denom.into()).ok()
+			})
+			.or(WellKnownPriceConverter::to_asset_balance(native_amount, asset_id))
+			.ok_or(DispatchError::Other(cross_chain_errors::ASSET_IS_NOT_PRICEABLE))
 	}
 }
 
 #[cfg(test)]
-mod commons_sence {
+mod commons_sense {
 	use super::WeightToFeeConverter;
 	use frame_support::weights::{constants::WEIGHT_PER_SECOND, WeightToFee};
 
