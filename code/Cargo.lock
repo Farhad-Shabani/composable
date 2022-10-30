@@ -2822,6 +2822,62 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-xcvm-asset-registry"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-storage-plus 0.14.0",
+ "cw-utils",
+ "cw2",
+ "schemars",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "cw-xcvm-interpreter"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-storage-plus 0.13.4",
+ "cw-utils",
+ "cw-xcvm-asset-registry",
+ "cw2",
+ "cw20",
+ "num",
+ "prost 0.11.0",
+ "schemars",
+ "serde",
+ "serde-json-wasm",
+ "serde_json",
+ "thiserror",
+ "xcvm-core",
+ "xcvm-proto",
+]
+
+[[package]]
+name = "cw-xcvm-router"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-storage-plus 0.14.0",
+ "cw-utils",
+ "cw-xcvm-asset-registry",
+ "cw-xcvm-interpreter",
+ "cw2",
+ "cw20",
+ "hex",
+ "schemars",
+ "serde",
+ "serde-json-wasm",
+ "thiserror",
+ "xcvm-core",
+]
+
+[[package]]
 name = "cw2"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -17248,20 +17304,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "xcvm-asset-registry"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-storage-plus 0.14.0",
- "cw-utils",
- "cw2",
- "schemars",
- "serde",
- "thiserror",
-]
-
-[[package]]
 name = "xcvm-core"
 version = "0.1.0"
 dependencies = [
@@ -17278,28 +17320,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "xcvm-interpreter"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-storage-plus 0.13.4",
- "cw-utils",
- "cw2",
- "cw20",
- "num",
- "prost 0.11.0",
- "schemars",
- "serde",
- "serde-json-wasm",
- "serde_json",
- "thiserror",
- "xcvm-asset-registry",
- "xcvm-core",
- "xcvm-proto",
-]
-
-[[package]]
 name = "xcvm-proto"
 version = "0.1.0"
 dependencies = [
@@ -17308,26 +17328,6 @@ dependencies = [
  "prost-build 0.11.1",
  "prost-types 0.11.1",
  "xcvm-core",
-]
-
-[[package]]
-name = "xcvm-router"
-version = "0.1.0"
-dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-storage-plus 0.14.0",
- "cw-utils",
- "cw2",
- "cw20",
- "hex",
- "schemars",
- "serde",
- "serde-json-wasm",
- "thiserror",
- "xcvm-asset-registry",
- "xcvm-core",
- "xcvm-interpreter",
 ]
 
 [[package]]
