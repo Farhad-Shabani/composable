@@ -1,4 +1,5 @@
 use crate::{prelude::*, Balance};
+use composable_support::math::safe::safe_multiply_by_rational;
 use composable_traits::{
 	currency::{AssetExistentialDepositInspect, AssetRatioInspect, Rational64},
 	rational,
@@ -46,17 +47,6 @@ pub fn multi_existential_deposits<AssetsRegistry>(_currency_id: &CurrencyId) -> 
 	Balance::zero()
 }
 
-// trait MultiExistentialDeposits<
-// 	AssetsRegistry: AssetRatioInspect<AssetId = CurrencyId>
-// 		+ AssetExistentialDepositInspect<AssetId = CurrencyId, Balance = Balance>,
-// >
-// {
-
-// }
-
-/// Given a `currency_id`, returns the existential deposit of a MultiAsset in the native asset.
-/// Returns `Balance::MAX` as the existential deposit if unable to get an existential deposit
-/// for the given `currency_id`, this will prune unknown asset balances.
 #[cfg(not(feature = "runtime-benchmarks"))]
 pub fn multi_existential_deposits<
 	AssetsRegistry: AssetRatioInspect<AssetId = CurrencyId>
@@ -64,31 +54,10 @@ pub fn multi_existential_deposits<
 >(
 	currency_id: &CurrencyId,
 ) -> Balance {
-	use frame_support::traits::tokens::BalanceConversion;
-
 	AssetsRegistry::existential_deposit(*currency_id)
-		.and_then(|ed| PriceConverter::<AssetsRegistry>::to_asset_balance(ed, *currency_id))
-		.unwrap_or(match *currency_id {
-			CurrencyId::PICA => native_existential_deposit(),
-			// PICA: 0.1 or 100_000_000_000
-			CurrencyId::PBLO => 100_000_000_000,
-			// USDT: 100_000_000_000 * 1_000_000 / 67_000_000_000_000 = 1492 + 36/67
-			CurrencyId::USDT => 1492,
-			// //TODO: KAR: ?
-			CurrencyId::KAR => 100_000_000_000,
-			// kUSD: 100_000_000_000 / 67 = 1_492_537_313 + 29/67
-			CurrencyId::kUSD => 1_492_537_313,
-			// KSM: 100_000_000_000 / 2667 = 37_495_314 + 229/2667
-			CurrencyId::KSM => 37_495_314,
-			// TODO: BNC: ?
-			CurrencyId::BNC => 100_000_000_000,
-			// TODO: vKSM: ?
-			CurrencyId::vKSM => 100_000_000_000,
-			// TODO: MOVR: ?
-			CurrencyId::MOVR => 100_000_000_000,
-			// Unknown: Prune unknown balances
-			_ => Balance::MAX,
-		})
+		.ok()
+		.or(WellKnownPriceConverter::existential_deposit(*currency_id))
+		.unwrap_or(Balance::MAX)
 }
 
 pub struct PriceConverter<AssetsRegistry>(PhantomData<AssetsRegistry>);
@@ -116,10 +85,9 @@ impl WellKnownPriceConverter {
 		Self::to_asset_balance(NATIVE_EXISTENTIAL_DEPOSIT, asset_id)
 	}
 
-	pub fn to_asset_balance(fee: NativeBalance asset_id: CurrencyId) -> Option<Balance> {
+	pub fn to_asset_balance(fee: NativeBalance, asset_id: CurrencyId) -> Option<Balance> {
 		Self::get_ratio(asset_id).map(|x| {
-			safe_multiply_by_rational(fee, x.numer.into(), x.denom.into())
-				.unwrap_or(Balance::one())
+			safe_multiply_by_rational(fee, x.numer.into(), x.denom.into()).unwrap_or(Balance::one())
 		})
 	}
 }
