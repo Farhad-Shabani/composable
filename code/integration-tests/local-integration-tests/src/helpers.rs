@@ -1,8 +1,5 @@
-use common::{
-	multi_existential_deposits, xcmp::BaseXcmWeight, AccountId, Balance, NativeExistentialDeposit,
-	PriceConverter,
-};
-use composable_traits::{currency::AssetExistentialDepositInspect, xcm::assets::AssetRatioInspect};
+use common::{xcmp::BaseXcmWeight, AccountId, Balance};
+use composable_traits::currency::{AssetExistentialDepositInspect, AssetRatioInspect};
 use cumulus_primitives_core::ParaId;
 
 use primitives::currency::CurrencyId;
