@@ -45,7 +45,7 @@ async fn setup_clients<H: Clone + Send + Sync + 'static>() -> (CosmosClient<H>, 
 
 	let mut chain_a = CosmosClient::<H>::new(config_a).await.unwrap();
 	let mut chain_b = CosmosClient::<H>::new(config_b).await.unwrap();
-	
+
 	// Wait until for cosmos chains to start producing blocks
 	log::info!(target: "hyperspace", "Waiting for block production from cosmos chains");
 	chain_a.rpc_client.health().await.unwrap();
@@ -54,8 +54,19 @@ async fn setup_clients<H: Clone + Send + Sync + 'static>() -> (CosmosClient<H>, 
 	chain_b.rpc_client.status().await.unwrap();
 	log::info!(target: "hyperspace", "Cosmos chains are ready");
 
-	todo!()
-	(chain_a, chain_b)
+	// Check if the clients are already created
+	let clients_on_a = chain_a.query_clients().await.unwrap();
+	log::info!(target: "hyperspace", "Clients on chain_a: {:?}", clients_on_a);
+	let clients_on_b = chain_b.query_clients().await.unwrap();
+	log::info!(target: "hyperspace", "Clients on chain_b: {:?}", clients_on_b);
+
+	if !clients_on_a.is_empty() && !clients_on_b.is_empty() {
+		chain_a.set_client_id(clients_on_b[0].clone());
+		chain_b.set_client_id(clients_on_b[0].clone());
+		return (chain_a, chain_b)
+	}
+
+	todo!()(chain_a, chain_b)
 }
 
 #[tokio::test]
