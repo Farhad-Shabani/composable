@@ -5,21 +5,25 @@ edition = "2021"
 authors = ["Seun Lanlege <seunlanlege@gmail.com>", "David Salami <david.salami@gmail.com>"]
 
 [dependencies]
-tokio = { version = "1.19.2", features = ["macros", "sync", "time"] }
 log = "0.4.17"
 futures = "0.3.24"
 json = { version = "1.0.85", package = "serde_json" }
+tokio = { version = "1.19.2", features = ["macros", "sync", "time"] }
+tonic = { version = "0.7.2", features = ["tls", "tls-roots"] }
 
 ibc = { path = "../../ibc/modules" }
 ibc-proto = { path = "../../ibc/proto" }
 tendermint-proto = { git = "https://github.com/composableFi/tendermint-rs", rev = "5a74e0f8da4d3dab83cc04b5f1363b018cf3d9e8" }
+tendermint-rpc   = { git = "https://github.com/composableFi/tendermint-rs", rev = "5a74e0f8da4d3dab83cc04b5f1363b018cf3d9e8", features = ["http-client", "websocket-client"] }
 
 hyperspace = { path = "../", features = ["testing"] }
 hyperspace-primitives = { path = "../primitives", features = ["testing"] }
 pallet-ibc = { path = "../../../parachain/frame/ibc" }
 
 [dev-dependencies]
-parachain = { path = "../parachain", package = "hyperspace-parachain", features = ["testing"] }
+# parachain = { path = "../parachain", package = "hyperspace-parachain", features = ["testing"] }
+cosmos = { path = "../cosmos", package = "hyperspace-cosmos", features = ["testing"] }
+
 # substrate
 sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.27", features = ["full_crypto"] }
 sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.27" }
@@ -30,3 +34,6 @@ subxt = { git = "https://github.com/paritytech/subxt", rev = "51179a8b72472d0b43
 # We need this so the tests run sequentially
 [[test]]
 name = "parachain_parachain"
+
+[[test]]
+name = "cosmos_cosmos"

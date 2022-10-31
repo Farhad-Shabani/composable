@@ -5038,15 +5038,14 @@ dependencies = [
  "ibc",
  "ibc-proto",
  "ibc-rpc",
+ "ics07-tendermint",
  "ics10-grandpa",
  "ics11-beefy",
  "ics13-near",
  "light-client-common",
  "log 0.4.17",
- "metrics",
  "pallet-ibc",
  "parity-scale-codec",
- "prometheus",
  "prost 0.10.4",
  "sc-keystore",
  "serde",
@@ -5067,7 +5066,27 @@ dependencies = [
 name = "hyperspace-cosmos"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "async-trait",
+ "env_logger",
+ "futures 0.3.24",
  "hyperspace-primitives",
+ "ibc",
+ "ibc-proto",
+ "ibc-rpc",
+ "ics07-tendermint",
+ "jsonrpsee 0.15.1",
+ "jsonrpsee-ws-client 0.14.0",
+ "log 0.4.17",
+ "pallet-ibc",
+ "parity-scale-codec",
+ "serde",
+ "ss58-registry",
+ "tendermint",
+ "tendermint-proto",
+ "tendermint-rpc",
+ "thiserror",
+ "tonic",
 ]
 
 [[package]]
@@ -5163,7 +5182,7 @@ version = "0.1.0"
 dependencies = [
  "futures 0.3.24",
  "hyperspace",
- "hyperspace-parachain",
+ "hyperspace-cosmos",
  "hyperspace-primitives",
  "ibc",
  "ibc-proto",
@@ -5176,7 +5195,9 @@ dependencies = [
  "sp-runtime",
  "subxt 0.24.0",
  "tendermint-proto",
+ "tendermint-rpc",
  "tokio",
+ "tonic",
 ]
 
 [[package]]
@@ -16728,7 +16749,10 @@ dependencies = [
  "pin-project",
  "prost 0.10.4",
  "prost-derive 0.10.1",
+ "rustls-native-certs 0.6.2",
+ "rustls-pemfile 1.0.1",
  "tokio",
+ "tokio-rustls 0.23.4",
  "tokio-stream",
  "tokio-util",
  "tower",
