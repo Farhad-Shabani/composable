@@ -62,6 +62,7 @@ export class XCVM {
     this.messageTypeLookUp['Balance'] = this.BalanceMessage;
     this.messageTypeLookUp['Binding'] = this.BindingMessage;
     this.messageTypeLookUp['Bindings'] = this.BindingsMessage;
+    this.messageTypeLookUp['BindingValue'] = this.BindingValueMessage;
     this.messageTypeLookUp['AssetAmount'] = this.AssetAmountMessage;
     this.messageTypeLookUp['Unit'] = this.UnitMessage;
     this.messageTypeLookUp['Ratio'] = this.RatioMessage;
@@ -215,7 +216,7 @@ export class XCVM {
   //  return security;
   //}
 
-  public createSpawn(networkMessage: Message, saltMessage: Message, security: Number, programMessage: Message, assetsMessage: Array<Message>): Message<{}> {
+  public createSpawn(networkMessage: Message, security: Number, saltMessage: Message, programMessage: Message, assetsMessage: Array<Message>): Message<{}> {
     if (networkMessage.$type.name != "Network") {
       throw this.getTypeError("networkMessage", "network")
     }
@@ -262,13 +263,14 @@ export class XCVM {
       return this.BindingValueMessage.create({self: bindingValueType});
     } else if (bindingValueType.$type.name == "Relayer") {
       return this.BindingValueMessage.create({relayer: bindingValueType});
+    } else if (bindingValueType.$type.name == "Result") {
+      return this.BindingValueMessage.create({result: bindingValueType});
     } else if (bindingValueType.$type.name == "AssetAmount") {
       return this.BindingValueMessage.create({assetAmount: bindingValueType});
     } else if (bindingValueType.$type.name == "AssetId") {
       return this.BindingValueMessage.create({assetId: bindingValueType});
-    } else if (bindingValueType.isNumeric()) {
-      // type 3
-      return this.BindingValueMessage.create({result: bindingValueType});
+    } else if (bindingValueType.$type.name == "IpRegister") {
+      return this.BindingValueMessage.create({assetId: bindingValueType});
     } else {
       throw ("Binding value type message incorrect");
     }

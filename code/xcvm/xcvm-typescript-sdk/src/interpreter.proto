@@ -73,6 +73,9 @@ message Result {
   uint32 result = 1;
 }
 
+message IpRegister {
+  uint64 ip = 1;
+}
 
 message AssetAmount {
   AssetId assetId = 1;
@@ -80,10 +83,6 @@ message AssetAmount {
     Ratio ratio = 2;
     Unit unit = 3;
   }
-}
-
-message IpRegister {
-  uint64 ip = 1;
 }
 
 message BindingValue {
