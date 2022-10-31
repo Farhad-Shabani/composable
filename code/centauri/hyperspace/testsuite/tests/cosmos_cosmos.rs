@@ -45,6 +45,15 @@ async fn setup_clients<H: Clone + Send + Sync + 'static>() -> (CosmosClient<H>, 
 
 	let mut chain_a = CosmosClient::<H>::new(config_a).await.unwrap();
 	let mut chain_b = CosmosClient::<H>::new(config_b).await.unwrap();
+	
+	// Wait until for cosmos chains to start producing blocks
+	log::info!(target: "hyperspace", "Waiting for block production from cosmos chains");
+	chain_a.rpc_client.health().await.unwrap();
+	chain_a.rpc_client.status().await.unwrap();
+	chain_b.rpc_client.health().await.unwrap();
+	chain_b.rpc_client.status().await.unwrap();
+	log::info!(target: "hyperspace", "Cosmos chains are ready");
+
 	todo!()
 	(chain_a, chain_b)
 }
