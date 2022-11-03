@@ -14,7 +14,7 @@ use ibc::{
 		ics02_client::{height::Height, trust_threshold::TrustThreshold},
 		ics23_commitment::{commitment::CommitmentPrefix, specs::ProofSpecs},
 		ics24_host::{
-			identifier::{ChainId, ClientId},
+			identifier::{ChainId, ClientId, ConnectionId},
 			path::ClientConsensusStatePath,
 			Path,
 		},
@@ -62,6 +62,8 @@ pub struct CosmosClient<H> {
 	pub chain_id: String,
 	/// Light client id on counterparty chain
 	pub client_id: Option<ClientId>,
+	/// Connection Id
+	pub connection_id: Option<ConnectionId>,
 	/// Name of the key to use for signing
 	pub key_name: String,
 	/// Account prefix
@@ -123,6 +125,7 @@ where
 			grpc_url: config.grpc_url,
 			ws_client,
 			client_id,
+			connection_id: None,
 			account_prefix: config.account_prefix,
 			commitment_prefix,
 			key_name: config.key_name,

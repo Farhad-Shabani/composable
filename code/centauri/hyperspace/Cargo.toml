@@ -10,6 +10,7 @@ path = "./bin/main.rs"
 
 [dependencies]
 primitives = { path = "primitives", package = "hyperspace-primitives" }
+metrics = { path = "metrics" }
 parachain = { path = "parachain", package = "hyperspace-parachain", optional = true }
 cosmos = { path = "cosmos", package = "hyperspace-cosmos", optional = true }
 #near = { path = "near", package = "hyperspace-near", optional = true }
@@ -51,7 +52,7 @@ subxt = { git = "https://github.com/paritytech/subxt", rev = "51179a8b72472d0b43
 [dev-dependencies]
 derive_more = "0.99.17"
 prost = "0.10"
-# parachain = { path = "parachain", package = "hyperspace-parachain", features = ["testing"] }
+parachain = { path = "parachain", package = "hyperspace-parachain", features = ["testing"] }
 cosmos = { path = "cosmos", package = "hyperspace-cosmos", features = ["testing"] }
 
 # substrate

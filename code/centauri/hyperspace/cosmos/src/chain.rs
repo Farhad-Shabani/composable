@@ -4,6 +4,7 @@ use primitives::{Chain, IbcProvider};
 use std::pin::Pin;
 
 use crate::finality_protocol::FinalityProtocol;
+use subxt::ext::sp_core;
 
 use super::{error::Error, CosmosClient};
 
@@ -36,7 +37,7 @@ where
 		}
 	}
 
-	async fn submit(&self, messages: Vec<Any>) -> Result<(), Error> {
-		Ok(())
+	async fn submit(&self, messages: Vec<Any>) -> Result<(sp_core::H256, Option<sp_core::H256>), Error> {
+		todo!()
 	}
 }

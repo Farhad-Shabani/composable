@@ -7,6 +7,7 @@ use core::{
 	time::Duration,
 };
 use std::pin::Pin;
+use sp_core::H256;
 
 use futures::{Stream, TryFutureExt};
 use ibc::{
@@ -39,6 +40,7 @@ use ibc_rpc::PacketInfo;
 use ics07_tendermint::{
 	client_state::ClientState as TmClientState, consensus_state::ConsensusState as TmConsensusState,
 };
+use pallet_ibc::light_clients::{AnyClientState, AnyConsensusState};
 use primitives::{Chain, IbcProvider, UpdateType};
 use tendermint::block::Height as TmHeight;
 use tendermint_rpc::Client;
@@ -267,6 +269,10 @@ where
 		self.client_id()
 	}
 
+	fn connection_id(&self) -> ConnectionId {
+		self.connection_id.as_ref().expect("Connection id should be defined").clone()
+	}
+
 	fn client_type(&self) -> ClientType {
 		match self.finality_protocol {
 			FinalityProtocol::Tendermint => TmClientState::<H>::client_type(),
@@ -353,5 +359,19 @@ where
 	) -> bool {
 		let refresh_period: u64 = if cfg!(feature = "testing") { 15 } else { 50 };
 		latest_height - latest_client_height_on_counterparty >= refresh_period
+	}
+
+	async fn initialize_client_state(
+		&self,
+	) -> Result<(AnyClientState, AnyConsensusState), Self::Error> {
+		todo!()
+	}
+
+	async fn query_client_id_from_tx_hash(
+		&self,
+		tx_hash: H256,
+		block_hash: Option<H256>,
+	) -> Result<ClientId, Self::Error> {
+		todo!()
 	}
 }
