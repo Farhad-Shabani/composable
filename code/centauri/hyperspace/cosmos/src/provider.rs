@@ -148,7 +148,23 @@ where
 	}
 
 	async fn latest_height_and_timestamp(&self) -> Result<(Height, Timestamp), Self::Error> {
-		todo!()
+		let response = self
+			.rpc_client
+			.status()
+			.await
+			.map_err(|e| Error::RpcError(format!("{:?}", e)))?;
+
+		if response.sync_info.catching_up {
+			return Err(Error::from(format!("Node is still syncing")))
+		}
+
+		let time = response.sync_info.latest_block_time;
+		let height = Height::new(
+			ChainId::chain_version(response.node_info.network.as_str()),
+			u64::from(response.sync_info.latest_block_height),
+		);
+
+		Ok((height, time.into()))
 	}
 
 	async fn query_packet_commitments(
@@ -244,7 +260,7 @@ where
 	}
 
 	fn connection_prefix(&self) -> CommitmentPrefix {
-		todo!()
+		CommitmentPrefix::try_from(self.commitment_prefix.clone()).unwrap()
 	}
 
 	fn client_id(&self) -> ClientId {
@@ -252,11 +268,22 @@ where
 	}
 
 	fn client_type(&self) -> ClientType {
-		todo!()
+		match self.finality_protocol {
+			FinalityProtocol::Tendermint => TmClientState::<H>::client_type(),
+		}
 	}
 
 	async fn query_timestamp_at(&self, block_number: u64) -> Result<u64, Self::Error> {
-		todo!()
+		let height = TmHeight::try_from(block_number)
+			.map_err(|e| Error::from(format!("Invalid block number: {}", e)))?;
+		let response = self
+			.rpc_client
+			.block(height)
+			.await
+			.map_err(|e| Error::RpcError(e.to_string()))?;
+		let timestamp: Timestamp = response.block.header.time.into();
+		let time = timestamp.nanoseconds() / 1_000_000_000 as u64;
+		Ok(time)
 	}
 
 	async fn query_clients(&self) -> Result<Vec<ClientId>, Self::Error> {
@@ -324,6 +351,7 @@ where
 		latest_height: u64,
 		latest_client_height_on_counterparty: u64,
 	) -> bool {
-		todo!()
+		let refresh_period: u64 = if cfg!(feature = "testing") { 15 } else { 50 };
+		latest_height - latest_client_height_on_counterparty >= refresh_period
 	}
 }
